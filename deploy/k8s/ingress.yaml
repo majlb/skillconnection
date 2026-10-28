@@ -1,0 +1,28 @@
+# Requires ingress-nginx (or AKS app routing add-on) and cert-manager with a "letsencrypt" ClusterIssuer.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skillconnect
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # OAuth2 authorization requests are kept in the HTTP session until the provider redirects back.
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/session-cookie-name: sc-route
+    nginx.ingress.kubernetes.io/limit-rps: "30"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [skillconnect.example.com]
+      secretName: skillconnect-tls
+  rules:
+    - host: skillconnect.example.com
+      http:
+        paths:
+          - { path: /api, pathType: Prefix, backend: { service: { name: skillconnect-api, port: { number: 8080 } } } }
+          - { path: /ws, pathType: Prefix, backend: { service: { name: skillconnect-api, port: { number: 8080 } } } }
+          - { path: /oauth2, pathType: Prefix, backend: { service: { name: skillconnect-api, port: { number: 8080 } } } }
+          - { path: /login/oauth2, pathType: Prefix, backend: { service: { name: skillconnect-api, port: { number: 8080 } } } }
+          - { path: /, pathType: Prefix, backend: { service: { name: skillconnect-web, port: { number: 80 } } } }

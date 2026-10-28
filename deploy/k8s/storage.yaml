@@ -1,0 +1,11 @@
+# Shared upload volume backed by Azure Files (ReadWriteMany so every API replica sees the same files).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: skillconnect-uploads
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: azurefile-csi-premium
+  resources:
+    requests:
+      storage: 100Gi

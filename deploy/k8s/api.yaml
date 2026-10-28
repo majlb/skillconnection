@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: skillconnect-api
+  annotations:
+    azure.workload.identity/client-id: "<workload-identity-client-id>"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skillconnect-api
+  labels: { app: skillconnect-api }
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels: { app: skillconnect-api }
+  strategy:
+    rollingUpdate: { maxSurge: 1, maxUnavailable: 0 }
+  template:
+    metadata:
+      labels:
+        app: skillconnect-api
+        azure.workload.identity/use: "true"
+    spec:
+      serviceAccountName: skillconnect-api
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 101
+        seccompProfile: { type: RuntimeDefault }
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: skillconnect-api } }
+      containers:
+        - name: api
+          image: skillconnect-api
+          ports: [{ containerPort: 8080, name: http }]
+          envFrom:
+            - configMapRef: { name: skillconnect-config }
+            - secretRef: { name: skillconnect-secrets }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { memory: 1Gi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            initialDelaySeconds: 60
+            periodSeconds: 20
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            failureThreshold: 30
+            periodSeconds: 5
+          volumeMounts:
+            - { name: uploads, mountPath: /data/uploads }
+            - { name: tmp, mountPath: /tmp }
+            - { name: kv, mountPath: /mnt/secrets, readOnly: true }
+      volumes:
+        - name: uploads
+          persistentVolumeClaim: { claimName: skillconnect-uploads }
+        - name: tmp
+          emptyDir: {}
+        - name: kv
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes: { secretProviderClass: skillconnect-kv }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skillconnect-api
+spec:
+  selector: { app: skillconnect-api }
+  ports: [{ port: 8080, targetPort: http, name: http }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: skillconnect-api
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: skillconnect-api }
+  minReplicas: 3
+  maxReplicas: 15
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 65 } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: skillconnect-api
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels: { app: skillconnect-api }

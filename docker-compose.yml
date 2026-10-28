@@ -1,0 +1,59 @@
+# Local full stack:  docker compose up --build
+# Web: http://localhost:3000   API: http://localhost:8080/swagger-ui.html   Mail UI: http://localhost:8025
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: skillconnect
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-NewPassword123}
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports: ["8025:8025", "1025:1025"]
+
+  api:
+    build: ./backend
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/skillconnect
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-NewPassword123}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (base64, >= 32 bytes) in .env}
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-replace-me}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-replace-me}
+      FACEBOOK_CLIENT_ID: ${FACEBOOK_CLIENT_ID:-replace-me}
+      FACEBOOK_CLIENT_SECRET: ${FACEBOOK_CLIENT_SECRET:-replace-me}
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      EMAIL_ENABLED: "true"
+    ports: ["8080:8080"]
+    volumes: [uploads:/data/uploads]
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        # Empty API URL = same origin; nginx proxies /api, /ws and /oauth2 to the api service.
+        VITE_API_URL: ""
+        VITE_OAUTH_BASE: http://localhost:3000
+        VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-AIzaSyBySZlmxNSn9uyQT5_xOO-FyCvlGw9pcpE}
+    environment:
+      API_UPSTREAM: http://api:8080
+    depends_on: [api]
+    ports: ["3000:8080"]
+
+volumes:
+  pgdata:
+  uploads:

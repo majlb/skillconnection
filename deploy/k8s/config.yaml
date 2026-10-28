@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skillconnect-config
+data:
+  DB_URL: jdbc:postgresql://skillconnect-pg.postgres.database.azure.com:5432/skillconnect?sslmode=require
+  DB_POOL_SIZE: "15"
+  FRONTEND_URL: https://skillconnect.example.com
+  CORS_ORIGINS: https://skillconnect.example.com
+  SMTP_HOST: smtp.azurecomm.net
+  SMTP_PORT: "587"
+  EMAIL_ENABLED: "true"
+  SMS_ENABLED: "true"
+  UPLOAD_DIR: /data/uploads
+---
+# Secrets are synced from Azure Key Vault by the Secrets Store CSI driver (see docs/deployment.md).
+# Never commit real values; this object only declares which Key Vault secrets map to which env vars.
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: skillconnect-kv
+spec:
+  provider: azure
+  parameters:
+    usePodIdentity: "false"
+    clientID: "<workload-identity-client-id>"
+    keyvaultName: skillconnect-kv
+    tenantId: "<tenant-id>"
+    objects: |
+      array:
+        - |
+          objectName: db-user
+          objectType: secret
+        - |
+          objectName: db-password
+          objectType: secret
+        - |
+          objectName: jwt-secret
+          objectType: secret
+        - |
+          objectName: google-client-id
+          objectType: secret
+        - |
+          objectName: google-client-secret
+          objectType: secret
+        - |
+          objectName: facebook-client-id
+          objectType: secret
+        - |
+          objectName: facebook-client-secret
+          objectType: secret
+        - |
+          objectName: smtp-user
+          objectType: secret
+        - |
+          objectName: smtp-password
+          objectType: secret
+  secretObjects:
+    - secretName: skillconnect-secrets
+      type: Opaque
+      data:
+        - { objectName: db-user, key: DB_USER }
+        - { objectName: db-password, key: DB_PASSWORD }
+        - { objectName: jwt-secret, key: JWT_SECRET }
+        - { objectName: google-client-id, key: GOOGLE_CLIENT_ID }
+        - { objectName: google-client-secret, key: GOOGLE_CLIENT_SECRET }
+        - { objectName: facebook-client-id, key: FACEBOOK_CLIENT_ID }
+        - { objectName: facebook-client-secret, key: FACEBOOK_CLIENT_SECRET }
+        - { objectName: smtp-user, key: SMTP_USER }
+        - { objectName: smtp-password, key: SMTP_PASSWORD }
