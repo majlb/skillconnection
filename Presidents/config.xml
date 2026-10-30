@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<configuration>
+	<include type="classpath" name="/com/sgs/transitnet/config/daemonConfig.xml" />
+	<include type="classpath" name="/com/sgs/transitnet/config/wsConfig.xml" />
+	<include type="classpath" name="/com/sgs/transitnet/config/ftpConfig.xml" />
+	<section name="common">
+	
+	    <!-- 22133 - Cancelation Request at Group Level -->
+		<entry key="enableRFTCancelationPerCountries" value="SK,IT,LT,IE,CH"/>
+	  
+		<entry key="ncts4CheckCountries" value="it"></entry>
+		<entry key="platform" value="DEV" />
+		<entry key="security" value="on" />
+		<entry key="staticContentRoot" value="/TransitNet_Paths/FlexibleContent" />
+		<entry key="logoOverrideString" value="" />
+		<entry key="tariffBookNumberOfLangs" value="24" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="hideImpDeclarations" value="false" />
+		<entry key="trLoginHTML" value="/Site/transitnet.html" />
+		<entry key="simpleCTRate" value="25" />
+		<entry key="simpleSpecialRate" value="35" />
+		<entry key="isEmailNotificationEnabled" value="true" />
+		<entry key="auditEnabled" value="false" />
+		<entry key="notificationEnabled" value="false" />
+		<entry key="enablePfNumberSaving" value="true" />
+		<entry key="pfVesselName" value="*" />
+		<entry key="amountToBeAddToIMP" value="2" />
+		<entry key="amountToBeChargedMS" value="100" />
+		<entry key="docAEODetails" value="Y024-ESAEOC17000006II,Y026-ESAEOC17000006II" />
+		<entry key="minutesBeforeClose" value="30" />
+		<entry key="excludedFrenchPortsCustomOffice" value="FR004430" />
+		<entry key="excludedFrenchCustomOffice" value="FR004430,FR005920,FR002730" />
+		<entry key="isStopTRInterface" value="false" />
+		<entry key="ClientCenterAccessReport" value="23-16" />
+		<entry key="enabledCCToPreviewOtherCCTSN" value="RO,MD,LT,MK,FR">
+		</entry>
+		<entry key="blockedTIN" value="7070314318" />
+		<entry key="blockedNames" value="OZTAS,ELK" />
+		<entry key="blockedAddress" value="SERBEST,BOLGE,DESPAS" />
+		<entry key="geolocationDbfile" value="TransitNet_Paths/geolocation/GeoIP2-Country.mmdb" />
+		<entry key="urlSurveyMonkey" value="https://www.surveymonkey.com/r/Users-" />
+		<entry key="blockedConsigneeName" value="ROUSSEL SPRL FRERES" />
+		<entry key="bypassCountriesDaemonSending" value="" />
+		<entry key="scheduleSendMessageByCountries" value="" />
+		<entry key="jmsServer" value="secret-file:common-jmsserver" />
+		<entry key="jmsFactory" value="jms/TestConnectionFactory" />
+		<entry key="jmsQueue" value="jms/TestJMSQueue" />
+		<entry key="jmsServerAlt" value="secret-file:common-jmsserveralt" />
+		<entry key="jmsQueueAlt" value="jms/TestJMSQueue" />
+		<entry key="guathreshold" value="10" />
+		<entry key="enableJms" value="false" />
+		<entry key="enableJmsOnLoad" value="false" />
+		<entry key="fromCC" value="15" />
+		<entry key="toCC" value="49" />
+		<entry key="clientsToClonesList" value="151285,168677" />
+		<entry key="bucket.name" value="sgs-transitnet-nonprod" />
+		<entry key="api.url" value="https://tw-zuul-proxy-test.sgs.com/aws-transitnet/current/" />
+		
+		<!-- 21775 - S3 -->
+		<entry key="cloud.storage.migration" value="true"/>		
+		<!-- Wrapper type values "amazon-s3" or "azure-blob-storage" -->
+		<entry key="cloud.storage.wrapper.type" value="azure-blob-storage"/>
+		<entry key="cloud.storage.call.timeout.seconds" value="60"/>
+		<entry key="cloud.storage.call.maxRetryAttempts" value="3"/>
+
+		<entry key="cloud.storage.s3.bucket.name" value="sgs-transitnet-nonprod"/>
+		<entry key="cloud.storage.s3.accessKey" value="secret-file:common-cloud-storage-s3-accesskey"/>
+		<!--<entry key="cloud.storage.s3.secretKey" value="secret-file:common-cloud-storage-s3-secretkey"/>-->
+		<entry key="cloud.storage.s3.defaultMinutesExpiration" value="99999999"/>
+
+		<!-- 21775 - AZURE -->
+		<entry key="cloud.storage.azure.accountName" value="secret-file:common-cloud-storage-azure-accountname"/>
+		<entry key="cloud.storage.azure.containerName" value="transitnet-azure-storage-nonprod"/>
+		<entry key="cloud.storage.azure.accountKey" value="secret-file:common-cloud-storage-azure-accountkey"/>
+		<entry key="cloud.storage.azure.endPoint" value="https://sgssaeuwtrnetnonprod.blob.core.windows.net/"/>
+		
+		<entry key="awsUploadRetringCount" value="3" />
+		<entry key="isAsyncSeparate" value="true" />
+		<entry key="checkUploadDocuments" value="true" />
+		<entry key="gteeAutoAcceptLimit" value="500000" />
+		<entry key="ERP_exculde_merge_clients" value="TR7690007011,MK00000" />
+		<entry key="enableGteeOverride" value="true" />
+		<entry key="gteeOverrideCO" value="TR341200,TR341300" />
+		<entry key="jmsQueueType" value="activemq" />
+		<entry key="amqpConnectionString" value="secret-file:common-amqpconnectionstring" />
+		<entry key="amqpQueue" value="sgsqueue" />
+		<entry key="amqpConnectionStringAlt" value="secret-file:common-amqpconnectionstringalt" />
+		<entry key="amqpQueueAlt" value="sgsqueue" />
+		<entry key="activemqConnectionString" value="tcp://trnet-activemq1-service:61616" />
+		<entry key="activemqQueue" value="sgsqueue" />
+		<entry key="activemqConnectionStringAlt" value="tcp://trnet-activemq2-service:61616" />
+		<entry key="activemqQueueAlt" value="sgsqueue" />
+		<entry key="EUTaxationUrl" value="https://ec.europa.eu/taxation_customs/dds2/tra/transit_list.jsp" />
+		<entry key="duplicateControlRemove" value="23539-(LKW)" />
+		<entry key="enableFileWatcherService" value="false" />
+		<entry key="nbOfSecondsToRecheckForNewConfigurationOrPrice" value="60" />
+		<entry key="checkForRecentConfigurationOrPrice" value="true" />
+		<entry key="serviceLocationExcel" value="TransitNet_Paths/party/ServiceLocation-idGenerated.xls" />
+		<entry key="jfrShellScriptPath" value="/TransitNet_Paths/plateform/extractJFRDump.sh" />
+		<entry key="userSanctionEnable" value="false"/>
+		<entry key="TransitNetRestUrl" value="https://sgs-tnet-dev.sword-group.com/QA_transitnet/api/"/>
+     	<entry key="redisCustomsOfficeTimeoutDays" value="1"/> 
+      	<entry key="isCustomsRedisEnabled" value="true"/>
+      <entry key="pre_notification_countries" value="BG,HR,HU"/>
+      <entry key="ncts6PresentationNotificationEntRoleCountry" value="LV,HR,PL,SK"/>
+      <entry key="refund_toBeCancelled_timeoutPerDays" value="3" />
+         <entry key="config.secret.key.path" value="/mnt/secrets-store/" />
+	</section>
+	<section name="security">
+		<entry key="adminConfigPath" value="/TransitNet_Paths/config/sword-env/admin.properties" />
+		<entry key="lockDangerousActions" value="false" />
+		<entry key="preventBackButton" value="false" />
+		<entry key="enableActionUrlHide" value="false" />
+		<entry key="enableLinkUrlHide" value="false" />
+		<entry key="enableFormHiddenValuesHide" value="false" />
+		<entry key="enablePasswordValidity" value="true" />
+		<entry key="passwordValidity" value="60" />
+		<entry key="enableInactivityDays" value="true" />
+		<entry key="inactivityDays" value="30" />
+	</section>
+	<section name="tracking">
+		<entry key="OracleTracking" value="false" />
+		<entry key="TrackingCall" value="begin set_tn_ctx(?); end;" />
+	</section>
+	<section name="ediSender">
+		<entry key="EDISender" value="EDI Sender" />
+		<entry key="smtpServer" value="10.100.0.115" />
+		<entry key="from" value="noreply@sword-group.com" />
+		<entry key="from_HR_submission" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ccManagers" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_taxationCustoms_Control" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_guaranteeLimitsRecipients" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="guaranteeLimits_hq" value="hakimy,ertan_hq,bulent_HQ,Todor_HQ,tokum" />
+		<entry key="to_NotificationRecipients" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetWaw" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_1" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_2" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_3" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_4" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_5" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_6" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_8" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_10" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_11" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_13" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_14" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_15" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_17" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_18" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_19" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_20" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_21" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_22" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_23" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_24" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_25" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_26" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_27" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_28" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_29" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_30" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_31" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_32" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_33" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_34" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_40" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_41" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_42" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_43" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_44" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_ClientCenter_57" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnet_riskControl" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="clients_customs_rejections" value="689625" />
+		<entry key="689625_clients_customs_rejections_email" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="cc_prizeEmails" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitRail" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnet_BO_Risk" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_BO_TICKETING" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_PL" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_DE" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_IT" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_TR" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_RO" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetPoland" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetSupport" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetTurkey" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetRo" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetBulgaria" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnet_BO" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnet_BO_Support" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnet_BO_GVMS" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_transitnetLt" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_belgrade_cc" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="fromNoReply" value="hady.haddad@sword-group.com" />
+		<entry key="sendGridEnabled" value="true" />
+		<entry key="sendGridSmtpServer" value="smtp.sendgrid.net" />
+		<entry key="sendGridSmtpServerUserName" value="secret-file:ediSender-sendGridSmtpServerUserName"/>
+		<entry key="sendGridSmtpServerPassword" value="secret-file:edisender-sendgridsmtpserverpassword"/>
+		<entry key="sendGridSmtpServerApiKey" value="secret-file:edisender-sendgridsmtpserverapikey"/>
+	</section>
+	<section name="ediReceiver">
+		<entry key="EDIReceiver" value="EDI Receiver" />
+		<entry key="server" value="hermes" />
+		<entry key="user" value="secret-file:edireceiver-user"/>
+      <entry key="password" value="secret-file:edireceiver-password" />
+		<entry key="numberOfmessagesToProcess" value="10" />
+	</section>
+	<section name="ediDe">
+		<entry key="ftps.send.dir" value="/LftpSolutionFileShare/ZNET/send/" />
+		<entry key="ftps.receive.dir" value="/LftpSolutionFileShare/ZNET/receive/" />
+		<entry key="ftps.receive.success.dir" value="/LftpSolutionFileShare/ZNET/receive_success/" />
+		<entry key="ftps.receive.failure.dir" value="/LftpSolutionFileShare/ZNET/receive_failure/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="subtractTaxDuty" value="-25" />
+	</section>
+	<section name="ediRo">
+		<entry key="serverWS.Url" value="http://fake_80.96.3.71/WebServ/services/sgs_ncts_bean" />
+		<entry key="keyStore" value="/PlateformFileShare/keystore/ro/new_spain12.p12" />
+      <entry key="keyStorePassword" value="secret-file:ediro-keystorepassword" />
+		<entry key="trustStore" value="/PlateformFileShare/customs/ro/cacerts" />
+      <entry key="trustStorePassword" value="secret-file:ediro-truststorepassword" />
+		<entry key="guaranteeOffice" value="ROANV003" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/RO/active/in/" />
+		<entry key="folderSigned" value="/eSignatureFileShare/RO/active/out/" />
+		<entry key="folderError" value="/eSignatureFileShare/RO/active/error/" />
+		<entry key="addToTaxDuty" value="15" />
+		<entry key="VAT" value="20" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="GRNCustomsOffice" value="DE003200,BG009999,FR009570,PL440000,IT129199" />
+	</section>
+	<section name="ediApPlus">
+		<entry key="ftps.send.dir" value="/LftpSolutionFileShare/MGI/send/" />
+		<entry key="ftps.receive.dir" value="/LftpSolutionFileShare/MGI/receive/" />
+		<entry key="ftps.receive.success.dir" value="/LftpSolutionFileShare/MGI/receive_success/" />
+		<entry key="ftps.receive.failure.dir" value="/LftpSolutionFileShare/MGI/receive_failure/" />
+		<entry key="apPlusCustomsOffice" value="FR002730" />
+		<entry key="apPlusPlatformName" value="APPLUS" />
+		<entry key="apPlusThirdPartyName" value="APPLUS" />
+		<entry key="apPlusUserName" value="APPLUS" />
+		<entry key="transitNetSystemName" value="SGS" />
+		<entry key="transitNetThirdPartyName" value="HITTR" />
+		<entry key="transitNetUserName" value="HIT759" />
+		<entry key="enableApPlusSaving" value="true" />
+	</section>
+	<section name="ediDoaToCI5">
+		<entry key="ftps.send.dir" value="/TransitNet_Paths/DoaToCI5/send/" />
+		<entry key="ftps.receive.dir" value="/TransitNet_Paths/DoaToCI5/receive/" />
+		<entry key="ftps.receive.success.dir" value="/TransitNet_PathsDoaToCI5/receive_success/" />
+		<entry key="ftps.receive.failure.dir" value="/TransitNet_Paths/DoaToCI5/receive_failure/" />
+		<entry key="doaToCI5Enabled" value="true" />
+		<entry key="senderName" value="TRANSITNET" />
+		<entry key="receiverName" value="APPLUSSET" />
+		<entry key="userDestinataire" value="APPLUSSET" />
+		<entry key="tiersProfDestinataire" value="APPLUSSET" />
+		<entry key="userEmetteur" value="SGS4589" />
+		<entry key="tiersProfEmetteur" value="SGSTR" />
+		<entry key="interactionType" value="DOA" />
+		<entry key="refDocType" value="T1" />
+		<entry key="refDocCircuit" value="BAE" />
+		<entry key="refDocStatus" value="VA" />
+		<entry key="tiersDocSIC" value="SGSTR" />
+		<entry key="receiverMail" value="edi@gyptis.fr" />
+	</section>
+	<section name="ediIt">
+		<entry key="serverWS.Url" value="https://fake_xedi.multiconsult.com/service.asmx" />
+		<entry key="testIndicator" value="1" />
+		<entry key="controlUrl" value="http://ec.europa.eu/taxation_customs/dds/cgi-bin/misquer" />
+		<entry key="IE15XSD" value="/TransitNet_Paths/customs/it/IE15IT.xsd" />
+		<entry key="EUControlUrl" value="http://ec.europa.eu/taxation_customs/dds/cgi-bin/misquer" />
+		<entry key="ItalianControlUrl" value="http://www1.agenziadogane.it/ed/servizi/transito/mrn/transito.htm" />
+		<entry key="isNCTS4Active" value="true" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="arrivalElpasedHours" value="1" />
+		<entry key="intermediateCustomOffices" value="IT322104" />
+		<entry key="IT322104" value="7" />
+	</section>
+	<section name="ediBg">
+		<entry key="serverWS.Url" value="http://fake_57.79.15.221:8300/trixie/ncts/soa/submit-message-services/b2b/b2b" />
+		<entry key="VAT" value="20" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/BG/active/in/" />
+		<entry key="folderSigned" value="/eSignatureFileShare/BG/active/out/" />
+		<entry key="BULSTAT" value="000653802" />
+		<entry key="signedRequestFile" value="/eSignatureFileShare/BG/active/request/ack.xml.p7m" />
+		<entry key="IE15Schema" value="/TransitNet_Paths/customs/bg/IE15BG.xsd" />
+		<entry key="folderError" value="/eSignatureFileShare/BG/active/error/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="addToDuty" value="20" />
+		<entry key="principalEORI" value="BGA000653802ZZZZ8" />
+		<entry key="senderEORI" value="BGA000653802ZZZZ8" />
+		<entry key="signedRequestFile" value="/eSignatureFileShare/BG/request/ack.xml.BG.p7m" />
+	</section>
+	<section name="ediTr">
+		<entry key="serverWS.Url" value="http://bilgewebservislertest.gumruk.gov.tr/Gumruk.Tescil/TescilServis.svc" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/TR/active/in/" />
+		<entry key="folderSigned" value="/eSignatureFileShare/TR/active/out/" />
+		<entry key="folderError" value="/eSignatureFileShare/TR/active/error/" />
+		<entry key="addToTaxDuty" value="0" />
+		<entry key="subtractTaxDuty" value="-10" />
+		<entry key="bilgeUsername" value="secret-file:editr-bilgeusername" />
+		<entry key="bilgePassword" value="secret-file:editr-bilgepassword" />
+		<entry key="serverUndnetWS.Url" value="http://beta.undnet.org/WS/B2B/TransitNet/TransitNet.asmx" />
+		<entry key="transitNetUndLogin.Url" value="https://testtr-transitnet.sgs.com/TransitNetWeb/undLogin.jsp" />
+		<entry key="undnetImportCO.it" value="IT322102" />
+		<entry key="undnetImportCO.fr" value="FR004430" />
+		<entry key="undnetImportCO.bg" value="BG001015" />
+		<entry key="isNCTS4Active" value="true" />
+		<entry key="serverWS.NCTS.Url" value="http://wstest.gtb.gov.tr:8080/EXT/Gumruk/NCTS/Provider/NCTS2SWS" />
+		<entry key="isNCTS4Active" value="true" />
+		<entry key="OLD_USER_ID" value="secret-file:editr-old-user-id" />
+		<entry key="OLD_PASSWORD" value="secret-file:editr-old-password" />
+		<entry key="BURC_USER_ID" value="secret-file:editr-burc-user-id" />
+		<entry key="BURC_PASSWORD" value="secret-file:editr-burc-password" />
+		<entry key="USER_ID" value="secret-file:editr-user-id" />
+		<entry key="PASSWORD" value="secret-file:editr-password" />
+		<entry key="keytext" value="secret-file:editr-keytext" />
+		<entry key="vectext" value="11,12,13,14,15,16,17,19" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="trDischargingCustomsOffices" value="TR343400,TR351000,TR080300,TR220200,TR221300,TR220500,TR611500,TR210400,TR650200,TR650100" />
+		<entry key="trTransportCustomsOffices" value="BG003103,BG001011,GR001332,BG001015" />
+		<entry key="trTransportCustomsOffices20" value="BG003102,BG001014" />
+		<entry key="amountToBeChargedMS" value="100" />
+		<entry key="basicAuthUserName" value="secret-file:editr-basicauthusername" />
+		<entry key="basicAuthPassword" value="secret-file:editr-basicauthpassword" />
+		<entry key="exchangeCurrencies" value="EUR,USD,BGN,RON,CHF,GBP,RUB" />
+		<entry key="mixedUetdsEclient" value="0" />
+		<entry key="mixedUetds_NonEclientBaseFee" value="10" />
+		<entry key="mixedUetds_NonEclientAdditionalFee" value="2" />
+		<entry key="clientNotUetdsOnlyEclient" value="0" />
+		<entry key="clientUetdsOnlyEclient" value="5" />
+		<entry key="mixedClientUetdsOnly_NonEclientBaseFee" value="10" />
+		<entry key="mixedClientUetdsOnly_NonEclientAdditionalFee" value="2" />
+		<entry key="mixedClientNotUetdsOnly_NonEclientBaseFee" value="4" />
+		<entry key="mixedClientNotUetdsOnly_NonEclientAdditionalFee" value="2" />
+		<entry key="clientNotUetdsOnly_NonEclientBaseFee" value="10" />
+		<entry key="clientNotUetdsOnly_NonEclientAdditionalFee" value="2" />
+		<entry key="clientUetdsOnly_NonEclientBaseFee" value="10" />
+		<entry key="clientUetdsOnly_NonEclientAdditionalFee" value="2" />
+		<entry key="exchangeCurrencies" value="EUR,USD,BGN,RON,CHF,GBP,RUB" />
+		<entry key="enableSecurityFields" value="true" />
+	</section>
+	<section name="ediMk">
+		<entry key="puserId" value="secret-file:edimk-puserid" />
+		<entry key="serverWS.NCTS.Url" value="http://fake_146.255.89.62:9797/IC_NCTSMK_WSNEW/services/CommWS" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="folderSigned" value="/eSignatureFileShare/MK/active/out/" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/MK/active/in/" />
+		<entry key="folderError" value="/eSignatureFileShare/MK/active/error/" />
+	</section>
+	<section name="ediHu">
+		<entry key="serverWS.Url" value="https://fake_kkk.nav.gov.hu/teszt/2/ws/users/messagehandler.asmx" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="isSignatureActive" value="false" />
+		<entry key="channelName" value="http://vam.gov.hu/NCTS" />
+		<entry key="guaranteeRate" value="30" />
+		<entry key="senderUser" value="user:107181" />
+		<entry key="sendTo" value="http://vam.gov.hu/NCTS" />
+		<entry key="onBehalfOf" value="vpid:HU0001090936" />
+		<entry key="userName" value="secret-file:edihu-username" />
+		<entry key="password" value="secret-file:edihu-password" />
+	</section>
+	<section name="ediIntes">
+		<entry key="send.dir" value="/PlateformFileShare/INTES/send/" />
+		<entry key="receive.dir" value="/PlateformFileShare/INTES/receive/" />
+		<entry key="receive.archive.dir" value="/PlateformFileShare/INTES/receive_success/" />
+		<entry key="receive.errors.dir" value="/PlateformFileShare/INTES/receive_failure/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="custOffToIntes" value="BG000000" />
+		<entry key="userId" value="secret-file:ediintes-userid" />
+		<entry key="password" value="secret-file:ediintes-password" />
+	</section>
+	<section name="ediFr">
+		<entry key="ensFrCOD" value="FR620001,FR590002,FR000950,FR002300,FR003920,FR000720,FR004060,FR000690" />
+		<entry key="ensFrClients" value="367,627,425" />
+		<entry key="SMTPServer" value="213.193.109.218" />
+		<entry key="POPServer" value="213.193.109.218" />
+		<entry key="user" value="secret-file:edifr-user" />
+		<entry key="password" value="secret-file:edifr-password" />
+		<entry key="recipient" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="sender" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="addToTaxDuty" value="25" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="messageSender" value="FR35279149500158" />
+		<entry key="to_requestCancelationRecipients" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="cc_requestCancelationRecipients" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="isConsigneeMandatory" value="false" />
+		<entry key="isSecure" value="false" />
+		<entry key="smtpsPort" value="25" />
+		<entry key="pop3Port" value="995" />
+		<entry key="isTestSmtp" value="false" />
+		<entry key="isFrTrSecurityEnabled" value="true" />
+		<entry key="frAutoAcceptCustomsOffice" value="FR004250" />
+		<entry key="exchangeCurrencies" value="EUR,USD,BGN,RON,CHF,GBP,RUB" />
+		<entry key="isDeltaTEnabled" value="false" />
+		<entry key="connexionId" value="55203165001581" />
+		<entry key="interchangeAgreementId" value="00000401" />
+		<entry key="applicationId" value="Diagnostic" />
+		<entry key="numEnveloppe" value="7777" />
+		<entry key="marevaSmtpServer" value="55.8.56.162" />
+		<entry key="emailSender" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="emailRecipient" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="emailSubject" value="Test Mail Mareva" />
+		<entry key="pop3sMarevaUser" value="secret-file:edifr-pop3smarevauser" />
+		<entry key="pop3sMarevaPassword" value="secret-file:edifr-pop3smarevapassword" />
+		<entry key="pop3sMarevaHost" value="outlook.office365.com" />
+		<entry key="pop3sMarevaPort" value="995" />
+		<entry key="certificatePath" value="/PlateformFileShare/private_keys/merava-2024-2027.p12"/>
+		<entry key="certificatePassword" value="secret-file:edifr-certificatepassword"/>
+		<entry key="certificateSerialNumber" value="4d228a4fcbb8ddb9480dd9eb3914129"/>
+		<entry key="initialNumSequence" value="7700" />
+		<entry key="transactionId" value="7700" />
+		<entry key="ftps.send.dir" value="/LftpSolutionFileShare/MGI/send/" />
+		<entry key="ftps.receive.dir" value="/LftpSolutionFileShare/MGI/receive/" />
+		<entry key="ftps.receive.success.dir" value="/LftpSolutionFileShare/MGI/receive_success/" />
+		<entry key="ftps.receive.failure.dir" value="/LftpSolutionFileShare/MGI/receive_failure/" />
+		<entry key="icsSenderName" value="SGS" />
+		<entry key="icsReceiverName" value="M-CUSTOMS" />
+		<entry key="icsSenderTin" value="FR99999999999999" />
+		<entry key="icsReceiverTin" value="M-CUSTOMS" />
+	</section>
+	<section name="ediPl">
+		<entry key="send.dir" value="/eSignatureFileShare/winsad/send/" />
+		<entry key="receive.dir" value="/eSignatureFileShare/winsad/receive/" />
+		<entry key="receive.archive.dir" value="/eSignatureFileShare/winsad/receive_archive/" />
+		<entry key="receive.errors.dir" value="/eSignatureFileShare/winsad/receive_errors/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="zmpd.send.dir" value="/eSignatureFileShare/winsad/send_zmpd/" />
+		<entry key="receive.tads.dir" value="/eSignatureFileShare/winsad/receive_tad/" />
+		<entry key="receive.trnet.tads.dir" value="/eSignatureFileShare/winsad/receive_trnet_tad/" />
+		<entry key="presentationDays" value="30"/>
+	</section>
+	<section name="ediIe">
+		<entry key="service.url" value="https://softwaretest.ros.ie/service" />
+		<entry key="service.customs.url" value="https://softwaretest.ros.ie/customs/service/" />
+		<entry key="keystore.path" value="/PlateformFileShare/private_keys/07688608EA" />
+		<entry key="keystore.password" value="Itptest1" />
+		<entry key="keystore.pwdHashBase64" value="Da+fOkCFC+XTJCHdkkdqqg==" />
+		<entry key="tin" value="06370215" />
+		<entry key="messageSender" value="06370215Q" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/IE/active/in/" />
+		<entry key="folderSigned" value="/eSignatureFileShare/IE/active/out/" />
+		<entry key="folderError" value="/eSignatureFileShare/IE/active/error/" />
+		<entry key="folderArchive" value="/eSignatureFileShare/IE/active/archive/" />
+		<entry key="minutesBefore" value="3" />
+		<entry key="agreedPlaceLocOffices" value="IEROS100,IETIV100" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="guaranteeRate" value="28" />
+		<entry key="export.aes.migrationDateTime.transitionPeriodEndDate" value="2023-06-01T00:00:00.000Z"/>
+	</section>
+	<section name="ediSimulators">
+		<entry key="usePolishSimulator" value="true" />
+		<entry key="useGermanSimulator" value="true" />
+		<entry key="useRomaniaSimulator" value="true" />
+		<entry key="useItalianSimulator" value="true" />
+		<entry key="useBulgarianSimulator" value="true" />
+		<entry key="useTurkishSimulator" value="true" />
+		<entry key="useFrenchSimulator" value="true" />
+		<entry key="useUndnetSimulator" value="true" />
+		<entry key="useMacedonianSimulator" value="true" />
+		<entry key="useUndnetSimulator" value="true" />
+		<entry key="useHungarianSimulator" value="true" />
+		<entry key="useLithuanianSimulator" value="true" />
+		<entry key="useSerbianSimulator" value="true" />
+		<entry key="useCroatianSimulator" value="true" />
+		<entry key="useSpanishSimulator" value="true" />
+		<entry key="useLatvianSimulator" value="true" />
+		<entry key="useSwitzerlandSimulator" value="true" />
+		<entry key="useNetherlandsSimulator" value="true" />
+		<entry key="useSlovenianSimulator" value="true" />
+		<entry key="useSlovakianSimulator" value="true" />
+		<entry key="useRussianSimulator" value="true" />
+		<entry key="useBelarusianSimulator" value="true" />
+		<entry key="useIrelandSimulator" value="true" />
+	</section>
+	<section name="ediMonitoring">
+		<entry key="WinSADEU.timeout" value="120000" />
+		<entry key="WinSADEU.alert.receivers" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="ZNET.alert.receivers" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+	</section>
+	<section name="upload">
+		<entry key="maxFileSize" value="2097152" />
+	</section>
+	<section name="list">
+		<entry key="maxRows" value="200" />
+	</section>
+	<section name="recording">
+		<entry key="active" value="false" />
+		<entry key="pathPrefix" value="/PlateformFileShare/recording/" />
+	</section>
+	<section name="audit">
+		<entry key="profiler.active" value="false" />
+		<entry key="profiler.level" value="medium" />
+	</section>
+	<section name="multiLangFreeText">
+		<entry key="default.locale.order" value="en,bg,de,fr,it,pl,ru,ro,tr,mk,hu,lt,sr,es,lv,si,sk,be,nl" />
+	</section>
+	<section name="multiLangLocalizedText">
+		<entry key="default.lang.order" value="en,bg,de,fr,it,pl,ru,ro,tr,mk,hu,lt,sr,es,lv,si,sk,be,nl" />
+	</section>
+	<section name="tariffBookCountryMapping">
+		<entry key="tarrifBookMapping.BY" value="BY1" />
+		<entry key="tarrifBookMapping.DE" value="DE1" />
+		<entry key="tarrifBookMapping.PL" value="PL1" />
+		<entry key="tarrifBookMapping.RO" value="RO1" />
+		<entry key="tarrifBookMapping.RU" value="RU1" />
+		<entry key="tarrifBookMapping.TR" value="TR1" />
+		<entry key="tarrifBookMapping.IT" value="IT1" />
+		<entry key="tarrifBookMapping.BG" value="BG1" />
+		<entry key="tarrifBookMapping.FR" value="FR1" />
+		<entry key="tarrifBookMapping.MK" value="MK1" />
+		<entry key="tarrifBookMapping.HU" value="HU1" />
+		<entry key="tarrifBookMapping.RS" value="RS1" />
+		<entry key="tarrifBookMapping.LT" value="LT1" />
+		<entry key="tarrifBookMapping.ES" value="ES1" />
+		<entry key="tarrifBookMapping.HR" value="HR1" />
+		<entry key="tarrifBookMapping.LV" value="LV1" />
+		<entry key="tarrifBookMapping.RU" value="EU1" />
+		<entry key="tarrifBookMapping.SI" value="EU1" />
+		<entry key="tarrifBookMapping.SK" value="SK1" />
+		<entry key="tarrifBookMapping.NL" value="NL1" />
+		<entry key="tarrifBookMapping.GB" value="EU1" />
+		<entry key="tarrifBookMapping.other" value="EU1" />
+	</section>
+	<section name="defaultCustomOffices">
+		<entry key="defaultCustomOffice.PL.Country" value="PL" />
+		<entry key="defaultCustomOffice.PL.CustomsOfficeCode" value="301040" />
+		<entry key="defaultCustomOffice.PL.DescriptionTranslationKey" value="customoffice.description.default.PL" />
+		<entry key="defaultCustomOffice.BY.Country" value="BY" />
+		<entry key="defaultCustomOffice.BY.CustomsOfficeCode" value="987600" />
+		<entry key="defaultCustomOffice.BY.DescriptionTranslationKey" value="customoffice.description.default.BY" />
+		<entry key="defaultCustomOffice.IT.Country" value="IT" />
+		<entry key="defaultCustomOffice.IT.CustomsOfficeCode" value="322102" />
+		<entry key="defaultCustomOffice.IT.DescriptionTranslationKey" value="customoffice.description.default.IT" />
+		<entry key="defaultCustomOffice.BG.CustomsOfficeCode" value="003103,001011,005304" />
+		<entry key="defaultCustomOffice.TR.Country" value="TR" />
+		<entry key="defaultCustomOffice.TR.Trim.CustomsOfficeCode.Dep.sea" value="330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.TR.Trim.CustomsOfficeCode.Dep.road" value="221300,220200,220500" />
+		<entry key="defaultCustomOffice.TR.Trex.CustomsOfficeCode.Dep.sea" value="330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.TR.Trex.CustomsOfficeCode.Te.sea" value="040100,041100,310400,470100,800200" />
+		<entry key="defaultCustomOffice.TR.DescriptionTranslationKey" value="customoffice.description.default.TR" />
+		<entry key="defaultCustomOffice.TR.Trex.CustomsOfficeCode.Te.road" value="221300,220200,220500,330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.TR.Trext1.CustomsOfficeCode.Ex.sea" value="221300,220200,220500,330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.TR.Trext1.CustomsOfficeCode.Ex.road" value="221300,220200,220500,330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.TR.T1trex.CustomsOfficeCode.En.sea" value="330300,343400,343100,351000,220900" />
+		<entry key="defaultCustomOffice.FR.CustomsOfficeCode" value="004430" />
+		<entry key="defaultCustomOffice.FR.Country" value="FR" />
+		<entry key="defaultCustomOffice.FR.DescriptionTranslationKey" value="customoffice.description.default.FR" />
+		<entry key="defaultCustomOffice.BG.TransitCustomsOfficeCode" value="003103,001011,005804,005707,005809,004209,004206,001003,005703,005706,005702" />
+		<entry key="defaultCustomOffice.TR.TransitCustomsOfficeCode" value="343100,343400,330300,340900,220000,221300,351000,410300" />
+		<entry key="defaultCustomOffice.FR.TransitCustomsOfficeCode" value="889001" />
+		<entry key="defaultCustomOffice.IT.TransitCustomsOfficeCode" value="322102" />
+		<entry key="defaultCustomOffice.HR.Country" value="HR" />
+		<entry key="defaultCustomOffice.HR.DescriptionTranslationKey" value="customoffice.description.default.HR" />
+		<entry key="defaultCustomOffice.HU.TransitCustomsOfficeCode" value="515000,317000" />
+		<entry key="defaultCustomOffice.HU.Country" value="HU" />
+		<entry key="defaultCustomOffice.HU.DescriptionTranslationKey" value="customoffice.description.default.HU" />
+		<entry key="defaultCustomOffice.CH.TransitCustomsOfficeCode" value="004181,001801,006251" />
+		<entry key="defaultCustomOffice.CH.Country" value="CH" />
+		<entry key="defaultCustomOffice.CH.DescriptionTranslationKey" value="customoffice.description.default.CH" />
+	</section>
+	<section name="DKDDeclaration">
+		<entry key="DKDCreation.enable" value="true" />
+	</section>
+	<section name="DeclarationValidation">
+		<entry key="Validation.duration" value="1" />
+	</section>
+	<section name="branding">
+		<entry key="transitnet_sgs_com.urls" value="sgs-tnet-dev.sword-group.com, www.transitnet.sgs.com, localhost, 127.0.0.1, ren-dsk-141, localhostmfi,194.126.12.179" />
+		<entry key="atri_com.urls" value="devro-transitnet.sgs.com, sgs-tnet-devro.sword-group.com, www.easytransit.net, localhostro, localhostmfiro" />
+		<entry key="roder_com.urls" value="devtr-transitnet.sgs.com, sgs-tnet-devtr.sword-group.com, www.roder.com, localhosttr, 10.100.0.4, localhostmfitr" />
+		<entry key="france_com.urls" value="devfr-transitnet.sgs.com, sgs-tnet-devfr.sword-group.com, localhostfr,localhostfrmfi" />
+		<entry key="lithuania_com.urls" value="devlt-transitnet.sgs.com, sgs-tnet-devlt.sword-group.com, localhostlt,localhostmfilt" />
+		<entry key="zmpd_com.urls" value="devzmpd-transitnet.sgs.com, www.zmpd.com, localhostzmpd" />
+	</section>
+	<section name="pricing">
+		<entry key="pricingPath" value="/PricingFileShare/Pricing/declaration/" />
+		<entry key="refreshPricingPath" value="/PricingFileShare/Pricing/refresh/" />
+		<entry key="refPricingPath" value="/PricingFileShare/Pricing/declaration/reference" />
+		<entry key="clientPricingSuffix" value="ClientPrice" />
+		<entry key="clientCenterPricingSuffix" value="ClientCenterPrice" />
+		<entry key="premiumFile" value="/PricingFileShare/Pricing/" />
+		<entry key="premiumPriceSuffix" value="PremiumPrice" />
+		<entry key="guaranteeLimit" value="100000" />
+		<entry key="maxGuaranteeLimit" value="10000000" />
+		<entry key="pricingTempPath" value="/PricingFileShare/temp/" />
+		<entry key="maxNumberOfLups" value="7" />
+		<entry key="multiRegimesPriceAmount" value="5" />
+		<entry key="usePricingBrokerPM" value="true" />
+		<entry key="brokerPricingSuffix" value="BrokerPrice" />
+	</section>
+	<section name="pricingVATperCountry">
+		<entry key="DE" value="1.20" />
+	</section>
+	<section name="principal">
+		<entry key="maximumGuaranteePerPR" value="1" />
+	</section>
+	<section name="guarantee">
+		<entry key="actualAmountThreshold" value="10" />
+	</section>
+	<section name="tnImagingPath">
+		<entry key="TN_IMAGING_FOLDER_PATCH" value="TN_IMAGING_TST" />
+	</section>
+	<section name="autoProcessUsers">
+		<entry key="1" value="25179" />
+		<entry key="2" value="25179" />
+		<entry key="3" value="25180" />
+		<entry key="4" value="25179" />
+		<entry key="5" value="25181" />
+		<entry key="6" value="25183" />
+		<entry key="7" value="25183" />
+		<entry key="8" value="25181" />
+		<entry key="9" value="25181" />
+		<entry key="10" value="25183" />
+		<entry key="11" value="25184" />
+		<entry key="13" value="25184" />
+		<entry key="14" value="25184" />
+		<entry key="15" value="25184" />
+		<entry key="16" value="25184" />
+		<entry key="17" value="25184" />
+		<entry key="18" value="25184" />
+		<entry key="19" value="25184" />
+		<entry key="20" value="25184" />
+		<entry key="21" value="25184" />
+		<entry key="22" value="25184" />
+		<entry key="23" value="25184" />
+		<entry key="24" value="25184" />
+		<entry key="25" value="25184" />
+		<entry key="26" value="25184" />
+		<entry key="27" value="25184" />
+		<entry key="28" value="25184" />
+		<entry key="29" value="25184" />
+		<entry key="30" value="25184" />
+		<entry key="31" value="25184" />
+		<entry key="32" value="25184" />
+		<entry key="33" value="25184" />
+		<entry key="34" value="25184" />
+		<entry key="35" value="25184" />
+	</section>
+	<section name="Trieste">
+		<entry key="SamerUrl" value="http://localhost:90/CustomsWS/services/SamerWS" />
+		<entry key="ParisiUrl" value="https://213.82.127.5/ParisiSGS/ParisiSGS.asmx" />
+		<entry key="FranceUrl" value="http://localhost:90/CustomsWS/services/FranceWS" />
+		<entry key="numberOfFranceRetry" value="10" />
+		<entry key="sgs_to_worms_password" value="L12PTs35" />
+		<entry key="worms_to_sgs_password" value="HK147WZx" />
+	</section>
+	<section name="ProxySetting">
+		<entry key="enableProxy" value="false" />
+		<entry key="proxySet" value="false" />
+		<entry key="proxyHost" value="10.0.225.201" />
+		<entry key="proxyPort" value="8080" />
+		<entry key="https.proxySet" value="true" />
+		<entry key="https.proxyHost" value="10.0.225.201" />
+		<entry key="https.proxyPort" value="8080" />
+	</section>
+	<section name="PartyTemplate">
+		<entry key="path" value="TransitNet_Paths/party/template" />
+	</section>
+	<section name="DeclarationTemplate">
+		<entry key="path" value="TransitNet_Paths/declaration/template" />
+	</section>
+	<section name="TIRDeclaration">
+		<entry key="principalCountries" value="bg,it,ro,de,fr,pl,hu,es" />
+	</section>
+	<section name="IMPDeclaration">
+		<entry key="principalCountries" value="it,ro,fr,es" />
+	</section>
+	<section name="countriesReport">
+		<entry key="declarationsPerVoyageCountries" value="it,ro,fr" />
+	</section>
+	<section name="Signing">
+		<entry key="manufacturerDlls" value="aetpkss1.dll,siecap11.dll,gclib.dll,akisp11.dll,iidp11.dll" />
+	</section>
+	<section name="freeZonesList">
+		<entry key="070300" value="F01" />
+		<entry key="342800" value="F02" />
+		<entry key="342200" value="F03" />
+		<entry key="352200" value="F04" />
+		<entry key="330500" value="F05" />
+		<entry key="342000" value="F06" />
+		<entry key="611200" value="F07" />
+		<entry key="040400" value="F08" />
+		<entry key="470400" value="F09" />
+		<entry key="610200" value="F10" />
+		<entry key="550100" value="F11" />
+		<entry key="060600" value="F12" />
+		<entry key="221400" value="F13" />
+		<entry key="270100" value="F14" />
+		<entry key="353100" value="F15" />
+		<entry key="160100" value="F16" />
+		<entry key="311100" value="F17" />
+		<entry key="410500" value="F18" />
+		<entry key="410100" value="F19" />
+		<entry key="352100" value="F20" />
+	</section>
+	<section name="UNRORO">
+		<entry key="unRoroEnabled" value="true" />
+		<entry key="UnRoroUrl" value="http://rezervasyon.unroro.com.tr/ediws/roroedi.asmx" />
+	</section>
+	<section name="contractorPricing">
+		<entry key="contractorPricePlanPath" value="/PricingFileShare/Pricing/declaration/ContractorPricePlan.xml" />
+	</section>
+	<section name="ICS">
+		<entry key="icsEnabled" value="true" />
+		<entry key="numberOfRetry" value="10" />
+		<entry key="icsROUrl" value="http://localhost/CustomsWS/services/Service1Soap" />
+		<entry key="icsROEnabled" value="false" />
+		<entry key="icsEORINr" value="RO3451552" />
+		<entry key="icsROUsername" value="RO3451552" />
+		<entry key="icsROPassword" value="SGS2012ICS" />
+		<entry key="icsBGUrl" value="http://localhost/CustomsWS/services/TransitNetIcsBG" />
+		<entry key="icsBGSignedRequestFile" value="/eSignatureFileShare/BG/active/request/icsSignedRequest.xml.p7m" />
+		<entry key="icsFREnabled" value="true" />
+	</section>
+	<section name="recalculateGuarantee">
+		<entry key="declarationDate" value="20181001" />
+	</section>
+	<section name="digitalSignaturesCertificates">
+		<entry key="emailTo" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="countries" value="RO,BG" />
+		<entry key="RO" value="20130810" />
+		<entry key="BG" value="20131107" />
+	</section>
+	<section name="groupGuranteeLimit">
+		<entry key="min" value="50000" />
+		<entry key="max" value="300000" />
+	</section>
+	<section name="trDefaultCustomsOfficeOfTransit">
+		<entry key="IT" value="322102" />
+		<entry key="FR" value="004430" />
+		<entry key="BG" value="003103,001011" />
+		<entry key="RO" value="CT1900,CT1970" />
+		<entry key="GR" value="001332" />
+	</section>
+	<section name="clientVehicles">
+		<entry key="maxNumberOfRows" value="100" />
+	</section>
+	<section name="sogecaDefault">
+		<entry key="countryOfRegime" value="FR" />
+	</section>
+	<section name="billitzDefault">
+		<entry key="countryOfRegime" value="IT" />
+	</section>
+	<section name="durmazDefault">
+		<entry key="countryOfRegime" value="DE" />
+	</section>
+	<section name="MilspedInterface">
+		<entry key="userId" value="secret-file:milspedinterface-userid" />
+		<entry key="password" value="secret-file:milspedinterface-password" />
+		<entry key="customsOfficeOfTransitAdjacentToSerbia" value="BG005804,HU317000,HU515000,HR070319,HR070300,ROTM5010,MK002031" />
+	</section>
+	<section name="ICSParisi">
+		<entry key="userId" value="secret-file:icsparisi-userid" />
+		<entry key="password" value="secret-file:icsparisi-password" />
+		<entry key="triesteCustomsOffice" value="%" />
+	</section>
+	<section name="guaranteeAccount">
+		<entry key="ES" value="2" />
+		<entry key="HR" value="2" />
+	</section>
+	<section name="SyrianControls">
+		<entry key="customsOfficesOfSyriaControl" value="TR270600,TR270300,TR310400,TR310500" />
+	</section>
+	<section name="claimSender">
+		<entry key="to_claimTransitnetRo" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_claimTransitnetHQ" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_claimTransitnetBulgaria" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="to_infoTransitnetTurkey" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+	</section>
+	<section name="AutoAccepControls">
+		<entry key="excludeCOTRTerList" value="BG005804,BG005702" />
+	</section>
+	<section name="GoodsItemSurchargeRule">
+		<entry key="regime" value="TR,MK,CT" />
+		<entry key="goodsItemSurchargeRuleFrom" value="3" />
+		<entry key="goodsItemSurchargeRuleTo" value="7" />
+		<entry key="priceINCC" value="3" />
+		<entry key="priceINClient" value="5" />
+		<entry key="priceOUTCC" value="10" />
+		<entry key="priceOUTClient" value="10" />
+	</section>
+	<section name="ediLt">
+		<entry key="serverWS.Url" value="https://fake_xedi.multiconsult.com/service.asmx" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="userName" value="secret-file:edilt-username" />
+		<entry key="password" value="secret-file:edilt-password" />
+		<entry key="tin" value="LT111432261" />
+	</section>
+	<section name="ediRs">
+		<entry key="serverWS.Url" value="https://fake_ncts.carina.rs/eccgateway/gatewayservice.svc" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="communicationAuthorizationID" value="14RS123450EC00129" />
+		<entry key="password" value="123456" />
+		<entry key="tin" value="201412101" />
+		<entry key="organisationID" value="201412101" />
+		<entry key="guaranteeRate" value="30" />
+		<entry key="folderSigned" value="/eSignatureFileShare/RS/active/out/" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/RS/active/in/" />
+		<entry key="folderError" value="/eSignatureFileShare/RS/active/error/" />
+		<entry key="batrovciCO" value="RS021091" />
+	</section>
+	<section name="ediHr">
+		<entry key="ftps.send.dir" value="/eSignatureFileShare/HR/active/send/" />
+		<entry key="ftps.receive.dir" value="/eSignatureFileShare/HR/active/receive/" />
+		<entry key="ftps.receive.success.dir" value="/eSignatureFileShare/HR/active/receive_archive/" />
+		<entry key="ftps.receive.failure.dir" value="/eSignatureFileShare/HR/active/receive_failure/" />
+		<entry key="tin" value="69359376226" />
+		<entry key="isNovaEnabled" value="false" />
+	</section>
+	<section name="serverOverrideConfig">
+		<entry key="configPassword" value="secret-file:serveroverrideconfig-configpassword" />
+	</section>
+	<section name="ediEs">
+		<entry key="unhRef" value="TEX011" />
+		<entry key="folderSigned" value="/eSignatureFileShare/ES/active/OUT/" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/ES/active/IN/" />
+		<entry key="folderError" value="/eSignatureFileShare/ES/active/error/" />
+		<entry key="NifNumber" value="A08006199" />
+		<entry key="FormUrl" value="https://www1.agenciatributaria.gob.es/l/inwinvoc/es.aeat.dit.adu.adht.infra.EntradaEdiJava" />
+		<entry key="showAppletSignButton" value="true" />
+		<entry key="docRef" value="ESAEOC17000006II" />
+		<entry key="327840" value="true" />
+		<entry key="dischargDocValidationUrl" value="https://www1.agenciatributaria.gob.es/wlpl/ADDS-JDIT/QIntDecSum" />
+		<entry key="keyStore" value="/PlateformFileShare/keystore/es/new_spain12.p12" />
+		<entry key="keyStoreSerialNumber" value="secret-file:ediEs-keyStoreSerialNumber"/>
+		<entry key="retreiveDays" value="10" />
+	</section>
+	<section name="clientsActivities">
+		<entry key="TR.Limit1" value="15" />
+		<entry key="TR.Limit2" value="30" />
+		<entry key="Other.Limit1" value="15" />
+		<entry key="Other.Limit2" value="30" />
+	</section>
+	<section name="SamerTAD">
+		<entry key="triesteCustomsOfficeCode" value="IT322102" />
+	</section>
+	<section name="ediLv">
+		<entry key="serverWS.Url" value="https://fake_emdas-new.vid.gov.lv/emdas_ws/emdas_ws_tks/services/" />
+		<entry key="isNCTS4Security" value="true" />
+      <entry key="userName" value="secret-file:edilv-username" />
+      <entry key="password" value="secret-file:edilv-password" />
+		<entry key="tin" value="LV40003057800" />
+		<entry key="guaranteeRate" value="25" />
+	</section>
+	<section name="ediCh">
+		<entry key="serverWS.Url" value="https://test.sisa.ch/sgs.om/service/OrderManagement/OrderManagementServiceV3.svc" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="userName" value="secret-file:edich-username" />
+		<entry key="password" value="secret-file:edich-password" />
+		<entry key="tin" value="00000000" />
+		<entry key="organisationUnitKey" value="690" />
+		<entry key="DeclarantNumber" value="201" />
+		<entry key="VATNumber" value="0" />
+		<entry key="internationalTraderNumber" value="CH378" />
+		<entry key="internationalTraderNumber" value="CHE105923438" />
+		<entry key="nationalTraderNumber" value="CHE105923438" />
+		<entry key="authorizedTrader" value="1" />
+		<entry key="guaranteeRate" value="25" />
+		<entry key="keyStore" value="TransitNet_Paths/certificates/keystore/ch/sisa_key.p12" />
+		<entry key="keyStorePassword" value="secret-file:edich-keystorepassword" />
+		<entry key="keyStoreSerialNumber" value="secret-file:edich-keystoreserialnumber" />
+		<entry key="DeclarantNumber" value="1" />
+		<entry key="traderNumber" value="CHE105923438" />
+	</section>
+	<section name="containers">
+		<entry key="roadMaxContainers" value="2" />
+		<entry key="railBargeMaxContainers" value="40" />
+	</section>
+	<section name="ICS_ES">
+		<entry key="icsEnabled" value="true" />
+		<entry key="numberOfRetry" value="10" />
+		<entry key="icsESUrl" value="https://www1.agenciatributaria.gob.es/L/inwinvoc/es.aeat.dit.adu.aden.enswsv4.IE315P4SOAP" />
+		<entry key="folderSigned" value="/eSignatureFileShare/ES_ENS/active/out/" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/ES_ENS/active/in/" />
+		<entry key="folderError" value="/eSignatureFileShare/ES_ENS/active/error/" />
+	</section>
+	<section name="riskProfiling">
+		<entry key="isRiskProfilingEnabled" value="true" />
+		<entry key="serverWS.Url" value="https://test2-profiler.sgs.com/profiler/ws" />
+		<entry key="groupsRiskProfilingThreshold" value="2" />
+		<entry key="groupsRiskProfilingThresholdForPDF" value="1" />
+		<entry key="serverWS.username" value="secret-file:riskprofiling-serverws-username" />
+		<entry key="serverWS.password" value="secret-file:riskprofiling-serverws-password" />
+		<entry key="riskProfilingFolder" value="/PlateformFileShare/profiler/pdf_folder" />
+		<entry key="serverWS.usernameTokenId" value="secret-file:riskprofiling-serverws-usernametokenid" />
+	</section>
+	<section name="ediAkanea">
+		<entry key="userId" value="secret-file:ediakanea-userid"/>
+		<entry key="password" value="secret-file:ediakanea-password"/>
+		<entry key="folderTobeHandled" value="/LftpSolutionFileShare/AKANEA/receive/" />
+		<entry key="folderArchived" value="/LftpSolutionFileShare/AKANEA/receive_success/" />
+		<entry key="folderError" value="/LftpSolutionFileShare/AKANEA/receive_failure/" />
+		<entry key="mailTo" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="mailSubject" value="AKANEA New Group" />
+	</section>
+	<section name="ediRu">
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="tin" value="40103060385" />
+		<entry key="ftps.send.dir" value="/PlateformFileShare/RU/send/" />
+		<entry key="ftps.receive.dir" value="/PlateformFileShare/RU/receive/" />
+		<entry key="ftps.receive.success.dir" value="/PlateformFileShare/RU/receive_success/" />
+		<entry key="ftps.receive.failure.dir" value="/PlateformFileShare/RU/receive_failure/" />
+		<entry key="declarantName" value="Russia Declarant" />
+		<entry key="declarantStrAndStrNbr" value="declarantStreet And Street Nbr" />
+		<entry key="declarantPostalCode" value="Declarant Postal Code" />
+		<entry key="declarantCity" value="Declarant City" />
+		<entry key="declarantCountry" value="RU" />
+		<entry key="declarantLangage" value="RU" />
+		<entry key="declarantTin" value="Declarant Tin" />
+	</section>
+	<section name="ediNl">
+		<entry key="ftps.send.dir" value="/LftpSolutionFileShare/NL/send/" />
+		<entry key="ftps.receive.dir" value="/LftpSolutionFileShare/NL/receive/" />
+		<entry key="ftps.receive.success.dir" value="/LftpSolutionFileShare/NL/receive_success/" />
+		<entry key="ftps.receive.errors.dir" value="/LftpSolutionFileShare/NL/receive_failure/" />
+		<entry key="ftps.receive.archive.dir" value="/LftpSolutionFileShare/NL/receive_archive/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="zipCodeXlsx" value="/TransitNet_Paths/template_files/NLZipCode.csv" />
+		<entry key="zipCodeXlsxNormal" value="/TransitNet_Paths/template_files/NLZipCodeNormal.csv" />
+	</section>
+	<section name="ediSi">
+		<entry key="tin" value="20180501" />
+		<entry key="send.dir" value="/eSignatureFileShare/SI/chot143/send/" />
+		<entry key="receive.dir" value="/eSignatureFileShare/SI/chot143/receive/" />
+		<entry key="receive.success.dir" value="/eSignatureFileShare/SI/chot143/receive_success/" />
+		<entry key="receive.errors.dir" value="/eSignatureFileShare/SI/chot143/receive_failure/" />
+		<entry key="receive.archive.dir" value="/eSignatureFileShare/SI/chot143/receive_archive/" />
+		<entry key="isNCTS4Security" value="true" />
+	</section>
+	<section name="ediSk">
+		<entry key="serverWS.Url" value="https://tcep.financnasprava.sk/tcep/procw/cep.ekre.web.ws/ReceiverExtSystem.asmx" />
+		<entry key="elektronickeSluzby.Url" value="https://tcep.financnasprava.sk/tcep/procw/CEP.MRP.ElektronickeSluzby.Svc.Wcf/ElektronickeSluzbyService.svc" />
+		<entry key="histCom.Url" value="https://tcep.financnasprava.sk/tcep/procw/cep.ekre.web.ws/HistKom.asmx" />
+		<entry key="receiverExtSystem.Url" value="https://tcep.financnasprava.sk/tcep/procw/cep.ekre.web.ws/ReceiverExtSystem.asmx" />
+		<entry key="subjectId" value="39644922" />
+		<entry key="userName" value="secret-file:edisk-username" />
+		<entry key="password" value="secret-file:edisk-password" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="tin" value="40103" />
+		<entry key="folderSigned" value="/eSignatureFileShare/SK/active/out/" />
+		<entry key="folderToBeSigned" value="/eSignatureFileShare/SK/active/in/" />
+		<entry key="folderError" value="/eSignatureFileShare/SK/active/error/" />
+		<entry key="folderArchive" value="/eSignatureFileShare/SK/active/archive/" />
+		<entry key="send.dir" value="/eSignatureFileShare/SK/active/in/" />
+		<entry key="simplifiedProNb" value="ZO05200180001" />
+		<entry key="testIndicator" value="0" />
+	</section>
+	<section name="ediBy">
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="isSignatureActive" value="true" />
+		<entry key="tin" value="SGSBY" />
+		<entry key="ftps.send.dir" value="/PlateformFileShare/BY/send/" />
+		<entry key="ftps.archive.dir" value="/PlateformFileShare/BY/archive" />
+		<entry key="ftps.receive.dir" value="/PlateformFileShare/BY/receive/" />
+		<entry key="ftps.receive.archive.dir" value="/PlateformFileShare/BY/receive_archive/" />
+		<entry key="ftps.receive.errors.dir" value="/PlateformFileShare/BY/receive_failure/" />
+		<entry key="lowGteeAmount" value="500" />
+	</section>
+	<section name="securityAnalysisGuaranteeLimit">
+		<entry key="clientCenter_35" value="500000" />
+		<entry key="clientCenter_36" value="500000" />
+		<entry key="clientCenter_37" value="500000" />
+		<entry key="clientCenter_38" value="500000" />
+		<entry key="clientCenter_39" value="500000" />
+		<entry key="clientCenter_40" value="500000" />
+		<entry key="clientCenter_41" value="500000" />
+		<entry key="clientCenter_42" value="500000" />
+		<entry key="clientCenter_43" value="500000" />
+		<entry key="clientCenter_44" value="500000" />
+	</section>
+	<section name="uploadPricePlace">
+		<entry key="user" value="secret-file:uploadpriceplace-user" />
+		<entry key="password" value="secret-file:uploadpriceplace-password" />
+		<entry key="enableRedisCashe" value="true" />
+		<entry key="redisUrl" value="http://transitnetrediscache.transitnetrediscache-subdomain.transitnet-phase1.svc.cluster.local:8080/TransitNetCache/api/" />
+		<!-- 22322 --> 		 
+	    <entry key="enableAzureRedisService" value="false"/> 		 
+		<!-- transit-net-redis-cache -->
+		<entry key="redisHostName" value="secret-file:uploadPricePlace-redisHostName"/>
+		<entry key="redisPassword" value="secret-file:uploadPricePlace-redisPassword"/>
+        <entry key="redisPort" value="6380"/>
+        <entry key="redisSsl" value="true"/>
+        <entry key="useZstdCompression" value="true"/>
+	</section>
+	<section name="gvms">
+		<entry key="clientId" value="secret-file:gvms-clientid" />
+		<entry key="clientSecret" value="secret-file:gvms-clientsecret" />
+		<entry key="redirectUri" value="http://localhost/TransitNetWeb/getGvms?action=getAuth" />
+		<entry key="apiUri" value="https://test-api.service.hmrc.gov.uk" />
+		<entry key="pushSecret" value="secret-file:gvms-pushsecret" />
+		<entry key="price" value="7" />
+	</section>
+	<section name="highLowIncrementHighService">
+		<entry key="timeout" value="1200" />
+		<entry key="security" value="secret-file:highlowincrementhighservice-security" />
+		<entry key="pod" value="http://localhost:8080/TransitNetRest/api" />
+	</section>
+	<section name="lkwWalter">
+		<entry key="pop3sLkwHost" value="outlook.office365.com" />
+		<entry key="pop3sLkwUser" value="secret-file:lkwwalter-pop3slkwuser" />
+		<entry key="pop3sLkwPassword" value="secret-file:lkwwalter-pop3slkwpassword" />
+		<entry key="pop3sLkwPort" value="995" />
+		<entry key="fromEmail" value="CH-SUI-SGS.ALERTINFRA.TEST@sword-group.com" />
+		<entry key="lkwCallBackUrl" value="https://ws.lkw-walter.com/customsResponseTest" />
+		<entry key="lkwCallBackUsername" value="secret-file:lkwwalter-lkwcallbackusername" />
+		<entry key="lkwCallBackPassword" value="secret-file:lkwwalter-lkwcallbackpassword" />
+	</section>
+	<section name="ediScanner">
+		<entry key="pop3sUser" value="secret-file:ediScanner-pop3sUser" />
+		<entry key="googleUser" value="secret-file:ediScanner-googleUser" />
+		<entry key="googleApiAccessToken" value="secret-file:ediscanner-googleapiaccesstoken" />
+	</section>
+	<section name="ediGb">
+		<entry key="gbExsLocationOfGoods" value="TransitNet_Paths/party/template/GbExsLocationOfGoods.csv" />
+		<entry key="serverWS.Url" value="https://tpvs2.hmrc.gov.uk/ws/ncts/service" />
+		<entry key="username" value="secret-file:edigb-username" />
+		<entry key="password" value="secret-file:edigb-password" />
+		<entry key="vendorName" value="Vender1" />
+		<entry key="vendorURI" value="Vender1" />
+		<entry key="vendorId" value="V10000" />
+		<entry key="vendorProduct" value="Client Product 1" />
+		<entry key="vendorProductVersion" value="1.0" />
+		<entry key="actionKey" value="123456789123" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="maxResponses" value="4" />
+		<entry key="messageSender" value="GB35279149500158" />
+		<entry key="maxGBSpecialCCGuarantee" value="150000" />
+		<entry key="useNcts" value="true" />
+	</section>
+	<section name="ediBe">
+		<entry key="ftps.send.dir" value="/LftpSolutionFileShare/BE/send/" />
+		<entry key="ftps.receive.dir" value="/LftpSolutionFileShare/BE/receive/" />
+		<entry key="ftps.receive.success.dir" value="/LftpSolutionFileShare/BE/receive_success/" />
+		<entry key="ftps.receive.errors.dir" value="/LftpSolutionFileShare/BE/receive_failure/" />
+		<entry key="ftps.receive.archive.dir" value="/LftpSolutionFileShare/BE/receive_archive/" />
+		<entry key="ftps.receive.tads.dir" value="/LftpSolutionFileShare/BE/receive_tad/" />
+		<entry key="ftps.receive.trnet.tads.dir" value="/LftpSolutionFileShare/BE/receive_trnet_tad/" />
+		<entry key="isNCTS4Security" value="true" />
+		<entry key="authCodeXlsx" value="TransitNet_Paths/party/template/BEAuthCode.csv" />
+	</section>
+	<section name="ncts5">
+		<entry key="ncts5.migrationDateTime.version5_1.hr" 					value="2023-05-31T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.hr" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.hr" value="2023-05-30T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.si" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.si" 					value="2025-03-13T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.si" value="2022-03-13T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.it" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.it" 					value="2025-03-13T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.it" value="2025-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.ro" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.ro" 					value="2025-03-13T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.ro" value="2025-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.rs" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.rs" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.rs" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.pl" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.pl" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.pl" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.ua" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.ua" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.ua" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.gb" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.gb" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.gb" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.xi" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.xi" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.xi" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.bg" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.bg" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.bg" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.de" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.de" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.de" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.tr" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.tr" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.tr" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.be" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.be" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.be" value="2025-01-23T13:24:15.943Z"/>		
+		<entry key="ncts5.migrationDateTime.version5_1.ie" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.ie" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.ie" value="2025-01-23T13:24:15.943Z"/>		
+		<entry key="ncts5.migrationDateTime.version5_1.lv" 					value="2023-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.lv" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.lv" value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.es" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.es" 					value="2025-01-23T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.es" value="2025-01-23T13:24:20.943Z"/>		
+		<entry key="ncts5.migrationDateTime.version5_1.sk" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.sk" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.sk" value="2024-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.fr" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.fr" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.fr" value="2025-11-25T13:24:15.943Z"/>		
+		<entry key="ncts5.migrationDateTime.version5_1.lt" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.lt" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.lt" value="2024-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.nl" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.nl" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.nl" value="2024-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.hu" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.hu" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.hu" value="2024-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.mk" 					value="2023-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.mk" 					value="2025-03-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.mk" value="2024-11-25T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_1.ch" 					value="2023-09-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version5_2.ch" 					value="2025-01-01T13:24:15.943Z"/>
+		<entry key="ncts5.migrationDateTime.version4CreationFallbackEnd.ch" value="2025-01-01T13:24:15.943Z"/>
+		
+	</section>
+	
+	<section name="ELO">
+		<entry key="token" value="secret-file:elo-token"/>
+		<entry key="auth_username" value="secret-file:elo-auth_username"/>
+		<entry key="auth_password" value="secret-file:elo-auth_password"/>
+		<entry key="auth_scope" value="openid"/>		
+		<entry key="auth_client_id" value="gun-api"/>		
+		<entry key="auth_grant_type" value="password"/>		
+		<entry key="auth_url" value="https://connexion-api-moa.douane.gouv.fr/oauth2/token"/>		
+		<entry key="api_url" value="https://api-moa.douane.gouv.fr/sibrexit/"/>	
+			
+		<entry key="enableELO" value="true"/>
+	</section>
+	<section name="hopEoriPerCountry">
+	 	<entry key="GB" value="GB1111111111"/>
+	 	<entry key="RS" value="RS2222222222"/>
+	</section>
+</configuration>

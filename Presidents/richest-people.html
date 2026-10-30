@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17191a">
+  <title>Fortunes, by year | World Wealth Index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #17191a;
+      --panel: #202324;
+      --panel-raised: #282c2d;
+      --paper: #f3f0e8;
+      --muted: #a7aaa5;
+      --line: #3b4140;
+      --lime: #d6f36a;
+      --blue: #829bff;
+      --coral: #ff8b73;
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "DM Sans", "Segoe UI", sans-serif;
+      --mono: "DM Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--paper);
+      font-family: var(--sans);
+      background-color: var(--ink);
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(ellipse at 78% -10%, rgba(130,155,255,.13), transparent 34rem),
+        radial-gradient(ellipse at 4% 46%, rgba(214,243,106,.055), transparent 30rem);
+      background-size: 48px 48px, 48px 48px, auto, auto;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .page-shell {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 0 48px 34px;
+    }
+
+    .topbar {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font: 500 11px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      aspect-ratio: 1;
+      color: var(--ink);
+      background: var(--lime);
+      font: 700 15px var(--serif);
+    }
+
+    .edition {
+      color: var(--muted);
+      font: 11px var(--mono);
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 32px;
+      padding: 42px 0 27px;
+    }
+
+    .eyebrow, .section-label {
+      color: var(--lime);
+      font: 500 10px var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 10px 0 0;
+      font: 600 clamp(40px, 5vw, 68px)/.98 var(--serif);
+      letter-spacing: 0;
+    }
+
+    h1 span { color: var(--lime); font-style: italic; }
+
+    .intro-copy {
+      max-width: 410px;
+      margin: 13px 0 0;
+      color: #c0c2bb;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .range-box {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      padding: 13px;
+      border: 1px solid var(--line);
+      background: rgba(32,35,36,.78);
+    }
+
+    .range-field { display: grid; gap: 6px; }
+
+    .range-field label {
+      color: var(--muted);
+      font: 10px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .range-field input {
+      width: 82px;
+      height: 38px;
+      padding: 0 10px;
+      color: var(--paper);
+      border: 1px solid #4b5150;
+      border-radius: 0;
+      outline: 0;
+      background: #17191a;
+      font: 500 15px var(--mono);
+    }
+
+    .range-field input:focus-visible, button:focus-visible, input[type="range"]:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 3px;
+    }
+
+    .range-dash { padding-bottom: 10px; color: #777d7b; }
+
+    .year-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 20px;
+      padding: 20px 22px 18px;
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      background: rgba(32,35,36,.92);
+    }
+
+    .year-title-row { display: flex; gap: 15px; align-items: baseline; }
+
+    .year-title {
+      color: var(--lime);
+      font: 600 48px/.9 var(--serif);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .year-context { color: var(--muted); font-size: 12px; }
+
+    .summary {
+      color: var(--muted);
+      font: 10px var(--mono);
+      letter-spacing: .04em;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .profiles {
+      display: grid;
+      grid-template-columns: 1.12fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .profile {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      animation: reveal .38s both;
+    }
+
+    .profile:nth-child(2) { animation-delay: .06s; }
+    .profile:nth-child(3) { animation-delay: .12s; }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(9px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .portrait {
+      position: relative;
+      height: 207px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(130,155,255,.24), transparent 56%),
+        linear-gradient(30deg, rgba(255,139,115,.2), transparent 62%),
+        #303535;
+    }
+
+    .profile:first-child .portrait { height: 232px; }
+
+    .portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 54%, rgba(15,17,18,.72));
+      pointer-events: none;
+    }
+
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: saturate(.82);
+      transition: transform .45s ease, filter .45s ease;
+    }
+
+    .profile:hover .portrait img { transform: scale(1.035); filter: saturate(1); }
+
+    .portrait-fallback {
+      position: absolute;
+      color: rgba(243,240,232,.72);
+      font: 600 72px var(--serif);
+    }
+
+    .portrait.has-image .portrait-fallback { display: none; }
+
+    .rank {
+      position: absolute;
+      z-index: 1;
+      top: 12px;
+      left: 12px;
+      min-width: 34px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      background: var(--lime);
+      font: 500 11px var(--mono);
+    }
+
+    .profile:not(:first-child) .rank { background: var(--paper); }
+
+    .profile-body { padding: 16px 17px 18px; }
+
+    .profile-kicker {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font: 10px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .age { color: var(--blue); }
+
+    .profile h2 {
+      min-height: 30px;
+      margin: 8px 0 13px;
+      color: var(--paper);
+      font: 600 22px/1.1 var(--serif);
+    }
+
+    .profile:first-child h2 { font-size: 26px; }
+
+    .arabic-name {
+      display: block;
+      margin-top: 4px;
+      color: #c5c8bf;
+      font: 500 16px/1.4 var(--sans);
+    }
+
+    .profile:first-child .arabic-name { font-size: 18px; }
+
+    .wealth-label {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--muted);
+      font: 9px var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .wealth {
+      color: var(--lime);
+      font: 500 27px/1.15 var(--mono);
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .profile:not(:first-child) .wealth { font-size: 24px; }
+
+    .facts {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 11px;
+      margin: 15px 0 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .facts div { min-width: 0; }
+
+    .facts dt {
+      margin-bottom: 4px;
+      color: #858b88;
+      font: 9px var(--mono);
+      text-transform: uppercase;
+    }
+
+    .facts dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+      color: #e4e2da;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .domain-arabic {
+      display: block;
+      margin-top: 3px;
+      color: #c5c8bf;
+      font-family: var(--sans);
+    }
+
+    .timeline {
+      padding: 17px 20px 16px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: rgba(32,35,36,.92);
+    }
+
+    .timeline-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .timeline-label { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+
+    .transport { display: flex; align-items: center; gap: 7px; }
+
+    .transport button {
+      width: 34px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #4b5150;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: background .16s ease, color .16s ease;
+    }
+
+    .transport button:hover { color: var(--ink); background: var(--lime); border-color: var(--lime); }
+    .transport .play-button { width: 78px; display: flex; gap: 7px; font: 10px var(--mono); }
+    .transport svg { width: 13px; height: 13px; fill: currentColor; }
+
+    .slider-wrap { padding: 18px 3px 0; }
+
+    input[type="range"] {
+      width: 100%;
+      height: 5px;
+      margin: 0;
+      appearance: none;
+      border-radius: 0;
+      background: linear-gradient(90deg, var(--lime) var(--progress, 0%), #4a504e var(--progress, 0%));
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      width: 15px;
+      height: 15px;
+      appearance: none;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 1px var(--lime);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 10px;
+      height: 10px;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 0 1px var(--lime);
+    }
+
+    .tick-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 9px;
+      color: #8e9490;
+      font: 9px var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .source-note {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 13px 2px 0;
+      color: #858b88;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .source-note a { color: #c3c7c0; text-underline-offset: 3px; }
+    .source-note a:hover { color: var(--lime); }
+
+    @media (max-width: 900px) {
+      .page-shell { padding: 0 25px 27px; }
+      .intro { grid-template-columns: 1fr; align-items: start; gap: 19px; padding-top: 34px; }
+      .range-box { justify-self: start; }
+      .profiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+      .portrait, .profile:first-child .portrait { height: 180px; }
+      .profile-body { padding: 13px; }
+      .profile h2, .profile:first-child h2 { font-size: 19px; }
+      .wealth, .profile:not(:first-child) .wealth { font-size: 21px; }
+      .facts { grid-template-columns: 1fr; gap: 8px; }
+    }
+
+    @media (max-width: 620px) {
+      .page-shell { padding: 0 16px 22px; }
+      .topbar { height: 58px; }
+      .edition { font-size: 9px; }
+      .intro { padding: 28px 0 20px; }
+      h1 { font-size: 43px; }
+      .intro-copy { max-width: 34ch; font-size: 13px; }
+      .range-box { width: 100%; }
+      .range-field { flex: 1; }
+      .range-field input { width: 100%; }
+      .year-panel { padding: 16px; }
+      .year-title { font-size: 42px; }
+      .summary { max-width: 100px; line-height: 1.5; }
+      .profiles { grid-template-columns: 1fr; gap: 10px; }
+      .profile { display: grid; grid-template-columns: 34% 1fr; min-height: 164px; }
+      .portrait, .profile:first-child .portrait { height: 100%; min-height: 164px; }
+      .portrait-fallback { font-size: 46px; }
+      .rank { top: 8px; left: 8px; min-width: 29px; height: 26px; font-size: 9px; }
+      .profile-body { display: flex; flex-direction: column; justify-content: center; padding: 12px; }
+      .profile-kicker { font-size: 9px; }
+      .profile h2, .profile:first-child h2 { min-height: 0; margin: 6px 0 8px; font-size: 20px; }
+      .wealth, .profile:not(:first-child) .wealth { font-size: 20px; }
+      .facts { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 9px; padding-top: 8px; }
+      .facts dd { font-size: 11px; }
+      .timeline { padding: 14px 13px; }
+      .timeline-top { align-items: flex-start; }
+      .timeline-label { max-width: 120px; line-height: 1.5; }
+      .transport { gap: 5px; }
+      .transport button { width: 31px; height: 31px; }
+      .transport .play-button { width: 68px; }
+      .source-note { flex-direction: column; gap: 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">W</span><span>World Wealth Index</span></div>
+      <div class="edition">ANNUAL RANKINGS / USD</div>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">A changing order of fortunes</div>
+        <h1 id="page-title">Fortunes, <span>by year.</span></h1>
+        <p class="intro-copy">Meet the three people at the top of the annual billionaire rankings. Move through the years to see how wealth, industries, and leaders changed.</p>
+      </div>
+      <form class="range-box" aria-label="Choose timeline year range" onsubmit="return false">
+        <div class="range-field">
+          <label for="startYear">Start year</label>
+          <input id="startYear" type="number" min="2010" max="2025" value="2010" inputmode="numeric">
+        </div>
+        <span class="range-dash" aria-hidden="true">to</span>
+        <div class="range-field">
+          <label for="endYear">End year</label>
+          <input id="endYear" type="number" min="2010" max="2025" value="2025" inputmode="numeric">
+        </div>
+      </form>
+    </section>
+
+    <section aria-label="Selected year ranking">
+      <div class="year-panel">
+        <div>
+          <div class="section-label">The list at a glance</div>
+          <div class="year-title-row"><div class="year-title" id="yearTitle" aria-live="polite">2025</div><div class="year-context">Forbes annual snapshot</div></div>
+        </div>
+        <div class="summary" id="yearSummary">3 people<br>1 year</div>
+      </div>
+      <div class="profiles" id="profiles" aria-live="polite"></div>
+    </section>
+
+    <section class="timeline" aria-label="Year controls">
+      <div class="timeline-top">
+        <div class="timeline-label">Drag to explore the annual rankings</div>
+        <div class="transport">
+          <button type="button" id="previousYear" aria-label="Previous year" title="Previous year">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.9 2.1 5 8l5.9 5.9-1.4 1.4L2.2 8l7.3-7.3z"/></svg>
+          </button>
+          <button type="button" class="play-button" id="playToggle" aria-label="Play timeline" title="Play timeline">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.3v11.4L13 8z"/></svg><span>Play</span>
+          </button>
+          <button type="button" id="nextYear" aria-label="Next year" title="Next year">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5.1 13.9 5.9-5.9-5.9-5.9 1.4-1.4L13.8 8l-7.3 7.3z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <input id="yearSlider" type="range" min="2010" max="2025" value="2025" step="1" aria-label="Selected year">
+        <div class="tick-row"><span id="rangeStartLabel">2010</span><span id="middleLabel">2018</span><span id="rangeEndLabel">2025</span></div>
+      </div>
+    </section>
+
+    <footer class="source-note">
+      <span>Wealth figures are annual estimates in USD. Ages are calculated at list publication; values can differ from real-time net worth.</span>
+      <span>Ranking source: <a id="sourceLink" href="https://en.wikipedia.org/wiki/The_World%27s_Billionaires_2025" target="_blank" rel="noreferrer">Forbes World’s Billionaires</a></span>
+    </footer>
+  </main>
+
+  <script>
+    const people = {
+      slim: { name: "Carlos Slim", nameArabic: "كارلوس سليم", country: "Mexico", domain: "Telecommunications", domainArabic: "الاتصالات", birth: "1940-01-28", page: "Carlos_Slim" },
+      gates: { name: "Bill Gates", nameArabic: "بيل غيتس", country: "United States", domain: "Software & technology", domainArabic: "البرمجيات والتكنولوجيا", birth: "1955-10-28", page: "Bill_Gates" },
+      buffett: { name: "Warren Buffett", nameArabic: "وارن بافيت", country: "United States", domain: "Investments", domainArabic: "الاستثمارات", birth: "1930-08-30", page: "Warren_Buffett" },
+      ortega: { name: "Amancio Ortega", nameArabic: "أمانسيو أورتيغا", country: "Spain", domain: "Fashion & retail", domainArabic: "الأزياء وتجارة التجزئة", birth: "1936-03-28", page: "Amancio_Ortega" },
+      bezos: { name: "Jeff Bezos", nameArabic: "جيف بيزوس", country: "United States", domain: "E-commerce & technology", domainArabic: "التجارة الإلكترونية والتكنولوجيا", birth: "1964-01-12", page: "Jeff_Bezos" },
+      arnault: { name: "Bernard Arnault", nameArabic: "برنار أرنو", country: "France", domain: "Luxury goods", domainArabic: "السلع الفاخرة", birth: "1949-03-05", page: "Bernard_Arnault" },
+      musk: { name: "Elon Musk", nameArabic: "إيلون ماسك", country: "United States", domain: "Automotive & aerospace", domainArabic: "صناعة السيارات والفضاء", birth: "1971-06-28", page: "Elon_Musk" },
+      zuckerberg: { name: "Mark Zuckerberg", nameArabic: "مارك زوكربيرغ", country: "United States", domain: "Social media & technology", domainArabic: "وسائل التواصل الاجتماعي والتكنولوجيا", birth: "1984-05-14", page: "Mark_Zuckerberg" }
+    };
+
+    const rankings = {
+      2010: [["slim", 53.5], ["gates", 53], ["buffett", 47]],
+      2011: [["slim", 74], ["gates", 56], ["buffett", 50]],
+      2012: [["slim", 69], ["gates", 61], ["buffett", 44]],
+      2013: [["slim", 73], ["gates", 67], ["ortega", 57]],
+      2014: [["gates", 76], ["slim", 72], ["ortega", 64]],
+      2015: [["gates", 79.2], ["slim", 77.1], ["buffett", 72.7]],
+      2016: [["gates", 75], ["ortega", 67], ["buffett", 60.8]],
+      2017: [["gates", 86], ["buffett", 75.6], ["bezos", 72.8]],
+      2018: [["bezos", 112], ["gates", 90], ["buffett", 84]],
+      2019: [["bezos", 131], ["gates", 96.5], ["buffett", 82.5]],
+      2020: [["bezos", 113], ["gates", 98], ["arnault", 76]],
+      2021: [["bezos", 177], ["musk", 151], ["arnault", 150]],
+      2022: [["musk", 219], ["bezos", 171], ["arnault", 158]],
+      2023: [["arnault", 211], ["musk", 180], ["bezos", 114]],
+      2024: [["arnault", 233], ["musk", 195], ["bezos", 194]],
+      2025: [["musk", 342], ["zuckerberg", 216], ["bezos", 215]]
+    };
+
+    const publicationDates = {
+      2010: "2010-03-10", 2011: "2011-03-08", 2012: "2012-03-07", 2013: "2013-03-03",
+      2014: "2014-03-03", 2015: "2015-03-02", 2016: "2016-03-01", 2017: "2017-03-20",
+      2018: "2018-03-06", 2019: "2019-03-05", 2020: "2020-03-18", 2021: "2021-04-06",
+      2022: "2022-04-05", 2023: "2023-04-04", 2024: "2024-04-02", 2025: "2025-04-01"
+    };
+
+    const elements = {
+      start: document.querySelector("#startYear"),
+      end: document.querySelector("#endYear"),
+      slider: document.querySelector("#yearSlider"),
+      yearTitle: document.querySelector("#yearTitle"),
+      summary: document.querySelector("#yearSummary"),
+      profiles: document.querySelector("#profiles"),
+      source: document.querySelector("#sourceLink"),
+      startLabel: document.querySelector("#rangeStartLabel"),
+      middleLabel: document.querySelector("#middleLabel"),
+      endLabel: document.querySelector("#rangeEndLabel"),
+      play: document.querySelector("#playToggle")
+    };
+
+    const portraitCache = new Map();
+    let playTimer = null;
+
+    function getAge(person, year) {
+      const [birthYear, birthMonth, birthDay] = person.birth.split("-").map(Number);
+      const [listYear, listMonth, listDay] = publicationDates[year].split("-").map(Number);
+      let age = listYear - birthYear;
+      if (listMonth < birthMonth || (listMonth === birthMonth && listDay < birthDay)) age -= 1;
+      return age;
+    }
+
+    function formatWealth(value) {
+      return `$${Number.isInteger(value) ? value : value.toFixed(1)}B`;
+    }
+
+    function portraitFor(person) {
+      if (!portraitCache.has(person.page)) {
+        const request = fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${person.page}`)
+          .then(response => response.ok ? response.json() : null)
+          .then(summary => summary?.thumbnail?.source || null)
+          .catch(() => null);
+        portraitCache.set(person.page, request);
+      }
+      return portraitCache.get(person.page);
+    }
+
+    function makeCard(personId, wealth, index, year) {
+      const person = people[personId];
+      const card = document.createElement("article");
+      card.className = "profile";
+      card.style.animationDelay = `${index * 55}ms`;
+      const initials = person.name.split(" ").map(part => part[0]).slice(0, 2).join("");
+      card.innerHTML = `
+        <div class="portrait">
+          <span class="portrait-fallback" aria-hidden="true">${initials}</span>
+          <img alt="Portrait of ${person.name}" loading="lazy">
+          <span class="rank">0${index + 1}</span>
+        </div>
+        <div class="profile-body">
+          <div class="profile-kicker"><span>Rank ${index + 1}</span><span class="age">${getAge(person, year)} years</span></div>
+          <h2>${person.name}<span class="arabic-name" lang="ar" dir="rtl">${person.nameArabic}</span></h2>
+          <span class="wealth-label">Estimated net worth</span>
+          <div class="wealth">${formatWealth(wealth)}</div>
+          <dl class="facts">
+            <div><dt>Country</dt><dd>${person.country}</dd></div>
+            <div><dt>Domain / المجال</dt><dd>${person.domain}<span class="domain-arabic" lang="ar" dir="rtl">${person.domainArabic}</span></dd></div>
+          </dl>
+        </div>`;
+
+      const portrait = card.querySelector(".portrait");
+      const image = card.querySelector("img");
+      portraitFor(person).then(source => {
+        if (!image.isConnected) return;
+        if (!source) {
+          image.remove();
+          return;
+        }
+        image.addEventListener("load", () => portrait.classList.add("has-image"), { once: true });
+        image.addEventListener("error", () => image.remove(), { once: true });
+        image.src = source;
+      });
+      return card;
+    }
+
+    function updateProgress() {
+      const min = Number(elements.slider.min);
+      const max = Number(elements.slider.max);
+      const value = Number(elements.slider.value);
+      const progress = max === min ? 0 : ((value - min) / (max - min)) * 100;
+      elements.slider.style.setProperty("--progress", `${progress}%`);
+    }
+
+    function render() {
+      const year = Number(elements.slider.value);
+      elements.yearTitle.textContent = year;
+      elements.summary.innerHTML = `3 people<br>${year - Number(elements.start.value) + 1} of ${Number(elements.end.value) - Number(elements.start.value) + 1} years`;
+      elements.profiles.replaceChildren(...rankings[year].map(([personId, wealth], index) => makeCard(personId, wealth, index, year)));
+      elements.source.href = `https://en.wikipedia.org/wiki/The_World%27s_Billionaires_${year}`;
+      elements.source.textContent = `Forbes World’s Billionaires ${year}`;
+      updateProgress();
+    }
+
+    function applyRange(changedField) {
+      let start = Math.min(2025, Math.max(2010, Number(elements.start.value) || 2010));
+      let end = Math.min(2025, Math.max(2010, Number(elements.end.value) || 2025));
+      if (start > end) {
+        if (changedField === "start") end = start;
+        else start = end;
+      }
+      elements.start.value = start;
+      elements.end.value = end;
+      elements.slider.min = start;
+      elements.slider.max = end;
+      elements.slider.value = Math.min(end, Math.max(start, Number(elements.slider.value)));
+      elements.startLabel.textContent = start;
+      elements.endLabel.textContent = end;
+      elements.middleLabel.textContent = Math.round((start + end) / 2);
+      stopPlayback();
+      render();
+    }
+
+    function stepYear(direction) {
+      const next = Number(elements.slider.value) + direction;
+      const start = Number(elements.slider.min);
+      const end = Number(elements.slider.max);
+      if (next > end) elements.slider.value = start;
+      else if (next < start) elements.slider.value = end;
+      else elements.slider.value = next;
+      render();
+    }
+
+    function stopPlayback() {
+      if (playTimer) window.clearInterval(playTimer);
+      playTimer = null;
+      elements.play.setAttribute("aria-label", "Play timeline");
+      elements.play.title = "Play timeline";
+      elements.play.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.3v11.4L13 8z"/></svg><span>Play</span>';
+    }
+
+    function togglePlayback() {
+      if (playTimer) {
+        stopPlayback();
+        return;
+      }
+      elements.play.setAttribute("aria-label", "Pause timeline");
+      elements.play.title = "Pause timeline";
+      elements.play.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h4v12H3zm6 0h4v12H9z"/></svg><span>Pause</span>';
+      playTimer = window.setInterval(() => {
+        if (Number(elements.slider.value) >= Number(elements.slider.max)) {
+          stopPlayback();
+          return;
+        }
+        stepYear(1);
+      }, 1400);
+    }
+
+    elements.start.addEventListener("change", () => applyRange("start"));
+    elements.end.addEventListener("change", () => applyRange("end"));
+    elements.slider.addEventListener("input", render);
+    elements.play.addEventListener("click", togglePlayback);
+    document.querySelector("#previousYear").addEventListener("click", () => stepYear(-1));
+    document.querySelector("#nextYear").addEventListener("click", () => stepYear(1));
+    document.addEventListener("keydown", event => {
+      if (event.target.matches("input")) return;
+      if (event.key === "ArrowLeft") stepYear(-1);
+      if (event.key === "ArrowRight") stepYear(1);
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayback();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Secret File Generator</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+progress {
+    width: 600px;
+    height: 25px;
+}
+
+#progressText {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+#result {
+    margin-top: 15px;
+    font-weight: bold;
+    color: green;
+}
+
+#folderName {
+    color: blue;
+    font-weight: bold;
+}
+</style>
+
+</head>
+<body>
+
+<h2>Secret File Generator</h2>
+
+<div class="section">
+    <label><b>Configuration XML ( have secret-file:)</b></label><br>
+    <input type="file" id="configXml" accept=".xml">
+</div>
+
+<div class="section">
+    <label><b>Data XML ( have real values)</b></label><br>
+    <input type="file" id="dataXml" accept=".xml">
+</div>
+
+<div class="section">
+    <button onclick="selectFolder()">Select Output Folder</button>
+    <span id="folderName">No folder selected</span>
+</div>
+
+<div class="section">
+    <button onclick="processXml()">Generate Files</button>
+</div>
+
+<div class="section">
+    <progress id="progressBar" value="0" max="100"></progress>
+    <span id="progressText">0%</span>
+</div>
+
+<div id="result"></div>
+
+<script>
+
+let selectedFolder = null;
+
+async function selectFolder() {
+    try {
+        selectedFolder = await window.showDirectoryPicker();
+
+        document.getElementById("folderName").innerText =
+            selectedFolder.name;
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+
+function getValueFromDataXml(sectionName, keyName, dataDoc) {
+
+    const sections = dataDoc.querySelectorAll("section");
+
+    for (const section of sections) {
+
+        const currentSection =
+            (section.getAttribute("name") || "")
+            .toLowerCase();
+
+        if (currentSection !== sectionName.toLowerCase()) {
+            continue;
+        }
+
+        const entries =
+            section.querySelectorAll("entry");
+
+        for (const entry of entries) {
+
+            const currentKey =
+                (entry.getAttribute("key") || "")
+                .toLowerCase();
+
+            if (currentKey === keyName.toLowerCase()) {
+
+                return (
+                    entry.getAttribute("value") ||
+                    entry.textContent.trim() ||
+                    ""
+                );
+            }
+        }
+    }
+
+    return "";
+}
+
+async function processXml() {
+
+    const configFile =
+        document.getElementById("configXml").files[0];
+
+    const dataFile =
+        document.getElementById("dataXml").files[0];
+
+    if (!configFile) {
+        alert("Please select Configuration XML");
+        return;
+    }
+
+    if (!dataFile) {
+        alert("Please select Data XML");
+        return;
+    }
+
+    if (!selectedFolder) {
+        alert("Please select Output Folder");
+        return;
+    }
+
+    document.getElementById("result").innerHTML = "";
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const progressText =
+        document.getElementById("progressText");
+
+    progressBar.value = 0;
+    progressText.innerHTML = "0%";
+
+    const parser = new DOMParser();
+
+    const configDoc =
+        parser.parseFromString(
+            await configFile.text(),
+            "text/xml"
+        );
+
+    const dataDoc =
+        parser.parseFromString(
+            await dataFile.text(),
+            "text/xml"
+        );
+
+    const secretEntries = [];
+
+    const sections =
+        configDoc.querySelectorAll("section");
+
+    sections.forEach(section => {
+
+        const sectionName =
+            section.getAttribute("name");
+
+        const entries =
+            section.querySelectorAll("entry");
+
+        entries.forEach(entry => {
+
+            const value =
+                entry.getAttribute("value") || "";
+
+            if (
+                value.toLowerCase()
+                     .startsWith("secret-file")
+            ) {
+
+                secretEntries.push({
+                    section: sectionName,
+                    key: entry.getAttribute("key"),
+					value: entry.getAttribute("value")
+                });
+            }
+        });
+    });
+
+    if (secretEntries.length === 0) {
+
+        alert(
+            "No entries with value starting with 'secret-file' found."
+        );
+
+        return;
+    }
+
+    let current = 0;
+
+    for (const item of secretEntries) {
+
+        const fileName =
+            item.value.substring(12);
+
+        const actualValue =
+            getValueFromDataXml(
+                item.section,
+                item.key,
+                dataDoc
+            );
+
+        const fileHandle =
+            await selectedFolder.getFileHandle(
+                fileName,
+                {
+                    create: true
+                }
+            );
+
+        const writable =
+            await fileHandle.createWritable();
+
+        await writable.write(actualValue);
+
+        await writable.close();
+
+        current++;
+
+        const percent =
+            Math.round(
+                (current / secretEntries.length) * 100
+            );
+
+        progressBar.value = percent;
+        progressText.innerHTML =
+            percent + "%";
+    }
+
+    progressBar.value = 100;
+    progressText.innerHTML = "100%";
+
+    document.getElementById("result").innerHTML =
+        current +
+        " file(s) generated successfully.";
+}
+
+</script>
+
+</body>
+</html>

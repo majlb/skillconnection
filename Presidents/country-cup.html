@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10221a">
+  <title>Country Cup | Tournament Draw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10221a;
+      --surface: #182c22;
+      --surface-raised: #20382b;
+      --line: #365343;
+      --ink: #f2f3e9;
+      --muted: #a8b8aa;
+      --pitch: #9cdb68;
+      --orange: #ff9d59;
+      --blue: #83c7da;
+      --sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+      --condensed: "Barlow Condensed", Impact, sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--sans);
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(rgba(224, 248, 215, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(224, 248, 215, .025) 1px, transparent 1px),
+        radial-gradient(ellipse at 82% 0%, rgba(156, 219, 104, .12), transparent 35rem);
+      background-size: 36px 36px, 36px 36px, auto;
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .shell { width: min(1480px, 100%); margin: auto; padding: 0 38px 42px; }
+    .topbar { height: 66px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .brand-mark { width: 28px; aspect-ratio: 1; display: grid; place-items: center; color: var(--bg); background: var(--pitch); font: 800 20px var(--condensed); }
+    .edition { color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+
+    .masthead {
+      min-height: 225px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 390px);
+      align-items: center;
+      gap: 30px;
+      margin: 20px 0 18px;
+      padding: 25px 30px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, rgba(12, 28, 20, .96) 0%, rgba(12, 28, 20, .84) 52%, rgba(12, 28, 20, .43) 100%),
+        url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1600&q=80") center 48% / cover,
+        var(--surface);
+    }
+    .eyebrow, .section-label { color: var(--pitch); font: 500 10px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+    h1 { margin: 8px 0 0; font: 700 clamp(46px, 6vw, 78px)/.87 var(--condensed); letter-spacing: .01em; text-transform: uppercase; }
+    h1 span { color: var(--pitch); }
+    .masthead-note { justify-self: end; width: min(100%, 360px); padding: 17px 0 17px 18px; border-left: 2px solid var(--pitch); color: #e0e9db; font-size: 13px; line-height: 1.55; }
+    .masthead-note strong { display: block; margin-bottom: 4px; color: var(--pitch); font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+
+    .builder { display: grid; grid-template-columns: 280px minmax(0, 1fr); border: 1px solid var(--line); background: rgba(24, 44, 34, .96); }
+    .builder-controls { padding: 21px; border-right: 1px solid var(--line); }
+    .builder-controls h2, .section-heading h2 { margin: 6px 0 0; font: 600 27px/.98 var(--condensed); letter-spacing: .015em; text-transform: uppercase; }
+    .count-label { display: block; margin: 21px 0 7px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+    .count-row { display: grid; grid-template-columns: 1fr 42px; gap: 7px; }
+    #countryCount { width: 100%; height: 43px; padding: 0 12px; border: 1px solid #587260; border-radius: 0; outline: 0; color: var(--ink); background: #0d1d15; font: 600 20px var(--mono); }
+    .count-suffix { display: grid; place-items: center; border: 1px solid var(--line); color: var(--muted); font: 10px var(--mono); }
+    .primary-button, .secondary-button {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 14px;
+      border: 1px solid var(--pitch);
+      border-radius: 0;
+      color: var(--bg);
+      background: var(--pitch);
+      font: 600 11px var(--mono);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .16s ease, color .16s ease, transform .16s ease;
+    }
+    .primary-button:hover { transform: translateY(-1px); background: #b7ed8a; }
+    .primary-button:disabled { cursor: not-allowed; opacity: .45; transform: none; }
+    .secondary-button { color: var(--ink); background: transparent; border-color: #587260; }
+    .secondary-button:hover { border-color: var(--pitch); color: var(--pitch); }
+    .builder-controls > .primary-button { width: 100%; margin-top: 9px; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+    .validation { min-height: 36px; margin: 10px 0 0; color: var(--orange); font-size: 11px; line-height: 1.4; }
+    .format-note { margin-top: 11px; padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+    .pot-area { min-width: 0; padding: 21px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 16px; }
+    .pot-count { color: var(--muted); font: 10px var(--mono); text-align: right; text-transform: uppercase; }
+    .pots-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .pot { min-width: 0; margin: 0; padding: 0 10px 10px; border: 1px solid var(--line); }
+    .pot legend { padding: 0 7px; color: var(--pitch); font: 700 18px var(--condensed); text-transform: uppercase; }
+    .pot-inputs { display: grid; gap: 7px; }
+    .country-input { min-width: 0; width: 100%; height: 34px; padding: 0 9px; border: 1px solid #3d5947; border-radius: 0; color: var(--ink); background: #12251a; font-size: 12px; }
+    .country-input::placeholder { color: #829587; }
+    .pots-footer { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 15px; }
+    .draw-note { color: var(--muted); font-size: 11px; }
+    .status-line { min-height: 17px; margin-top: 8px; color: var(--muted); font: 10px var(--mono); }
+
+    .results { display: none; margin-top: 24px; }
+    .results.is-visible { display: block; animation: enter .3s ease both; }
+    @keyframes enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .results-header { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 13px; }
+    .results-header h2 { margin: 5px 0 0; font: 700 36px/.92 var(--condensed); text-transform: uppercase; }
+    .results-meta { color: var(--muted); font: 10px var(--mono); text-align: right; text-transform: uppercase; }
+    .groups-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .group-card { min-width: 0; border: 1px solid var(--line); background: var(--surface); }
+    .group-title { display: flex; justify-content: space-between; align-items: center; padding: 11px 13px; border-bottom: 1px solid var(--line); background: var(--surface-raised); }
+    .group-title h3 { margin: 0; color: var(--pitch); font: 700 21px var(--condensed); text-transform: uppercase; }
+    .group-title span { color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; min-width: 500px; border-collapse: collapse; font-size: 10px; font-variant-numeric: tabular-nums; }
+    th, td { padding: 8px 6px; border-bottom: 1px solid rgba(54, 83, 67, .65); text-align: right; white-space: nowrap; }
+    th { color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+    th:first-child, td:first-child { width: 34%; padding-left: 12px; text-align: left; }
+    td:first-child { overflow: hidden; max-width: 180px; text-overflow: ellipsis; font-weight: 500; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td.points { color: var(--pitch); font-weight: 700; }
+    td.qualified::after { content: "  Q"; color: var(--pitch); font: 9px var(--mono); }
+    .matches { padding: 10px 12px 12px; border-top: 1px solid var(--line); }
+    .matches h4 { margin: 0 0 7px; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+    .match-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 4px 0; color: #d9e3d9; font-size: 10px; }
+    .match-row span:first-child { overflow: hidden; text-overflow: ellipsis; text-align: right; }
+    .match-row span:last-child { overflow: hidden; text-overflow: ellipsis; }
+    .match-score { min-width: 37px; color: var(--pitch); font: 600 10px var(--mono); text-align: center; }
+
+    .knockout { margin-top: 26px; }
+    .knockout-grid { display: grid; grid-auto-columns: minmax(190px, 1fr); grid-auto-flow: column; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
+    .stage { min-width: 0; border: 1px solid var(--line); background: rgba(24, 44, 34, .96); }
+    .stage h3 { margin: 0; padding: 10px 12px; border-bottom: 1px solid var(--line); color: var(--blue); font: 700 18px var(--condensed); text-transform: uppercase; }
+    .knockout-match { padding: 9px 11px; border-bottom: 1px solid rgba(54, 83, 67, .55); }
+    .knockout-match:last-child { border-bottom: 0; }
+    .knockout-team { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; font-size: 11px; }
+    .knockout-team span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .knockout-team strong { color: var(--pitch); font: 600 11px var(--mono); }
+    .knockout-team.is-winner { color: var(--pitch); font-weight: 700; }
+    .match-extra { margin-top: 5px; color: var(--muted); font: 9px var(--mono); }
+    .champion { padding: 17px 12px; text-align: center; }
+    .champion-label { color: var(--orange); font: 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .champion-name { margin-top: 7px; color: var(--pitch); font: 700 26px/1 var(--condensed); overflow-wrap: anywhere; }
+
+    @media (max-width: 1050px) {
+      .shell { padding: 0 24px 34px; }
+      .builder { grid-template-columns: 235px minmax(0, 1fr); }
+      .pots-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .groups-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .shell { padding: 0 13px 26px; }
+      .topbar { height: 56px; }
+      .edition { max-width: 115px; font-size: 8px; text-align: right; }
+      .masthead { min-height: 0; grid-template-columns: 1fr; gap: 16px; margin-top: 13px; padding: 21px 17px; background-position: center; }
+      h1 { font-size: 54px; }
+      .masthead-note { justify-self: start; width: 100%; padding: 9px 0 8px 12px; font-size: 12px; }
+      .builder { grid-template-columns: 1fr; }
+      .builder-controls { border-right: 0; border-bottom: 1px solid var(--line); }
+      .count-row { grid-template-columns: minmax(0, 1fr) 42px; }
+      .pot-area { padding: 16px 12px; }
+      .section-heading { align-items: start; }
+      .section-heading h2 { font-size: 24px; }
+      .pot { padding: 0 7px 8px; }
+      .country-input { height: 36px; padding: 0 7px; font-size: 11px; }
+      .pots-footer { align-items: stretch; flex-direction: column; }
+      .pots-footer .primary-button { width: 100%; }
+      .results-header h2 { font-size: 31px; }
+      .results-meta { max-width: 120px; line-height: 1.5; }
+      .group-card { overflow: hidden; }
+      .knockout-grid { grid-auto-columns: minmax(175px, 78vw); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">C</span><span>Country Cup / Draw Studio</span></div>
+      <div class="edition">GROUPS · RESULTS · KNOCKOUT</div>
+    </header>
+
+    <section class="masthead" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">Tournament generator / 01</div>
+        <h1 id="page-title">Build the <span>draw.</span></h1>
+      </div>
+      <div class="masthead-note"><strong>Matchday simulator</strong>Configure four pots, draw the groups, and follow every simulated score to the champion.</div>
+    </section>
+
+    <section class="builder" aria-label="Tournament setup">
+      <div class="builder-controls">
+        <div class="section-label">01 / Setup</div>
+        <h2>Set the field</h2>
+        <label class="count-label" for="countryCount">Number of countries</label>
+        <div class="count-row">
+          <input id="countryCount" type="number" min="4" max="128" step="1" value="32" inputmode="numeric">
+          <span class="count-suffix">TEAMS</span>
+        </div>
+        <button class="primary-button" id="buildPots" type="button">Generate pots <span aria-hidden="true">→</span></button>
+        <p class="validation" id="setupMessage" role="status" aria-live="polite"></p>
+        <div class="format-note">Four equal pots; group count must produce a standard knockout bracket. Supports 4–128 countries.</div>
+      </div>
+
+      <div class="pot-area">
+        <div class="section-heading">
+          <div><div class="section-label">02 / Seeded entries</div><h2>Fill the four pots</h2></div>
+          <div class="pot-count" id="potCount">32 countries / 8 per pot</div>
+        </div>
+        <div class="pots-grid" id="potsGrid"></div>
+        <div class="pots-footer">
+          <span class="draw-note">One country from each pot enters every group.</span>
+          <button class="primary-button" id="generateAll" type="button" disabled>Generate all <span aria-hidden="true">↗</span></button>
+        </div>
+        <div class="status-line" id="drawMessage" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="results" id="results" aria-live="polite">
+      <div class="results-header">
+        <div><div class="section-label">03 / Group stage</div><h2>Tables & match results</h2></div>
+        <div class="results-meta" id="resultsMeta"></div>
+      </div>
+      <div class="groups-grid" id="groupsGrid"></div>
+      <section class="knockout" aria-labelledby="knockoutTitle">
+        <div class="results-header">
+          <div><div class="section-label">04 / Elimination rounds</div><h2 id="knockoutTitle">Road to the final</h2></div>
+          <div class="results-meta">Top two from each group advance</div>
+        </div>
+        <div class="knockout-grid" id="knockoutGrid"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const countInput = document.querySelector("#countryCount");
+    const potsGrid = document.querySelector("#potsGrid");
+    const generateButton = document.querySelector("#generateAll");
+    const setupMessage = document.querySelector("#setupMessage");
+    const drawMessage = document.querySelector("#drawMessage");
+    const results = document.querySelector("#results");
+    const groupsGrid = document.querySelector("#groupsGrid");
+    const knockoutGrid = document.querySelector("#knockoutGrid");
+    const potCount = document.querySelector("#potCount");
+    const resultsMeta = document.querySelector("#resultsMeta");
+    let currentCount = 32;
+
+    function isPowerOfTwo(value) {
+      return Number.isInteger(value) && value > 0 && (value & (value - 1)) === 0;
+    }
+
+    function validateCount(value) {
+      if (!Number.isInteger(value) || value < 4 || value > 128) return "Enter a whole number from 4 to 128.";
+      const groups = value / 4;
+      if (!Number.isInteger(groups) || !isPowerOfTwo(groups)) return "Use 4, 8, 16, 32, 64, or 128 countries for a complete knockout bracket.";
+      return "";
+    }
+
+    function groupLabel(index) {
+      let label = "";
+      let value = index + 1;
+      while (value > 0) {
+        value -= 1;
+        label = String.fromCharCode(65 + (value % 26)) + label;
+        value = Math.floor(value / 26);
+      }
+      return label;
+    }
+
+    function clearTournament() {
+      results.classList.remove("is-visible");
+      groupsGrid.replaceChildren();
+      knockoutGrid.replaceChildren();
+      drawMessage.textContent = "";
+    }
+
+    function buildPots() {
+      const count = Number(countInput.value);
+      const error = validateCount(count);
+      if (error) {
+        setupMessage.textContent = error;
+        generateButton.disabled = true;
+        clearTournament();
+        return;
+      }
+
+      setupMessage.textContent = "";
+      currentCount = count;
+      const perPot = count / 4;
+      potCount.textContent = `${count} countries / ${perPot} per pot`;
+      potsGrid.replaceChildren();
+
+      for (let potIndex = 0; potIndex < 4; potIndex += 1) {
+        const fieldset = document.createElement("fieldset");
+        fieldset.className = "pot";
+        const legend = document.createElement("legend");
+        legend.textContent = `Pot ${potIndex + 1}`;
+        const inputs = document.createElement("div");
+        inputs.className = "pot-inputs";
+        for (let teamIndex = 0; teamIndex < perPot; teamIndex += 1) {
+          const input = document.createElement("input");
+          input.className = "country-input";
+          input.type = "text";
+          input.maxLength = 40;
+          input.required = true;
+          input.autocomplete = "off";
+          input.setAttribute("aria-label", `Pot ${potIndex + 1}, country ${teamIndex + 1}`);
+          input.placeholder = `Country ${teamIndex + 1}`;
+          inputs.append(input);
+        }
+        fieldset.append(legend, inputs);
+        potsGrid.append(fieldset);
+      }
+
+      generateButton.disabled = false;
+      clearTournament();
+      drawMessage.textContent = "Enter each country once, then generate the tournament.";
+      potsGrid.querySelector("input")?.focus();
+    }
+
+    function shuffle(items) {
+      const shuffled = [...items];
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      return shuffled;
+    }
+
+    function goalScore() {
+      const draw = Math.random();
+      if (draw < 0.2) return 0;
+      if (draw < 0.5) return 1;
+      if (draw < 0.75) return 2;
+      if (draw < 0.9) return 3;
+      if (draw < 0.97) return 4;
+      return 5;
+    }
+
+    function simulateMatch(home, away, knockout = false) {
+      const homeGoals = goalScore();
+      const awayGoals = goalScore();
+      const match = { home, away, homeGoals, awayGoals, winner: null, extra: "" };
+      if (knockout && homeGoals === awayGoals) {
+        const homePenalties = 3 + Math.floor(Math.random() * 4);
+        let awayPenalties = 3 + Math.floor(Math.random() * 4);
+        if (awayPenalties === homePenalties) awayPenalties = awayPenalties === 6 ? 5 : awayPenalties + 1;
+        const homeWins = homePenalties > awayPenalties;
+        match.winner = homeWins ? home : away;
+        match.extra = `Penalties ${homePenalties}–${awayPenalties}`;
+      } else if (knockout) {
+        match.winner = homeGoals > awayGoals ? home : away;
+      }
+      return match;
+    }
+
+    function createGroup(teams, index) {
+      const table = teams.map(name => ({ name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, points: 0 }));
+      const rows = new Map(table.map(row => [row.name, row]));
+      const matches = [];
+
+      for (let homeIndex = 0; homeIndex < teams.length; homeIndex += 1) {
+        for (let awayIndex = homeIndex + 1; awayIndex < teams.length; awayIndex += 1) {
+          const match = simulateMatch(teams[homeIndex], teams[awayIndex]);
+          matches.push(match);
+          const home = rows.get(match.home);
+          const away = rows.get(match.away);
+          home.played += 1;
+          away.played += 1;
+          home.gf += match.homeGoals;
+          home.ga += match.awayGoals;
+          away.gf += match.awayGoals;
+          away.ga += match.homeGoals;
+          if (match.homeGoals > match.awayGoals) {
+            home.wins += 1;
+            away.losses += 1;
+            home.points += 3;
+          } else if (match.homeGoals < match.awayGoals) {
+            away.wins += 1;
+            home.losses += 1;
+            away.points += 3;
+          } else {
+            home.draws += 1;
+            away.draws += 1;
+            home.points += 1;
+            away.points += 1;
+          }
+        }
+      }
+
+      table.sort((left, right) => right.points - left.points || (right.gf - right.ga) - (left.gf - left.ga) || right.gf - left.gf || left.name.localeCompare(right.name));
+      return { name: groupLabel(index), teams, table, matches };
+    }
+
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+
+    function renderGroup(group) {
+      const card = createElement("article", "group-card");
+      const title = createElement("div", "group-title");
+      title.append(createElement("h3", "", `Group ${group.name}`), createElement("span", "", "Top two qualify"));
+
+      const scroll = createElement("div", "table-scroll");
+      const table = document.createElement("table");
+      const head = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      ["Country", "P", "W", "D", "L", "GF", "GA", "GD", "Pts"].forEach(label => headerRow.append(createElement("th", "", label)));
+      head.append(headerRow);
+      const body = document.createElement("tbody");
+      group.table.forEach((team, rank) => {
+        const row = document.createElement("tr");
+        const name = createElement("td", rank < 2 ? "qualified" : "", team.name);
+        row.append(name);
+        [team.played, team.wins, team.draws, team.losses, team.gf, team.ga, team.gf - team.ga].forEach(value => row.append(createElement("td", "", String(value))));
+        row.append(createElement("td", "points", String(team.points)));
+        body.append(row);
+      });
+      table.append(head, body);
+      scroll.append(table);
+
+      const matches = createElement("div", "matches");
+      matches.append(createElement("h4", "", "All group results"));
+      group.matches.forEach(match => {
+        const line = createElement("div", "match-row");
+        line.append(createElement("span", "", match.home), createElement("strong", "match-score", `${match.homeGoals}–${match.awayGoals}`), createElement("span", "", match.away));
+        matches.append(line);
+      });
+      card.append(title, scroll, matches);
+      return card;
+    }
+
+    function createKnockoutPairings(groups) {
+      const pairings = [];
+      if (groups.length === 1) return [[groups[0].table[0], groups[0].table[1]]];
+
+      for (let index = 0; index < groups.length; index += 2) {
+        pairings.push([groups[index].table[0], groups[index + 1].table[1]]);
+      }
+      for (let index = 1; index < groups.length; index += 2) {
+        pairings.push([groups[index].table[0], groups[index - 1].table[1]]);
+      }
+      return pairings;
+    }
+
+    function roundName(teamCount) {
+      if (teamCount === 2) return "Final";
+      if (teamCount === 4) return "Semifinals";
+      if (teamCount === 8) return "Quarterfinals";
+      return `Round of ${teamCount}`;
+    }
+
+    function renderKnockoutMatch(match) {
+      const card = createElement("article", "knockout-match");
+      const home = createElement("div", `knockout-team${match.winner === match.home ? " is-winner" : ""}`);
+      home.append(createElement("span", "", match.home.name), createElement("strong", "", String(match.homeGoals)));
+      const away = createElement("div", `knockout-team${match.winner === match.away ? " is-winner" : ""}`);
+      away.append(createElement("span", "", match.away.name), createElement("strong", "", String(match.awayGoals)));
+      card.append(home, away);
+      if (match.extra) card.append(createElement("div", "match-extra", match.extra));
+      return card;
+    }
+
+    function renderKnockout(groups) {
+      let pairings = createKnockoutPairings(groups);
+      let teamCount = pairings.length * 2;
+      let champion = null;
+      while (pairings.length > 0) {
+        const stage = createElement("section", "stage");
+        stage.append(createElement("h3", "", roundName(teamCount)));
+        const matches = pairings.map(([home, away]) => simulateMatch(home, away, true));
+        matches.forEach(match => stage.append(renderKnockoutMatch(match)));
+        knockoutGrid.append(stage);
+        champion = matches[0]?.winner || champion;
+        pairings = [];
+        for (let index = 0; index < matches.length; index += 2) {
+          if (matches[index + 1]) pairings.push([matches[index].winner, matches[index + 1].winner]);
+        }
+        teamCount = pairings.length * 2;
+      }
+
+      const trophy = createElement("section", "stage champion");
+      trophy.append(createElement("div", "champion-label", "Tournament champion"), createElement("div", "champion-name", champion.name));
+      knockoutGrid.append(trophy);
+    }
+
+    function generateAll() {
+      const pots = Array.from(potsGrid.querySelectorAll(".pot"), fieldset => Array.from(fieldset.querySelectorAll("input"), input => input.value.trim()));
+      const names = pots.flat();
+      const normalized = names.map(name => name.toLocaleLowerCase());
+      if (names.length !== currentCount || names.some(name => !name)) {
+        drawMessage.textContent = "Fill every country field before generating the draw.";
+        return;
+      }
+      if (new Set(normalized).size !== normalized.length) {
+        drawMessage.textContent = "Country names must be unique across all four pots.";
+        return;
+      }
+
+      const shuffledPots = pots.map(shuffle);
+      const groups = Array.from({ length: currentCount / 4 }, (_, index) => createGroup(shuffledPots.map(pot => pot[index]), index));
+      groupsGrid.replaceChildren(...groups.map(renderGroup));
+      knockoutGrid.replaceChildren();
+      renderKnockout(groups);
+      resultsMeta.textContent = `${groups.length} groups · ${currentCount} countries · simulated results`;
+      results.classList.add("is-visible");
+      drawMessage.textContent = "Draw complete. Group stage and knockout results generated.";
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document.querySelector("#buildPots").addEventListener("click", buildPots);
+    generateButton.addEventListener("click", generateAll);
+    countInput.addEventListener("input", () => {
+      setupMessage.textContent = validateCount(Number(countInput.value));
+      generateButton.disabled = true;
+    });
+
+    buildPots();
+  </script>
+</body>
+</html>

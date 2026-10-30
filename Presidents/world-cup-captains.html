@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101513">
+  <title>World Cup Captains | 1930 - 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: dark; --bg: #101513; --ink: #f2f5ee; --muted: #a4b2aa; --line: #334139; --mint: #b7efce; --gold: #e9c16e; }
+    * { box-sizing: border-box; letter-spacing: 0; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", sans-serif; }
+    button, select, input { font: inherit; }
+    button, select { color: inherit; }
+    button, a, select, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+    .wrap { width: min(1400px, 100%); margin: auto; padding: 0 32px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; min-height: 65px; gap: 20px; border-bottom: 1px solid var(--line); }
+    .topbar a { color: var(--muted); text-decoration: none; font-size: 12px; }
+    .topbar a:hover { color: var(--mint); }
+    .overline, .meta, label, .time, footer { font-family: "IBM Plex Mono", Consolas, monospace; font-size: 11px; }
+    .overline { color: var(--mint); text-transform: uppercase; }
+    header { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 25px 0 22px; }
+    h1 { margin: 0; font: 700 54px/.95 "Barlow Condensed", Impact, sans-serif; text-transform: uppercase; }
+    h1 span { color: var(--mint); }
+    .header-meta { text-align: right; line-height: 1.8; color: var(--muted); }
+    .header-meta strong { color: var(--gold); font-weight: 500; }
+    .theatre { position: relative; width: 100%; background: #101b17; overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    canvas { display: block; width: 100%; height: min(57vw, 570px); min-height: 340px; }
+    .recording { position: absolute; top: 18px; right: 20px; padding: 8px 10px; background: #a52e38; font: 12px "IBM Plex Mono", monospace; }
+    [hidden] { display: none !important; }
+    .captions { display: grid; grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr); align-items: center; gap: 15px; padding: 18px 26px; border-bottom: 1px solid var(--line); background: #18221d; }
+    .captions .next { text-align: right; }
+    .captions .meta { color: var(--gold); text-transform: uppercase; }
+    .captions h2 { font: 600 29px/1.1 "Barlow Condensed", Impact, sans-serif; margin: 5px 0; overflow-wrap: anywhere; }
+    .country { color: var(--muted); font-size: 13px; }
+    .handoff { color: var(--gold); text-align: center; font-size: 30px; }
+    .transport { padding: 17px 0 0; }
+    .seek-row { display: flex; align-items: center; gap: 16px; }
+    .time { color: var(--muted); min-width: 90px; text-align: right; font-variant-numeric: tabular-nums; }
+    input[type="range"] { accent-color: var(--mint); width: 100%; min-width: 0; cursor: pointer; }
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 13px 0 20px; }
+    .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+    button { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 4px; background: transparent; cursor: pointer; font-size: 20px; }
+    button:hover { border-color: var(--mint); color: var(--mint); }
+    button:disabled { opacity: .35; cursor: not-allowed; }
+    #play { color: var(--bg); background: var(--mint); border-color: var(--mint); }
+    button[aria-pressed="true"] { color: var(--mint); border-color: var(--mint); }
+    label { color: var(--muted); }
+    select { height: 38px; border: 1px solid var(--line); border-radius: 4px; background: #18221d; padding: 0 8px; max-width: 145px; }
+    .years { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; padding: 17px 0 22px; border-top: 1px solid var(--line); }
+    .years button { width: 100%; height: 40px; font: 12px "IBM Plex Mono", monospace; border-color: transparent; border-bottom: 2px solid var(--line); border-radius: 0; }
+    .years button[aria-current="true"] { border-color: var(--gold); background: #293128; color: var(--gold); }
+    footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--muted); padding: 0 0 24px; line-height: 1.8; }
+    footer a { color: var(--mint); }
+    #status { color: var(--gold); margin: 0; font-size: 12px; padding-bottom: 10px; }
+    .theatre:fullscreen { display: flex; align-items: center; background: #101513; }
+    .theatre:fullscreen canvas { height: 100%; max-height: 100vh; }
+    @media (max-width: 650px) {
+      .wrap { padding: 0 16px; }
+      .topbar { min-height: 54px; }
+      header { align-items: start; padding: 22px 0; }
+      h1 { font-size: 38px; max-width: 220px; }
+      .header-meta { font-size: 9px; max-width: 115px; }
+      canvas { height: 440px; min-height: 0; }
+      .captions { padding: 15px 12px; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; min-height: 124px; }
+      .captions h2 { font-size: 23px; }
+      .captions .meta { font-size: 9px; }
+      .country { font-size: 11px; }
+      .controls { flex-wrap: wrap; gap: 12px; }
+      .controls > .control-group:last-child { width: 100%; justify-content: space-between; }
+      .years { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .time { font-size: 10px; min-width: 82px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar" aria-label="Main navigation"><span class="overline">Football / The men's world champions</span><a href="country-cup.html">Country Cup &#8599;</a></nav>
+    <header>
+      <h1>World Cup <span>Captains</span></h1>
+      <div class="header-meta meta"><strong>1930 &mdash; 2026</strong><br>23 victories. One legacy.</div>
+    </header>
+    <main>
+      <section id="theatre" class="theatre" aria-label="Animated World Cup trophy relay">
+        <canvas id="scene" role="img" aria-label="World Cup captains lifting and passing the trophy">Your browser does not support canvas.</canvas>
+        <span id="recording" class="recording" hidden>Recording</span>
+      </section>
+      <section class="captions" aria-label="Captains in the current scene" aria-live="polite" aria-atomic="true">
+        <div><div class="meta" id="currentYear"></div><h2 id="currentName"></h2><div class="country" id="currentCountry"></div></div>
+        <div class="handoff" aria-hidden="true">&#8594;</div>
+        <div class="next"><div class="meta" id="nextYear"></div><h2 id="nextName"></h2><div class="country" id="nextCountry"></div></div>
+      </section>
+      <section class="transport" aria-label="Playback controls">
+        <div class="seek-row"><input id="seek" type="range" min="0" step="0.01" value="0" aria-label="Animation position"><output class="time" id="time"></output></div>
+        <div class="controls">
+          <div class="control-group">
+            <button id="restart" title="Restart" aria-label="Restart">&#8634;</button>
+            <button id="previous" title="Previous captain" aria-label="Previous captain">&#9198;</button>
+            <button id="play" title="Pause" aria-label="Pause">&#10074;&#10074;</button>
+            <button id="next" title="Next captain" aria-label="Next captain">&#9197;</button>
+            <button id="loop" title="Loop" aria-label="Loop" aria-pressed="false">&#8635;</button>
+          </div>
+          <div class="control-group">
+            <label for="speed">Speed</label><select id="speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+            <button id="export" title="Record and download video (WebM)" aria-label="Record and download video">&#8681;</button>
+            <button id="fullscreen" title="Full screen" aria-label="Full screen">&#9974;</button>
+          </div>
+        </div>
+        <p id="status" role="status" hidden></p>
+      </section>
+      <nav class="years" id="years" aria-label="Choose a World Cup year"></nav>
+    </main>
+    <footer><span>Cartoon interpretations of the captains, not archival footage.<br>1942 &amp; 1946: no tournament (World War II).</span><span>Jules Rimet trophy: 1930&ndash;1970 / FIFA trophy: 1974&ndash;2026<br>Sources: <a href="https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_winning_players" target="_blank" rel="noopener noreferrer">World Cup winners</a> / <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup" target="_blank" rel="noopener noreferrer">2026 tournament</a></span></footer>
+  </div>
+  <script>
+    "use strict";
+    const captains = [
+      { year: 1930, name: "Jos\u00e9 Nasazzi", country: "Uruguay", kit: "#79c9e6", shorts: "#20272b", skin: "#d8a580", hair: "#30251e", number: "", host: "Uruguay" },
+      { year: 1934, name: "Gianpiero Combi", country: "Italy", kit: "#363a3c", shorts: "#eeeeea", skin: "#dbab89", hair: "#27211e", number: "", host: "Italy" },
+      { year: 1938, name: "Giuseppe Meazza", country: "Italy", kit: "#2874c3", shorts: "#eeeeea", skin: "#dba37e", hair: "#28201d", number: "9", host: "France" },
+      { year: 1950, name: "Obdulio Varela", country: "Uruguay", kit: "#79c9e6", shorts: "#20272b", skin: "#b47a54", hair: "#28221e", number: "5", host: "Brazil" },
+      { year: 1954, name: "Fritz Walter", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#e5b492", hair: "#634936", number: "16", host: "Switzerland" },
+      { year: 1958, name: "Hilderaldo Bellini", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#c98e66", hair: "#25211d", number: "2", host: "Sweden" },
+      { year: 1962, name: "Mauro Ramos", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#bc825a", hair: "#29241f", number: "3", host: "Chile" },
+      { year: 1966, name: "Bobby Moore", country: "England", kit: "#d93f46", shorts: "#eeeeea", skin: "#edbb98", hair: "#be9558", number: "6", host: "England" },
+      { year: 1970, name: "Carlos Alberto", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#a56d46", hair: "#241f1b", number: "4", host: "Mexico" },
+      { year: 1974, name: "Franz Beckenbauer", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#e1ac88", hair: "#67462d", number: "5", host: "West Germany" },
+      { year: 1978, name: "Daniel Passarella", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#cf936d", hair: "#30231d", number: "19", host: "Argentina", stripes: true },
+      { year: 1982, name: "Dino Zoff", country: "Italy", kit: "#8a9499", shorts: "#242b30", skin: "#d5a281", hair: "#51463d", number: "1", host: "Spain" },
+      { year: 1986, name: "Diego Maradona", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#c58a60", hair: "#211c19", number: "10", host: "Mexico", stripes: true, curls: true },
+      { year: 1990, name: "Lothar Matth\u00e4us", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#ddaa85", hair: "#49301f", number: "10", host: "Italy" },
+      { year: 1994, name: "Dunga", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#d1a17f", hair: "#49301f", number: "8", host: "United States" },
+      { year: 1998, name: "Didier Deschamps", country: "France", kit: "#2765b7", shorts: "#eeeeea", skin: "#dfad88", hair: "#765a39", number: "7", host: "France" },
+      { year: 2002, name: "Cafu", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#9e6543", hair: "#25201c", number: "2", host: "South Korea / Japan" },
+      { year: 2006, name: "Fabio Cannavaro", country: "Italy", kit: "#2874c3", shorts: "#2874c3", skin: "#d8a077", hair: "#35271f", number: "5", host: "Germany" },
+      { year: 2010, name: "Iker Casillas", country: "Spain", kit: "#53a668", shorts: "#3a8650", skin: "#dfad88", hair: "#493020", number: "1", host: "South Africa" },
+      { year: 2014, name: "Philipp Lahm", country: "Germany", kit: "#efefea", shorts: "#efefea", skin: "#e7b994", hair: "#69452d", number: "16", host: "Brazil" },
+      { year: 2018, name: "Hugo Lloris", country: "France", kit: "#e4c348", shorts: "#e4c348", skin: "#d7a181", hair: "#352a23", number: "1", host: "Russia", beard: true },
+      { year: 2022, name: "Lionel Messi", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#dca47f", hair: "#3f2a21", number: "10", host: "Qatar", stripes: true, beard: true },
+      { year: 2026, name: "Rodri", country: "Spain", kit: "#c93640", shorts: "#254d81", skin: "#dba37f", hair: "#30231d", number: "16", host: "Canada / Mexico / United States" }
+    ];
+    const canvas = document.getElementById("scene");
+    const context = canvas.getContext("2d");
+    const faceStyles = {
+      1930: { width: 34, jaw: 28, hair: "slick", brow: 4, nose: 8, smile: 9 },
+      1934: { width: 31, jaw: 25, hair: "slick", brow: 3, nose: 9, smile: 10 },
+      1938: { width: 32, jaw: 26, hair: "part", brow: 3, nose: 7, smile: 14 },
+      1950: { width: 37, jaw: 33, hair: "crew", brow: 5, nose: 10, smile: 8 },
+      1954: { width: 31, jaw: 25, hair: "part", brow: 3, nose: 8, smile: 11 },
+      1958: { width: 33, jaw: 30, hair: "quiff", brow: 4, nose: 8, smile: 10 },
+      1962: { width: 34, jaw: 28, hair: "slick", brow: 4, nose: 9, smile: 10 },
+      1966: { width: 34, jaw: 31, hair: "part", brow: 3, nose: 7, smile: 13 },
+      1970: { width: 35, jaw: 30, hair: "crew", brow: 4, nose: 10, smile: 12 },
+      1974: { width: 32, jaw: 27, hair: "wave", brow: 3, nose: 9, smile: 10 },
+      1978: { width: 35, jaw: 32, hair: "wave", brow: 5, nose: 8, smile: 9 },
+      1982: { width: 31, jaw: 26, hair: "wave", brow: 4, nose: 10, smile: 10 },
+      1986: { width: 38, jaw: 31, hair: "curls", brow: 5, nose: 8, smile: 16 },
+      1990: { width: 35, jaw: 33, hair: "quiff", brow: 4, nose: 7, smile: 11 },
+      1994: { width: 34, jaw: 31, hair: "crew", brow: 5, nose: 8, smile: 9 },
+      1998: { width: 32, jaw: 27, hair: "part", brow: 3, nose: 8, smile: 16 },
+      2002: { width: 35, jaw: 29, hair: "buzz", brow: 3, nose: 10, smile: 19 },
+      2006: { width: 35, jaw: 32, hair: "buzz", brow: 4, nose: 8, smile: 17, eyes: "#719b93" },
+      2010: { width: 32, jaw: 27, hair: "quiff", brow: 4, nose: 9, smile: 12, stubble: true },
+      2014: { width: 30, jaw: 25, hair: "part", brow: 3, nose: 7, smile: 13, eyes: "#7398ab" },
+      2018: { width: 31, jaw: 26, hair: "quiff", brow: 4, nose: 10, smile: 10, beard: true },
+      2022: { width: 33, jaw: 27, hair: "fade", brow: 4, nose: 10, smile: 12, beard: true },
+      2026: { width: 35, jaw: 31, hair: "crew", brow: 4, nose: 8, smile: 14 }
+    };
+    const elements = Object.fromEntries(["play", "seek", "time", "previous", "next", "loop", "speed", "export", "status", "recording"].map(id => [id, document.getElementById(id)]));
+    const chapterLength = 5.6;
+    const duration = captains.length * chapterLength;
+    let position = 0;
+    let playing = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let looping = false;
+    let lastTimestamp = null;
+    let activeChapter = -1;
+    let recorder = null;
+    let recordingChunks = [];
+    let recordingCancelled = false;
+    let stageWidth = 1200;
+    let stageHeight = 570;
+    elements.seek.max = duration;
+
+    const clamp = value => Math.max(0, Math.min(1, value));
+    const ease = value => { const bounded = clamp(value); return bounded * bounded * (3 - 2 * bounded); };
+    const mix = (start, end, amount) => start + (end - start) * amount;
+    const clock = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+
+    function setPlaying(value) {
+      playing = value;
+      elements.play.innerHTML = playing ? "&#10074;&#10074;" : "&#9654;";
+      elements.play.title = elements.play.ariaLabel = playing ? "Pause" : "Play";
+      lastTimestamp = null;
+    }
+
+    function jump(chapter) {
+      position = Math.max(0, Math.min(captains.length - 1, chapter)) * chapterLength;
+      lastTimestamp = null;
+      render();
+    }
+
+    function updateCaptions(chapter) {
+      if (chapter === activeChapter) return;
+      activeChapter = chapter;
+      const current = captains[chapter];
+      const next = captains[chapter + 1];
+      document.getElementById("currentYear").textContent = `${current.year} / World champion`;
+      document.getElementById("currentName").textContent = current.name;
+      document.getElementById("currentCountry").textContent = current.country;
+      document.getElementById("nextYear").textContent = next ? `${next.year} / Next champion` : "1930 - 2026";
+      document.getElementById("nextName").textContent = next ? next.name : "The legacy continues";
+      document.getElementById("nextCountry").textContent = next ? next.country : "23 World Cup victories";
+      document.querySelectorAll(".years button").forEach((button, index) => button.setAttribute("aria-current", String(index === chapter)));
+      canvas.setAttribute("aria-label", `${current.year}: ${current.name}, ${current.country}, lifts the trophy.${next ? ` Passes to ${next.name}, ${next.country}, ${next.year}.` : " End of the relay."}`);
+    }
+
+    function roundedRect(left, top, width, height, radius, color) {
+      context.fillStyle = color;
+      context.beginPath();
+      context.roundRect(left, top, width, height, radius);
+      context.fill();
+    }
+
+    function line(points, color, width) {
+      context.beginPath();
+      context.moveTo(points[0][0], points[0][1]);
+      points.slice(1).forEach(point => context.lineTo(point[0], point[1]));
+      context.strokeStyle = color;
+      context.lineWidth = width;
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      context.stroke();
+    }
+
+    function ellipse(left, top, radiusX, radiusY, color) {
+      context.fillStyle = color;
+      context.beginPath();
+      context.ellipse(left, top, radiusX, radiusY, 0, 0, Math.PI * 2);
+      context.fill();
+    }
+
+    function text(value, left, top, size, color, align = "left", font = "Barlow Condensed") {
+      context.fillStyle = color;
+      context.textAlign = align;
+      context.font = `600 ${size}px "${font}", sans-serif`;
+      context.fillText(value, left, top);
+    }
+
+    function drawFace(captain) {
+      const style = faceStyles[captain.year];
+      const width = style.width;
+      const ink = "#302c29";
+      context.save();
+      context.translate(0, -307);
+      roundedRect(-12, 22, 24, 31, 7, captain.skin);
+      roundedRect(-11, 25, 22, 12, 5, "#0000001c");
+      for (const side of [-1, 1]) {
+        ellipse(side * width, 3, 7, 11, captain.skin);
+        line([[side * (width + 1), -1], [side * (width + 3), 5]], "#80543f", 2);
+      }
+      if (style.hair === "wave" || style.hair === "curls") {
+        ellipse(0, -7, width + 5, 37, captain.hair);
+      }
+      const face = new Path2D();
+      face.moveTo(-width, -17);
+      face.bezierCurveTo(-width - 1, -48, width + 1, -48, width, -17);
+      face.lineTo(width - 1, 12);
+      face.quadraticCurveTo(style.jaw, 33, 12, 37);
+      face.quadraticCurveTo(0, 42, -12, 37);
+      face.quadraticCurveTo(-style.jaw, 33, -width + 1, 12);
+      face.closePath();
+      context.fillStyle = captain.skin; context.fill(face);
+      context.strokeStyle = "#533c304d"; context.lineWidth = 2; context.stroke(face);
+      context.save(); context.clip(face);
+      ellipse(width - 1, 10, 11, 29, "#00000012");
+      ellipse(-12, -14, 14, 17, "#ffffff0d");
+      if (style.beard || style.stubble) {
+        context.globalAlpha = style.stubble ? .28 : 1;
+        context.fillStyle = captain.hair;
+        context.beginPath(); context.moveTo(-width, 0); context.lineTo(-width + 7, 16);
+        context.quadraticCurveTo(-14, 12, -10, 15); context.quadraticCurveTo(0, 20, 10, 15);
+        context.quadraticCurveTo(14, 12, width - 7, 16); context.lineTo(width, 0);
+        context.lineTo(width, 43); context.lineTo(-width, 43); context.closePath(); context.fill();
+        context.globalAlpha = 1;
+      }
+      context.restore();
+      context.fillStyle = captain.hair;
+      context.beginPath();
+      context.moveTo(-width, 0);
+      if (style.hair === "buzz" || style.hair === "crew") {
+        context.lineTo(-width - 1, -18);
+        context.bezierCurveTo(-width, -47, width, -47, width + 1, -18);
+        context.lineTo(width, 0); context.lineTo(width - 6, -20);
+        context.quadraticCurveTo(0, style.hair === "buzz" ? -34 : -28, -width + 6, -20);
+      } else {
+        context.lineTo(-width - 2, -24);
+        context.bezierCurveTo(-width + 1, -49, width - 4, -51, width + 3, -23);
+        context.lineTo(width, 2); context.lineTo(width - 7, -18);
+        if (style.hair === "slick") {
+          context.quadraticCurveTo(4, -33, -width + 6, -20);
+        } else if (style.hair === "fade" || style.hair === "quiff") {
+          context.lineTo(width - 9, -27); context.quadraticCurveTo(-8, -14, -width + 8, -21);
+        } else {
+          context.quadraticCurveTo(16, -33, 5, -25); context.quadraticCurveTo(-8, -8, -width + 6, -17);
+        }
+      }
+      context.closePath(); context.fill();
+      if (style.hair === "curls") {
+        for (let curl = 0; curl < 13; curl++) {
+          const angle = Math.PI + curl / 12 * Math.PI;
+          ellipse(Math.cos(angle) * (width - 1), -15 + Math.sin(angle) * 25, 9, 10, captain.hair);
+        }
+        for (let curl = 0; curl < 6; curl++) ellipse(-25 + curl * 10, -22 + Math.sin(curl * 2) * 4, 9, 8, captain.hair);
+      } else if (style.hair !== "buzz") {
+        line([[-width + 9, -29], [-9, -35], [10, -35]], "#ffffff20", 2);
+      }
+      const eyeSpacing = width * .41;
+      for (const side of [-1, 1]) {
+        const eyeX = side * eyeSpacing;
+        line([[eyeX - 7, -9], [eyeX, -11 - style.brow * .2], [eyeX + 6, -9]], captain.hair, style.brow);
+        ellipse(eyeX, -2, 6, 4, "#fff8ed");
+        ellipse(eyeX + .5, -2, 2.8, 3.2, style.eyes || "#594438");
+        ellipse(eyeX + .5, -2, 1.4, 2, ink);
+        ellipse(eyeX + 1, -3, .9, .9, "#ffffff");
+        line([[eyeX - 6, -4], [eyeX, -6], [eyeX + 6, -4]], ink, 1.6);
+      }
+      line([[-1, 1], [-3, style.nose + 4], [4, style.nose + 5]], "#855b43", 2);
+      ellipse(5, style.nose + 3, 3, 2, "#00000015");
+      const smile = style.smile;
+      context.fillStyle = style.beard ? "#b67d60" : "#8e5142";
+      context.beginPath(); context.moveTo(-smile, 21);
+      context.quadraticCurveTo(0, 25, smile, 20);
+      context.quadraticCurveTo(0, 38, -smile, 21); context.fill();
+      line([[-smile + 3, 23], [0, 25], [smile - 3, 22]], "#fff6e8", 3);
+      if (style.beard) {
+        line([[-12, 16], [-5, 15], [0, 18], [5, 15], [12, 16]], captain.hair, 4);
+      }
+      context.restore();
+    }
+
+    function drawCaptain(captain, left, floor, scale, leftHand, rightHand, opacity = 1, labelOpacity = opacity) {
+      context.save();
+      context.globalAlpha = opacity;
+      context.translate(left, floor);
+      context.scale(scale, scale);
+      ellipse(0, 4, 74, 12, "#00000045");
+      line([[-23, -116], [-27, -60], [-34, -9]], captain.skin, 24);
+      line([[23, -116], [27, -60], [34, -9]], captain.skin, 24);
+      line([[-30, -40], [-34, -11]], captain.kit, 25);
+      line([[30, -40], [34, -11]], captain.kit, 25);
+      roundedRect(-52, -15, 35, 18, 6, "#171b1b");
+      roundedRect(17, -15, 35, 18, 6, "#171b1b");
+      roundedRect(-48, -150, 43, 48, 5, captain.shorts);
+      roundedRect(5, -150, 43, 48, 5, captain.shorts);
+      const leftElbow = [mix(-86, leftHand[0] - 25, .6), mix(-210, leftHand[1] + 45, .6)];
+      const rightElbow = [mix(86, rightHand[0] + 25, .6), mix(-210, rightHand[1] + 45, .6)];
+      line([[-44, -244], leftElbow, leftHand], captain.skin, 23);
+      line([[44, -244], rightElbow, rightHand], captain.skin, 23);
+      line([[-41, -245], [mix(-41, leftElbow[0], .48), mix(-245, leftElbow[1], .48)]], captain.kit, 31);
+      line([[41, -245], [mix(41, rightElbow[0], .48), mix(-245, rightElbow[1], .48)]], captain.kit, 31);
+      line([[mix(41, rightElbow[0], .36), mix(-245, rightElbow[1], .36)], [mix(41, rightElbow[0], .47), mix(-245, rightElbow[1], .47)]], "#e4c16e", 33);
+      roundedRect(-48, -261, 96, 116, 15, captain.kit);
+      if (captain.stripes) {
+        context.fillStyle = "#70bade";
+        [-34, -5, 24].forEach(stripe => context.fillRect(stripe, -256, 14, 108));
+      }
+      line([[-16, -259], [0, -248], [16, -259]], captain.country === "Brazil" ? "#3c9766" : "#ffffff99", 5);
+      text(captain.number, 0, -190, 33, captain.stripes || captain.country.includes("Germany") ? "#222b31" : "#ffffff", "center");
+      roundedRect(19, -240, 13, 17, 3, "#e8c976");
+      drawFace(captain);
+      ellipse(leftHand[0], leftHand[1], 12, 12, captain.skin);
+      ellipse(rightHand[0], rightHand[1], 12, 12, captain.skin);
+      context.restore();
+      context.save();
+      context.globalAlpha = labelOpacity;
+      const labelWidth = stageWidth < 650 ? stageWidth * .38 : stageWidth * .35;
+      const fontSize = stageWidth < 650 ? 17 : 23;
+      context.font = `600 ${fontSize}px "Barlow Condensed", sans-serif`;
+      const fittedSize = Math.min(fontSize, fontSize * labelWidth / context.measureText(captain.name).width);
+      const labelX = Math.max(labelWidth / 2 + 8, Math.min(stageWidth - labelWidth / 2 - 8, left));
+      text(captain.name, labelX, floor + 30, fittedSize, "#f2f5ee", "center");
+      text(`${captain.country} / ${captain.year}`, labelX, floor + 49, stageWidth < 650 ? 10 : 12, "#b7efce", "center", "IBM Plex Sans");
+      context.restore();
+    }
+
+    function drawTrophy(left, top, scale, year) {
+      context.save(); context.translate(left, top); context.scale(scale, scale);
+      const gold = context.createLinearGradient(-24, 0, 26, 0);
+      gold.addColorStop(0, "#9c6722"); gold.addColorStop(.35, "#ffe5a0"); gold.addColorStop(.6, "#d9aa48"); gold.addColorStop(.82, "#f4d786"); gold.addColorStop(1, "#9f6b24");
+      if (year <= 1970) {
+        roundedRect(-21, 21, 42, 27, 3, "#43698a");
+        roundedRect(-25, 16, 50, 8, 2, gold);
+        line([[-9, 15], [-6, -15], [-30, -38], [-13, -31], [0, -18], [13, -31], [30, -38], [6, -15], [9, 15]], gold, 8);
+        ellipse(0, -27, 7, 10, gold);
+        context.fillStyle = gold; context.beginPath(); context.moveTo(-24, -45); context.quadraticCurveTo(0, -29, 24, -45); context.lineTo(18, -57); context.lineTo(-18, -57); context.closePath(); context.fill();
+      } else {
+        roundedRect(-23, 31, 46, 13, 4, gold);
+        roundedRect(-22, 35, 44, 5, 1, "#4e8d67");
+        context.fillStyle = gold; context.beginPath(); context.moveTo(-21, 31); context.bezierCurveTo(-18, 7, -9, 0, -21, -22); context.lineTo(-10, -31); context.quadraticCurveTo(4, -10, 12, -22); context.lineTo(23, -21); context.bezierCurveTo(10, 5, 15, 12, 21, 31); context.closePath(); context.fill();
+        ellipse(0, -40, 25, 25, gold);
+        line([[-12, -58], [-3, -50], [-10, -40], [-2, -34], [-4, -22]], "#b3822e", 3);
+        line([[10, -58], [14, -46], [4, -43], [12, -31]], "#b3822e", 3);
+        line([[-11, 24], [5, 4], [-4, -9]], "#ffe7a4", 3);
+      }
+      context.restore();
+    }
+
+    function drawStadium(chapter, progress) {
+      const background = context.createLinearGradient(0, 0, 0, stageHeight);
+      background.addColorStop(0, "#12261f"); background.addColorStop(.6, "#263d32"); background.addColorStop(1, "#12241b");
+      context.fillStyle = background; context.fillRect(0, 0, stageWidth, stageHeight);
+      context.strokeStyle = "#829c8840"; context.lineWidth = 1;
+      for (let row = 0; row < 7; row++) {
+        context.beginPath(); context.ellipse(stageWidth / 2, stageHeight * .05, stageWidth * .8, stageHeight * .30 + row * 22, 0, 0, Math.PI); context.stroke();
+      }
+      for (let seat = 0; seat < 240; seat++) {
+        const left = ((seat * 83.3) % stageWidth);
+        const top = stageHeight * .31 + ((seat * 37) % (stageHeight * .27));
+        ellipse(left, top, 1.7, 1.7, seat % 4 === 0 ? "#e9c16e66" : "#b7efce33");
+      }
+      context.fillStyle = "#2d4d37"; context.fillRect(0, stageHeight * .79, stageWidth, stageHeight * .21);
+      for (let stripe = 0; stripe < 10; stripe++) {
+        context.fillStyle = stripe % 2 ? "#ffffff03" : "#00000005";
+        context.fillRect(stripe * stageWidth / 10, stageHeight * .79, stageWidth / 10, stageHeight * .21);
+      }
+      line([[0, stageHeight * .88], [stageWidth, stageHeight * .88]], "#abc3a438", 1);
+      text(String(captains[chapter].year), stageWidth / 2, stageHeight * .3, stageWidth < 650 ? 110 : 160, "#d4e8cd15", "center");
+      text("FIFA WORLD CUP", 24, 30, 12, "#b7efce", "left", "IBM Plex Mono");
+      text(`${String(chapter + 1).padStart(2, "0")} / 23`, stageWidth - 24, 30, 12, "#d4dfd5", "right", "IBM Plex Mono");
+      if (stageWidth >= 650) text(`HOST: ${captains[chapter].host.toUpperCase()}`, 24, 52, 10, "#a4b2aa", "left", "IBM Plex Mono");
+      if (progress > .23 && progress < .72) {
+        const confettiTime = (progress - .23) / .49;
+        for (let piece = 0; piece < 65; piece++) {
+          const left = stageWidth * .1 + ((piece * 79.7) % (stageWidth * .8));
+          const top = ((piece * 43.8 + confettiTime * stageHeight * .9) % (stageHeight * .86));
+          context.save(); context.globalAlpha = Math.sin(confettiTime * Math.PI) * .8;
+          context.translate(left, top); context.rotate(piece + confettiTime * 6);
+          context.fillStyle = ["#e9c16e", "#b7efce", "#e98788", "#f2f5ee"][piece % 4];
+          context.fillRect(-2, -4, 4, 8); context.restore();
+        }
+      }
+    }
+
+    function render() {
+      const chapter = Math.min(captains.length - 1, Math.floor(position / chapterLength));
+      const progress = Math.min(1, (position - chapter * chapterLength) / chapterLength);
+      updateCaptions(chapter);
+      drawStadium(chapter, progress);
+      const compact = stageWidth < 650;
+      const floor = stageHeight * .79;
+      const scale = Math.min(compact ? stageWidth / 590 : 1.02, (floor - 70) / 470);
+      const center = stageWidth / 2;
+      const lift = ease((progress - .04) / .22);
+      const next = captains[chapter + 1];
+      const lower = next ? ease((progress - .58) / .16) : 0;
+      const transfer = next ? ease((progress - .74) / .26) : 0;
+      const currentX = mix(center, center - stageWidth * .32, transfer);
+      const nextX = mix(center + stageWidth * .44, center, transfer);
+      const trophyX = mix(mix(currentX, (currentX + nextX) / 2, lower), nextX, next ? ease((progress - .88) / .12) : 0);
+      const trophyY = floor + scale * mix(mix(-230, -403, lift), -230, lower);
+      const handY = (trophyY - floor) / scale + 35;
+      const relativeTrophyX = (trophyX - currentX) / scale;
+      const currentLeft = [mix(-25, relativeTrophyX - 20, lower), handY];
+      const currentRight = [relativeTrophyX + 20, handY];
+      if (next) {
+        const receiving = ease((progress - .64) / .18);
+        const nextRelative = (trophyX - nextX) / scale;
+        drawCaptain(next, nextX, floor, scale, [mix(-65, nextRelative - 20, receiving), mix(-170, handY, receiving)], [mix(65, nextRelative + 20, receiving), mix(-170, handY, receiving)], mix(.28, 1, receiving), ease((transfer - .35) / .35));
+      }
+      drawCaptain(captains[chapter], currentX, floor, scale, currentLeft, currentRight, 1 - transfer);
+      drawTrophy(trophyX, trophyY, scale, captains[chapter].year);
+      const phase = !next && progress > .58 ? "THE LEGACY CONTINUES" : progress < .25 ? "THE LIFT" : progress < .58 ? "WORLD CHAMPIONS" : "PASSING THE LEGACY";
+      text(phase, center, stageHeight - 22, compact ? 11 : 13, "#e9c16e", "center", "IBM Plex Mono");
+      elements.seek.value = position;
+      elements.seek.setAttribute("aria-valuetext", `${captains[chapter].year}, ${captains[chapter].name}, ${clock(position)}`);
+      elements.time.textContent = `${clock(position)} / ${clock(duration)}`;
+      elements.previous.disabled = chapter === 0;
+      elements.next.disabled = chapter === captains.length - 1;
+    }
+
+    function resize() {
+      const bounds = canvas.getBoundingClientRect();
+      const ratio = Math.min(devicePixelRatio || 1, 2);
+      stageWidth = bounds.width; stageHeight = bounds.height;
+      canvas.width = Math.round(stageWidth * ratio); canvas.height = Math.round(stageHeight * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      render();
+    }
+
+    function frame(timestamp) {
+      if (playing && !document.hidden) {
+        if (lastTimestamp !== null) position += Math.min((timestamp - lastTimestamp) / 1000, .1) * (recorder ? 1 : Number(elements.speed.value));
+        if (position >= duration) {
+          position = duration;
+          if (recorder) recorder.stop();
+          if (looping && !recorder) position = 0;
+          else setPlaying(false);
+        }
+        render();
+      }
+      lastTimestamp = timestamp;
+      requestAnimationFrame(frame);
+    }
+
+    captains.forEach((captain, chapter) => {
+      const button = document.createElement("button");
+      button.textContent = captain.year;
+      button.title = `${captain.name} / ${captain.country}`;
+      button.setAttribute("aria-label", `${captain.year}: ${captain.name}, ${captain.country}`);
+      button.addEventListener("click", () => jump(chapter));
+      document.getElementById("years").append(button);
+    });
+    elements.play.addEventListener("click", () => { if (position >= duration) position = 0; setPlaying(!playing); render(); });
+    elements.previous.addEventListener("click", () => jump(activeChapter - 1));
+    elements.next.addEventListener("click", () => jump(activeChapter + 1));
+    document.getElementById("restart").addEventListener("click", () => { jump(0); setPlaying(true); });
+    elements.seek.addEventListener("input", () => { position = Number(elements.seek.value); lastTimestamp = null; render(); });
+    elements.loop.addEventListener("click", () => { looping = !looping; elements.loop.setAttribute("aria-pressed", String(looping)); });
+    document.addEventListener("visibilitychange", () => { lastTimestamp = null; });
+    document.getElementById("fullscreen").addEventListener("click", async () => {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else await document.getElementById("theatre").requestFullscreen();
+      } catch { elements.status.hidden = false; elements.status.textContent = "Full screen is unavailable in this browser."; }
+    });
+    elements.export.addEventListener("click", () => {
+      if (recorder) { recordingCancelled = true; recorder.stop(); setPlaying(false); return; }
+      if (!canvas.captureStream || typeof MediaRecorder === "undefined") {
+        elements.status.hidden = false; elements.status.textContent = "Video export is unavailable. Open this page in a recent Chrome or Edge browser."; return;
+      }
+      let stream;
+      try {
+        const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(type => MediaRecorder.isTypeSupported(type));
+        if (!mimeType) throw new Error("WebM is not supported");
+        stream = canvas.captureStream(30);
+        recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6000000 });
+        recordingChunks = []; recordingCancelled = false;
+        recorder.ondataavailable = event => { if (event.data.size) recordingChunks.push(event.data); };
+        const finishRecording = () => {
+          stream.getTracks().forEach(track => track.stop());
+          recorder = null; elements.recording.hidden = true;
+          elements.export.innerHTML = "&#8681;"; elements.export.title = elements.export.ariaLabel = "Record and download video";
+          document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = false; });
+          elements.status.textContent = recordingCancelled ? "Recording cancelled." : "Video downloaded: world-cup-captains-1930-2026.webm";
+          if (!recordingCancelled) {
+            const url = URL.createObjectURL(new Blob(recordingChunks, { type: mimeType }));
+            const link = document.createElement("a"); link.href = url; link.download = "world-cup-captains-1930-2026.webm";
+            document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
+          }
+          recordingChunks = []; render();
+        };
+        recorder.onstop = finishRecording;
+        recorder.onerror = () => { recordingCancelled = true; if (recorder && recorder.state !== "inactive") recorder.stop(); };
+        jump(0); setPlaying(true);
+        document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = control !== elements.export; });
+        elements.export.innerHTML = "&#9632;"; elements.export.title = elements.export.ariaLabel = "Cancel video recording";
+        elements.recording.hidden = false; elements.status.hidden = false;
+        elements.status.textContent = "Recording 2:08 at 1x speed. Keep this tab visible. The video downloads when finished.";
+        recorder.start();
+      } catch {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        recorder = null; elements.status.hidden = false;
+        elements.status.textContent = "Could not start video export. Try a recent Chrome or Edge browser.";
+      }
+    });
+    new ResizeObserver(resize).observe(canvas);
+    setPlaying(playing); resize(); requestAnimationFrame(frame);
+  </script>
+</body>
+</html>

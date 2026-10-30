@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#e8eeea">
+  <title>Middle East Through Time | Historical Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #e8eeea;
+      --surface: #f6f7f2;
+      --surface-alt: #dce7e1;
+      --ink: #162923;
+      --muted: #5d7068;
+      --line: #bdcbc3;
+      --teal: #12645e;
+      --teal-light: #a8d8c4;
+      --coral: #d56846;
+      --gold: #dbac3e;
+      --blue: #3f7fa0;
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "DM Sans", "Segoe UI", sans-serif;
+      --mono: "DM Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: var(--sans);
+      background-color: var(--paper);
+      background-image: linear-gradient(rgba(22,41,35,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(22,41,35,.035) 1px, transparent 1px);
+      background-size: 34px 34px;
+    }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .shell { width: min(1480px, 100%); margin: 0 auto; padding: 0 38px 34px; }
+    .topbar { height: 68px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .brand-mark { width: 29px; aspect-ratio: 1; display: grid; place-items: center; color: var(--surface); background: var(--teal); font: 700 16px var(--serif); }
+    .edition { color: var(--muted); font: 10px var(--mono); letter-spacing: .04em; text-transform: uppercase; }
+    .intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 390px); gap: 25px; align-items: end; padding: 34px 0 22px; }
+    .eyebrow, .section-label { color: var(--teal); font: 500 10px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 9px 0 0; font: 600 clamp(42px, 6vw, 72px)/.94 var(--serif); letter-spacing: 0; }
+    h1 span { color: var(--coral); font-style: italic; }
+    .intro-copy { max-width: 410px; margin: 0 0 3px; color: #435b52; font-size: 13px; line-height: 1.6; }
+
+    .atlas { border: 1px solid var(--line); background: var(--surface); box-shadow: 0 12px 30px rgba(28,55,43,.07); }
+    .atlas-head { min-height: 65px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+    .selected-date { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+    .date-title { color: var(--teal); font: 700 35px/.95 var(--serif); white-space: nowrap; }
+    .date-subtitle { color: var(--muted); font-size: 12px; }
+    .map-key { display: flex; flex-wrap: wrap; justify-content: end; gap: 13px; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+    .key-item { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 15px; height: 10px; border: 1px solid var(--teal); background: var(--gold); opacity: .75; }
+    .swatch.current { height: 0; border: 0; border-top: 2px solid var(--teal); background: none; opacity: 1; }
+    .atlas-body { display: grid; grid-template-columns: minmax(0, 1fr) 272px; min-height: 590px; }
+    .map-wrap { position: relative; min-width: 0; min-height: 590px; overflow: hidden; background-color: #c9dedb; background-image: radial-gradient(ellipse at center, rgba(255,255,255,.24), transparent 70%), linear-gradient(135deg, rgba(255,255,255,.14), transparent 55%); }
+    #map { display: block; width: 100%; height: 100%; min-height: 590px; }
+    .land-base { fill: #e9e4d6; stroke: #86978c; stroke-width: .8; }
+    .history-shape { stroke: #5c5038; stroke-width: .7; stroke-opacity: .65; fill-opacity: .6; cursor: pointer; transition: fill-opacity .18s ease, stroke-width .18s ease; }
+    .history-shape:hover, .history-shape:focus { fill-opacity: .9; stroke: #182f28; stroke-width: 1.8; outline: none; }
+    .history-label { fill: #293b34; font: 600 10px var(--sans); text-anchor: middle; paint-order: stroke; stroke: rgba(246,247,242,.83); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+    .current-boundary { fill: rgba(246,247,242,.035); stroke: #12645e; stroke-width: 1.2; stroke-opacity: .95; pointer-events: none; }
+    .current-label { fill: #154c47; font: 500 8px var(--mono); text-anchor: middle; paint-order: stroke; stroke: rgba(232,238,234,.88); stroke-width: 2.8px; stroke-linejoin: round; pointer-events: none; }
+    .sea-label { fill: #547b7c; font: italic 10px var(--serif); letter-spacing: .04em; text-anchor: middle; opacity: .84; pointer-events: none; }
+    .map-loading { position: absolute; inset: 0; display: grid; place-items: center; color: #31574e; background: rgba(201,222,219,.72); font: 500 11px var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+    .map-loading[hidden] { display: none; }
+    .map-error { max-width: 370px; padding: 16px; color: #6e372b; background: #fff6ed; border: 1px solid #d9a48c; font-size: 12px; line-height: 1.5; }
+
+    .side-panel { display: flex; flex-direction: column; min-width: 0; border-left: 1px solid var(--line); background: #eff3ef; }
+    .side-section { padding: 18px 17px; border-bottom: 1px solid var(--line); }
+    .side-section h2 { margin: 6px 0 0; font: 600 22px/1 var(--serif); }
+    .entity-summary { margin: 10px 0 0; color: #43584f; font-size: 12px; line-height: 1.55; }
+    .entity-list { display: grid; gap: 4px; max-height: 236px; margin-top: 12px; overflow-y: auto; }
+    .entity-button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 8px; border: 1px solid transparent; color: var(--ink); background: transparent; text-align: left; font-size: 11px; cursor: pointer; }
+    .entity-button:hover, .entity-button[aria-pressed="true"] { border-color: #b3c9bd; background: #e1ece5; }
+    .entity-button span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .precision-tag { flex: 0 0 auto; color: var(--muted); font: 8px var(--mono); text-transform: uppercase; }
+    .detail-box { min-height: 115px; margin-top: auto; padding: 16px 17px; border-top: 1px solid var(--line); background: #e2ebe5; }
+    .detail-name { margin: 6px 0 0; font: 600 20px/1.08 var(--serif); }
+    .detail-text { margin: 7px 0 0; color: #4d6259; font-size: 11px; line-height: 1.5; }
+    .today-control { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: #41584e; font-size: 11px; cursor: pointer; }
+    .today-control input { accent-color: var(--teal); }
+
+    .timeline { padding: 15px 18px 13px; border-top: 1px solid var(--line); background: #f1f4ef; }
+    .timeline-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+    .timeline-title { color: var(--muted); font: 10px var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+    .transport { display: flex; align-items: center; gap: 7px; }
+    .transport button { width: 34px; height: 32px; display: grid; place-items: center; padding: 0; border: 1px solid #9eafa5; border-radius: 0; color: var(--ink); background: transparent; cursor: pointer; transition: background .16s ease, border-color .16s ease; }
+    .transport button:hover { border-color: var(--teal); color: white; background: var(--teal); }
+    .transport .play-button { width: 82px; display: flex; gap: 7px; font: 10px var(--mono); }
+    .transport svg { width: 13px; height: 13px; fill: currentColor; }
+    .slider-wrap { padding: 18px 3px 0; }
+    input[type="range"] { width: 100%; height: 5px; margin: 0; appearance: none; border-radius: 0; background: linear-gradient(90deg, var(--teal) var(--progress, 0%), #bdcbc3 var(--progress, 0%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { width: 16px; height: 16px; appearance: none; border: 3px solid var(--surface); border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 1px var(--coral); }
+    input[type="range"]::-moz-range-thumb { width: 10px; height: 10px; border: 3px solid var(--surface); border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 1px var(--coral); }
+    .timeline-labels { display: flex; justify-content: space-between; gap: 5px; margin-top: 9px; color: var(--muted); font: 9px var(--mono); }
+    .timeline-labels span:nth-child(2) { text-align: center; }
+    .timeline-labels span:last-child { text-align: right; }
+    .source-note { display: flex; justify-content: space-between; gap: 20px; padding: 12px 1px 0; color: #65766e; font-size: 10px; line-height: 1.5; }
+    .source-note a { color: #285d55; text-underline-offset: 3px; }
+    .source-note a:hover { color: var(--coral); }
+
+    @media (max-width: 1050px) {
+      .shell { padding: 0 24px 28px; }
+      .atlas-body { grid-template-columns: minmax(0, 1fr) 235px; }
+      .map-wrap, #map { min-height: 540px; }
+    }
+    @media (max-width: 720px) {
+      .shell { padding: 0 12px 22px; }
+      .topbar { height: 57px; }
+      .edition { max-width: 120px; font-size: 8px; text-align: right; }
+      .intro { grid-template-columns: 1fr; gap: 12px; padding: 25px 0 16px; }
+      h1 { font-size: 48px; }
+      .intro-copy { font-size: 12px; }
+      .atlas-head { align-items: flex-start; flex-direction: column; gap: 10px; padding: 13px; }
+      .date-title { font-size: 30px; }
+      .map-key { justify-content: start; }
+      .atlas-body { grid-template-columns: 1fr; }
+      .map-wrap, #map { min-height: 430px; }
+      .side-panel { border-top: 1px solid var(--line); border-left: 0; }
+      .entity-list { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 210px; }
+      .detail-box { min-height: auto; }
+      .timeline { padding: 13px 12px; }
+      .timeline-top { align-items: flex-start; }
+      .timeline-title { max-width: 120px; line-height: 1.45; }
+      .transport { gap: 4px; }
+      .transport button { width: 31px; height: 31px; }
+      .transport .play-button { width: 70px; }
+      .timeline-labels span:nth-child(2) { display: none; }
+      .source-note { flex-direction: column; gap: 5px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">A</span><span>Atlas / Middle East</span></div>
+      <div class="edition">Historical snapshots / 1000 BCE to present</div>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">Territories, states & changing power</div>
+        <h1 id="page-title">Middle East <span>through time.</span></h1>
+      </div>
+      <p class="intro-copy">Move across three millennia of historical map snapshots. Colored regions show the selected era; today's national boundaries remain outlined for comparison.</p>
+    </section>
+
+    <section class="atlas" aria-label="Interactive historical map and timeline">
+      <div class="atlas-head">
+        <div class="selected-date"><div class="date-title" id="dateTitle" aria-live="polite">Loading</div><div class="date-subtitle" id="dateSubtitle">Historical snapshot</div></div>
+        <div class="map-key" aria-label="Map legend">
+          <span class="key-item"><span class="swatch" aria-hidden="true"></span>Historical regions</span>
+          <span class="key-item"><span class="swatch current" aria-hidden="true"></span>Today's borders</span>
+        </div>
+      </div>
+
+      <div class="atlas-body">
+        <div class="map-wrap">
+          <svg id="map" viewBox="0 0 920 590" role="img" aria-label="Map of historical states in the Middle East with current national borders overlaid">
+            <defs><clipPath id="mapClip"><rect x="0" y="0" width="920" height="590"/></clipPath></defs>
+            <g id="mapContent" clip-path="url(#mapClip)">
+              <g class="sea-labels">
+                <text class="sea-label" x="240" y="365">Mediterranean Sea</text>
+                <text class="sea-label" x="596" y="453">Arabian Sea</text>
+                <text class="sea-label" x="605" y="319">Persian Gulf</text>
+              </g>
+              <g id="landLayer"></g>
+              <g id="historyLayer"></g>
+              <g id="currentLayer"></g>
+              <g id="labelLayer"></g>
+            </g>
+          </svg>
+          <div class="map-loading" id="mapLoading" role="status">Loading historical atlas...</div>
+        </div>
+
+        <aside class="side-panel" aria-label="Selected map details">
+          <section class="side-section">
+            <div class="section-label">Territorial view</div>
+            <h2 id="sideTitle">Loading map</h2>
+            <p class="entity-summary" id="entitySummary">The map will list historical polities visible in the selected snapshot.</p>
+            <div class="entity-list" id="entityList"></div>
+            <label class="today-control"><input id="showCurrent" type="checkbox" checked> Show today's borders</label>
+          </section>
+          <section class="detail-box" aria-live="polite">
+            <div class="section-label">Selected territory</div>
+            <div class="detail-name" id="detailName">Choose a colored region</div>
+            <p class="detail-text" id="detailText">Select a region on the map or in the list to see its mapped name and boundary confidence.</p>
+          </section>
+        </aside>
+      </div>
+
+      <section class="timeline" aria-label="Historical year controls">
+        <div class="timeline-top">
+          <div class="timeline-title">Drag through the available map snapshots</div>
+          <div class="transport">
+            <button type="button" id="previous" aria-label="Previous snapshot" title="Previous snapshot">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.9 2.1 5 8l5.9 5.9-1.4 1.4L2.2 8l7.3-7.3z"/></svg>
+            </button>
+            <button type="button" class="play-button" id="play" aria-label="Play timeline" title="Play timeline">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.3v11.4L13 8z"/></svg><span>Play</span>
+            </button>
+            <button type="button" id="next" aria-label="Next snapshot" title="Next snapshot">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5.1 13.9 5.9-5.9-5.9-5.9 1.4-1.4L13.8 8l-7.3 7.3z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <input id="yearSlider" type="range" min="0" max="1" value="0" step="1" aria-label="Selected historical map snapshot">
+          <div class="timeline-labels"><span id="oldestLabel">1000 BCE</span><span id="midLabel"></span><span id="newestLabel">Present</span></div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="source-note">
+      <span>Ancient borders are approximate interpretations, not modern surveyed boundaries. Snapshot years vary; the map does not interpolate between them.</span>
+      <span>Sources: <a href="https://github.com/aourednik/historical-basemaps" target="_blank" rel="noreferrer">Historical Basemaps</a> (work in progress; GPL-3.0) · <a href="https://www.naturalearthdata.com/" target="_blank" rel="noreferrer">Natural Earth</a> (current outlines)</span>
+    </footer>
+  </main>
+
+  <script>
+    const HISTORICAL_ROOT = "https://raw.githubusercontent.com/aourednik/historical-basemaps/master/";
+    const HISTORICAL_INDEX = `${HISTORICAL_ROOT}index.json`;
+    const MODERN_COUNTRIES = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson";
+    const MODERN_YEAR = 2026;
+    const REGION = { west: 18, east: 72, south: 8, north: 53 };
+    const REGION_CORE = { west: 26, east: 72, south: 14, north: 53 };
+    const REGION_ANCHORS = [[30, 30], [35, 34], [44, 33], [53, 33], [47, 22], [35, 39], [51, 28], [44, 42], [36, 29]];
+    const MODERN_NAMES = new Set([
+      "Armenia", "Azerbaijan", "Bahrain", "Cyprus", "Egypt", "Georgia", "Iran", "Iraq", "Israel", "Jordan", "Kuwait", "Lebanon", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Syria", "Turkey", "United Arab Emirates", "Yemen"
+    ]);
+    const PALETTE = ["#e3bd68", "#df9271", "#87b6a3", "#91aaca", "#bf9fce", "#d8a4a5", "#c1c874", "#77abb5", "#d7ae78"];
+
+    const elements = {
+      slider: document.querySelector("#yearSlider"),
+      date: document.querySelector("#dateTitle"),
+      dateSubtitle: document.querySelector("#dateSubtitle"),
+      sideTitle: document.querySelector("#sideTitle"),
+      summary: document.querySelector("#entitySummary"),
+      entityList: document.querySelector("#entityList"),
+      detailName: document.querySelector("#detailName"),
+      detailText: document.querySelector("#detailText"),
+      loading: document.querySelector("#mapLoading"),
+      oldest: document.querySelector("#oldestLabel"),
+      middle: document.querySelector("#midLabel"),
+      newest: document.querySelector("#newestLabel"),
+      showCurrent: document.querySelector("#showCurrent"),
+      play: document.querySelector("#play")
+    };
+
+    const svg = d3.select("#map");
+    const landLayer = d3.select("#landLayer");
+    const historyLayer = d3.select("#historyLayer");
+    const currentLayer = d3.select("#currentLayer");
+    const labelLayer = d3.select("#labelLayer");
+    let snapshots = [];
+    let currentFeatures = [];
+    let snapshotCache = new Map();
+    let projection;
+    let path;
+    let playbackTimer = null;
+    let renderSequence = 0;
+    let selectedFeature = null;
+
+    function displayYear(year) {
+      if (year === MODERN_YEAR) return "Present";
+      return year < 0 ? `${Math.abs(year)} BCE` : `${year} CE`;
+    }
+
+    function getFeatureName(feature) {
+      return feature.properties?.NAME || feature.properties?.name || "Unnamed territory";
+    }
+
+    function getFeatureColor(feature) {
+      const source = feature.properties?.SUBJECTO || getFeatureName(feature);
+      let hash = 0;
+      for (const character of source) hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+      return PALETTE[hash % PALETTE.length];
+    }
+
+    function intersectsRegion(feature) {
+      let hasPointInRegion = false;
+      function inspectCoordinates(coordinates) {
+        if (!Array.isArray(coordinates) || hasPointInRegion) return;
+        if (typeof coordinates[0] === "number" && typeof coordinates[1] === "number") {
+          const [longitude, latitude] = coordinates;
+          hasPointInRegion = longitude >= REGION_CORE.west && longitude <= REGION_CORE.east && latitude >= REGION_CORE.south && latitude <= REGION_CORE.north;
+          return;
+        }
+        coordinates.forEach(inspectCoordinates);
+      }
+
+      inspectCoordinates(feature.geometry?.coordinates);
+      const [centerLongitude, centerLatitude] = d3.geoCentroid(feature);
+      if (hasPointInRegion && centerLongitude >= REGION_CORE.west && centerLongitude <= REGION_CORE.east && centerLatitude >= REGION_CORE.south && centerLatitude <= REGION_CORE.north) return true;
+      return REGION_ANCHORS.some(point => d3.geoContains(feature, point));
+    }
+
+    function precisionText(value) {
+      if (Number(value) === 1) return "Approximate";
+      if (Number(value) === 2) return "Moderate";
+      if (Number(value) === 3) return "Defined";
+      return "Unrated";
+    }
+
+    function updateDetail(feature) {
+      selectedFeature = feature;
+      if (!feature) {
+        elements.detailName.textContent = "Choose a colored region";
+        elements.detailText.textContent = "Select a region on the map or in the list to see its mapped name and boundary confidence.";
+        elements.entityList.querySelectorAll(".entity-button").forEach(button => button.setAttribute("aria-pressed", "false"));
+        return;
+      }
+      elements.detailName.textContent = getFeatureName(feature);
+      elements.detailText.textContent = `${feature.properties?.SUBJECTO || getFeatureName(feature)} · boundary confidence: ${precisionText(feature.properties?.BORDERPRECISION)}. Historical borders are approximate at this scale.`;
+      elements.entityList.querySelectorAll(".entity-button").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.name === getFeatureName(feature))));
+      historyLayer.selectAll("path").classed("is-selected", item => getFeatureName(item) === getFeatureName(feature));
+    }
+
+    function historicalPath(feature, index) {
+      const precision = Number(feature.properties?.BORDERPRECISION);
+      const pathElement = d3.create("svg:path")
+        .attr("class", "history-shape")
+        .attr("d", path(feature))
+        .attr("fill", getFeatureColor(feature))
+        .attr("stroke-dasharray", precision === 1 ? "3 3" : precision === 2 ? "1 2" : null)
+        .attr("tabindex", 0)
+        .attr("role", "button")
+        .attr("aria-label", `${getFeatureName(feature)}, ${precisionText(precision)} boundaries`)
+        .on("click", () => updateDetail(feature))
+        .on("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            updateDetail(feature);
+          }
+        });
+      return pathElement.node();
+    }
+
+    function colorForBase(feature) {
+      const [[west, south], [east, north]] = d3.geoBounds(feature);
+      const color = (east + west + north + south) % 2;
+      return color > 1 ? "#ece7d9" : "#e3e1d5";
+    }
+
+    function renderModernBase() {
+      landLayer.selectAll("path")
+        .data(currentFeatures, feature => feature.properties?.ADMIN)
+        .join("path")
+        .attr("class", "land-base")
+        .attr("d", path)
+        .attr("fill", colorForBase);
+    }
+
+    function renderCurrentBorders() {
+      const visible = elements.showCurrent.checked ? currentFeatures : [];
+      currentLayer.selectAll("path")
+        .data(visible, feature => feature.properties?.ADMIN)
+        .join("path")
+        .attr("class", "current-boundary")
+        .attr("d", path);
+
+      const labelFeatures = visible.filter(feature => {
+        const [x, y] = path.centroid(feature);
+        return Number.isFinite(x) && Number.isFinite(y) && x > 0 && x < 920 && y > 0 && y < 590;
+      });
+      labelLayer.selectAll("text")
+        .data(labelFeatures, feature => feature.properties?.ADMIN)
+        .join("text")
+        .attr("class", "current-label")
+        .attr("x", feature => path.centroid(feature)[0])
+        .attr("y", feature => path.centroid(feature)[1])
+        .text(feature => feature.properties?.NAME_EN || feature.properties?.ADMIN || "");
+    }
+
+    function renderEntities(features) {
+      const unique = Array.from(new Map(features.map(feature => [getFeatureName(feature), feature])).values())
+        .sort((left, right) => getFeatureName(left).localeCompare(getFeatureName(right)));
+      elements.entityList.replaceChildren();
+      elements.summary.textContent = unique.length
+        ? `${unique.length} mapped ${unique.length === 1 ? "polity" : "polities"} overlap the Middle East view. Select one to inspect its map label and boundary confidence.`
+        : "No historical polity polygons overlap this view in the selected snapshot.";
+
+      unique.forEach(feature => {
+        const button = document.createElement("button");
+        button.className = "entity-button";
+        button.type = "button";
+        button.dataset.name = getFeatureName(feature);
+        button.setAttribute("aria-pressed", String(selectedFeature && getFeatureName(selectedFeature) === getFeatureName(feature)));
+        const name = document.createElement("span");
+        name.textContent = getFeatureName(feature);
+        const precision = document.createElement("span");
+        precision.className = "precision-tag";
+        precision.textContent = precisionText(feature.properties?.BORDERPRECISION);
+        button.append(name, precision);
+        button.addEventListener("click", () => updateDetail(feature));
+        elements.entityList.append(button);
+      });
+
+      if (selectedFeature && !unique.some(feature => getFeatureName(feature) === getFeatureName(selectedFeature))) updateDetail(null);
+    }
+
+    function updateSliderProgress() {
+      const max = Number(elements.slider.max);
+      const value = Number(elements.slider.value);
+      const progress = max === 0 ? 0 : value / max * 100;
+      elements.slider.style.setProperty("--progress", `${progress}%`);
+    }
+
+    async function loadSnapshot(snapshot) {
+      if (snapshot.present) return currentFeatures.map(feature => ({
+        type: "Feature",
+        properties: {
+          NAME: feature.properties?.NAME_EN || feature.properties?.ADMIN,
+          SUBJECTO: feature.properties?.NAME_EN || feature.properties?.ADMIN,
+          BORDERPRECISION: 3
+        },
+        geometry: feature.geometry
+      }));
+
+      if (!snapshotCache.has(snapshot.filename)) {
+        const request = fetch(`${HISTORICAL_ROOT}geojson/${snapshot.filename}`)
+          .then(response => {
+            if (!response.ok) throw new Error(`Could not load ${displayYear(snapshot.year)} map (${response.status}).`);
+            return response.json();
+          })
+          .then(data => data.features || []);
+        snapshotCache.set(snapshot.filename, request);
+      }
+      return snapshotCache.get(snapshot.filename);
+    }
+
+    async function renderSnapshot() {
+      const sequence = ++renderSequence;
+      const snapshot = snapshots[Number(elements.slider.value)];
+      if (!snapshot) return;
+
+      elements.date.textContent = displayYear(snapshot.year);
+      elements.dateSubtitle.textContent = snapshot.present ? "Current national borders" : "Historical map snapshot";
+      elements.sideTitle.textContent = snapshot.present ? "Countries today" : `Around ${displayYear(snapshot.year)}`;
+      elements.loading.hidden = false;
+      elements.loading.textContent = `Loading ${displayYear(snapshot.year)} map...`;
+      elements.loading.classList.remove("map-error");
+      updateSliderProgress();
+
+      try {
+        const data = await loadSnapshot(snapshot);
+        if (sequence !== renderSequence) return;
+        const features = data.filter(intersectsRegion);
+        historyLayer.selectAll("path").remove();
+        historyLayer.selectAll("path")
+          .data(features, (feature, index) => `${getFeatureName(feature)}-${index}`)
+          .join((enter) => enter.append(historicalPath));
+        renderEntities(features);
+        renderCurrentBorders();
+        elements.loading.hidden = true;
+      } catch (error) {
+        if (sequence !== renderSequence) return;
+        elements.loading.hidden = false;
+        elements.loading.classList.add("map-error");
+        elements.loading.textContent = `${error.message} Check your connection and move the timeline to retry.`;
+        elements.sideTitle.textContent = "Map could not load";
+        elements.summary.textContent = "The timeline uses public GeoJSON hosted by GitHub.";
+      }
+    }
+
+    function stepSnapshot(direction) {
+      const max = Number(elements.slider.max);
+      const next = Number(elements.slider.value) + direction;
+      elements.slider.value = String(Math.max(0, Math.min(max, next)));
+      stopPlayback();
+      renderSnapshot();
+    }
+
+    function stopPlayback() {
+      if (playbackTimer) window.clearInterval(playbackTimer);
+      playbackTimer = null;
+      elements.play.setAttribute("aria-label", "Play timeline");
+      elements.play.title = "Play timeline";
+      elements.play.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.3v11.4L13 8z"/></svg><span>Play</span>';
+    }
+
+    function togglePlayback() {
+      if (playbackTimer) {
+        stopPlayback();
+        return;
+      }
+      elements.play.setAttribute("aria-label", "Pause timeline");
+      elements.play.title = "Pause timeline";
+      elements.play.innerHTML = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h4v12H3zm6 0h4v12H9z"/></svg><span>Pause</span>';
+      playbackTimer = window.setInterval(() => {
+        const current = Number(elements.slider.value);
+        const max = Number(elements.slider.max);
+        if (current >= max) {
+          stopPlayback();
+          return;
+        }
+        elements.slider.value = String(current + 1);
+        renderSnapshot();
+      }, 1800);
+    }
+
+    async function initialize() {
+      if (!window.d3) throw new Error("The map library did not load. Refresh the page with an internet connection.");
+      const [indexResponse, modernResponse] = await Promise.all([fetch(HISTORICAL_INDEX), fetch(MODERN_COUNTRIES)]);
+      if (!indexResponse.ok || !modernResponse.ok) throw new Error("Could not load public map data.");
+      const [index, modern] = await Promise.all([indexResponse.json(), modernResponse.json()]);
+      currentFeatures = modern.features.filter(feature => MODERN_NAMES.has(feature.properties?.ADMIN));
+      if (!currentFeatures.length) throw new Error("No current Middle East country boundaries were returned.");
+
+      snapshots = index.years
+        .filter(item => item.year >= -1000 && item.year <= 2010)
+        .sort((left, right) => left.year - right.year);
+      snapshots.push({ year: MODERN_YEAR, filename: null, present: true });
+      if (snapshots.length < 2) throw new Error("No historical snapshots were found for this period.");
+
+      const view = { type: "FeatureCollection", features: currentFeatures };
+      projection = d3.geoMercator().fitExtent([[28, 23], [892, 566]], view);
+      path = d3.geoPath(projection);
+      elements.slider.min = "0";
+      elements.slider.max = String(snapshots.length - 1);
+      elements.slider.value = String(snapshots.length - 1);
+      elements.oldest.textContent = displayYear(snapshots[0].year);
+      elements.middle.textContent = displayYear(snapshots[Math.floor((snapshots.length - 1) / 2)].year);
+      elements.newest.textContent = "Present";
+      renderModernBase();
+      renderCurrentBorders();
+      await renderSnapshot();
+    }
+
+    elements.slider.addEventListener("input", () => {
+      stopPlayback();
+      renderSnapshot();
+    });
+    elements.showCurrent.addEventListener("change", renderCurrentBorders);
+    elements.play.addEventListener("click", togglePlayback);
+    document.querySelector("#previous").addEventListener("click", () => stepSnapshot(-1));
+    document.querySelector("#next").addEventListener("click", () => stepSnapshot(1));
+    document.addEventListener("keydown", event => {
+      if (event.target.matches("input, button")) return;
+      if (event.key === "ArrowLeft") stepSnapshot(-1);
+      if (event.key === "ArrowRight") stepSnapshot(1);
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlayback();
+      }
+    });
+
+    initialize().catch(error => {
+      elements.date.textContent = "Unavailable";
+      elements.dateSubtitle.textContent = "Map data could not load";
+      elements.loading.hidden = false;
+      elements.loading.classList.add("map-error");
+      elements.loading.textContent = error.message;
+      elements.sideTitle.textContent = "Atlas unavailable";
+      elements.summary.textContent = "This page needs an internet connection to load public boundary data.";
+    });
+  </script>
+</body>
+</html>
