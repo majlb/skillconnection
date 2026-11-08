@@ -46,7 +46,7 @@ services:
       context: ./frontend
       args:
         # Empty API URL = same origin; nginx proxies /api, /ws and /oauth2 to the api service.
-        VITE_API_URL: "https://skillconnection-web.onrender.com"
+        VITE_API_URL: "https://skillconnection-l36i.onrender.com"
         VITE_OAUTH_BASE: http://localhost:3000
         VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-AIzaSyBySZlmxNSn9uyQT5_xOO-FyCvlGw9pcpE}
     environment:
