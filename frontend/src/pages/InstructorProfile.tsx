@@ -4,11 +4,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BadgeCheck, Clock, GraduationCap, Heart, Languages, MapPin, MessageSquare, Users } from 'lucide-react';
 import { instructorPublicApi, meApi } from '@/api/endpoints';
 import { useAuth } from '@/context/AuthContext';
+import { useMoney } from '@/context/CurrencyContext';
 import MapView from '@/components/MapView';
 import { Avatar, Badge, Button, Card, Spinner, Stars } from '@/components/ui';
-import { dateOnly, modeLabel, money } from '@/lib/format';
+import { dateOnly, modeLabel } from '@/lib/format';
 
 export default function InstructorProfile() {
+  const money = useMoney();
   const id = Number(useParams().id);
   const { user } = useAuth();
   const navigate = useNavigate();

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Bell, CalendarDays, LogOut, Map, Menu, MessageSquare, Moon, Search, Settings, Sun, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '@/context/AuthContext';
+import { useCurrency } from '@/context/CurrencyContext';
 import { useTheme } from '@/context/ThemeContext';
 import { notificationApi } from '@/api/endpoints';
 import { useRealtimeConnection } from '@/hooks/useRealtime';
@@ -11,10 +12,16 @@ import { Avatar, Button } from './ui';
 import AssistantWidget from './AssistantWidget';
 
 export default function Layout() {
+  const { currency, rateError } = useCurrency();
   useRealtimeConnection();
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
+      {currency === 'EUR' && rateError && (
+        <div role="status" className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+          {rateError}
+        </div>
+      )}
       <main className="flex-1">
         <Outlet />
       </main>

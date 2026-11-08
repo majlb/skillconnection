@@ -3,16 +3,17 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { LocateFixed } from 'lucide-react';
 import { searchApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import InstructorCard from '@/components/InstructorCard';
 import MapView, { MapPoint } from '@/components/MapView';
 import SearchFilters from '@/components/SearchFilters';
 import { Button, Field, Select } from '@/components/ui';
-import { money } from '@/lib/format';
 import { paramsFromUrl, paramsToUrl } from './Search';
 
 const DEFAULT_CENTER = { lat: 40.7128, lng: -74.006 };
 
 export default function MapSearch() {
+  const money = useMoney();
   const [sp, setSp] = useSearchParams();
   const params = useMemo(() => paramsFromUrl(sp), [sp]);
   const [center, setCenter] = useState(

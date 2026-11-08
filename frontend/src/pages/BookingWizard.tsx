@@ -6,10 +6,11 @@ import { Check, ChevronLeft, ChevronRight, CreditCard, Wallet } from 'lucide-rea
 import clsx from 'clsx';
 import { bookingApi, instructorPublicApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
+import { useMoney } from '@/context/CurrencyContext';
 import type { DeliveryMode, PaymentMethod, TimeSlot } from '@/api/types';
 import MapView from '@/components/MapView';
 import { Button, Card, ErrorText, Field, Select, Spinner, Textarea } from '@/components/ui';
-import { dateTime, isoDate, modeLabel, money, timeOnly } from '@/lib/format';
+import { dateTime, isoDate, modeLabel, timeOnly } from '@/lib/format';
 
 const STEPS = ['Service', 'Date & time', 'Location', 'Review & pay'];
 const PAYMENT_METHODS: { id: PaymentMethod; label: string }[] = [
@@ -20,6 +21,7 @@ const PAYMENT_METHODS: { id: PaymentMethod; label: string }[] = [
 ];
 
 export default function BookingWizard() {
+  const money = useMoney();
   const instructorId = Number(useParams().instructorId);
   const [sp] = useSearchParams();
   const [step, setStep] = useState(0);

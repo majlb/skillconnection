@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { meApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import { Badge, Card, Empty, Spinner, Stat } from '@/components/ui';
-import { dateOnly, money } from '@/lib/format';
+import { dateOnly } from '@/lib/format';
 
 export default function Payments() {
+  const money = useMoney();
   const { data = [], isLoading } = useQuery({ queryKey: ['payments'], queryFn: meApi.payments });
   const spent = data.filter((p) => p.status === 'SUCCEEDED' && p.type !== 'PAYOUT').reduce((s, p) => s + Number(p.amount), 0);
 

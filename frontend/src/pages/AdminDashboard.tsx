@@ -4,10 +4,11 @@ import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Too
 import { CalendarCheck, DollarSign, GraduationCap, Users } from 'lucide-react';
 import { api } from '@/api/client';
 import { adminApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import type { ReportRow } from '@/api/types';
 import InstructorCard from '@/components/InstructorCard';
 import { Badge, Button, Card, Empty, Input, Stat, Stars, Tabs } from '@/components/ui';
-import { dateOnly, money } from '@/lib/format';
+import { dateOnly } from '@/lib/format';
 
 type Tab = 'overview' | 'instructors' | 'catalog' | 'reviews' | 'disputes' | 'payments';
 
@@ -35,6 +36,7 @@ export default function AdminDashboard() {
 }
 
 function Overview() {
+  const money = useMoney();
   const { data: s } = useQuery({ queryKey: ['admin-stats'], queryFn: adminApi.stats });
   const { data: r } = useQuery({ queryKey: ['admin-reports'], queryFn: adminApi.reports });
   return (
@@ -65,6 +67,8 @@ function Overview() {
 }
 
 function Chart({ title, data, kind, valueKey = 'value' }: { title: string; data: ReportRow[]; kind: 'bar' | 'line'; valueKey?: 'value' | 'amount' }) {
+  const money = useMoney();
+  const tooltipFormatter = (value: number | string) => valueKey === 'amount' ? money(Number(value)) : value;
   return (
     <Card>
       <h3 className="mb-3 font-semibold">{title}</h3>
@@ -72,9 +76,9 @@ function Chart({ title, data, kind, valueKey = 'value' }: { title: string; data:
         <div className="h-56">
           <ResponsiveContainer>
             {kind === 'bar' ? (
-              <BarChart data={data}><CartesianGrid strokeDasharray="3 3" opacity={0.3} /><XAxis dataKey="label" fontSize={11} /><YAxis fontSize={11} /><Tooltip /><Bar dataKey={valueKey} fill="#337dff" radius={[6, 6, 0, 0]} /></BarChart>
+              <BarChart data={data}><CartesianGrid strokeDasharray="3 3" opacity={0.3} /><XAxis dataKey="label" fontSize={11} /><YAxis fontSize={11} /><Tooltip formatter={tooltipFormatter} /><Bar dataKey={valueKey} fill="#337dff" radius={[6, 6, 0, 0]} /></BarChart>
             ) : (
-              <LineChart data={data}><CartesianGrid strokeDasharray="3 3" opacity={0.3} /><XAxis dataKey="label" fontSize={11} /><YAxis fontSize={11} /><Tooltip /><Line dataKey={valueKey} stroke="#ff5a5f" strokeWidth={2} /></LineChart>
+              <LineChart data={data}><CartesianGrid strokeDasharray="3 3" opacity={0.3} /><XAxis dataKey="label" fontSize={11} /><YAxis fontSize={11} /><Tooltip formatter={tooltipFormatter} /><Line dataKey={valueKey} stroke="#ff5a5f" strokeWidth={2} /></LineChart>
             )}
           </ResponsiveContainer>
         </div>
@@ -235,6 +239,7 @@ function Disputes() {
 }
 
 function PaymentsAdmin() {
+  const money = useMoney();
   const qc = useQueryClient();
   const [status, setStatus] = useState('PENDING');
   const { data = [] } = useQuery({ queryKey: ['admin-payments', status], queryFn: () => adminApi.payments(status) });

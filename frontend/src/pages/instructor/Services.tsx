@@ -3,9 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
 import { catalogApi, instructorApi, searchApi } from '@/api/endpoints';
 import { errorMessage } from '@/api/client';
+import { useMoney } from '@/context/CurrencyContext';
 import type { DeliveryMode, PricingType, ServiceOffering } from '@/api/types';
 import { Badge, Button, Card, Empty, ErrorText, Field, Input, Select, Textarea } from '@/components/ui';
-import { modeLabel, money } from '@/lib/format';
+import { modeLabel } from '@/lib/format';
 
 interface Form {
   name: string; description: string; categoryId: number | ''; subjectId: number | ''; ageGroupId: number | '';
@@ -25,6 +26,7 @@ const toForm = (s: ServiceOffering): Form => ({
 });
 
 export default function Services() {
+  const money = useMoney();
   const qc = useQueryClient();
   const [editing, setEditing] = useState<number | 'new' | null>(null);
   const [f, setF] = useState<Form>(EMPTY);

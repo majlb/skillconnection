@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bot, Send, X } from 'lucide-react';
 import { searchApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import type { InstructorSummary } from '@/api/types';
-import { money } from '@/lib/format';
 
 interface Turn { from: 'user' | 'bot'; text: string; results?: InstructorSummary[] }
 
 /** Floating search-assistant chatbot. */
 export default function AssistantWidget() {
+  const money = useMoney();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);

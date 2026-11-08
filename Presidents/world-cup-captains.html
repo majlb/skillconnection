@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101513">
-  <title>World Cup Captains | 1930 - 2026</title>
+  <title>World Cup Captains / قادة كأس العالم | 1930 - 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -44,6 +44,7 @@
     .controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 13px 0 20px; }
     .control-group { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
     button { display: inline-grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 4px; background: transparent; cursor: pointer; font-size: 20px; }
+    .export-tiktok { width: auto; padding: 0 10px; font: 11px "IBM Plex Mono", monospace; }
     button:hover { border-color: var(--mint); color: var(--mint); }
     button:disabled { opacity: .35; cursor: not-allowed; }
     #play { color: var(--bg); background: var(--mint); border-color: var(--mint); }
@@ -78,72 +79,76 @@
 </head>
 <body>
   <div class="wrap">
-    <nav class="topbar" aria-label="Main navigation"><span class="overline">Football / The men's world champions</span><a href="country-cup.html">Country Cup &#8599;</a></nav>
+    <nav class="topbar" aria-label="Main navigation"><span class="overline">Football / كرة القدم / The men's world champions / أبطال العالم للرجال</span><a href="country-cup.html">Country Cup / كأس البلد &#8599;</a></nav>
     <header>
-      <h1>World Cup <span>Captains</span></h1>
-      <div class="header-meta meta"><strong>1930 &mdash; 2026</strong><br>23 victories. One legacy.</div>
+      <h1>World Cup <span>Captains</span> / <span>قادة كأس العالم</span></h1>
+      <div class="header-meta meta"><strong>1930 &mdash; 2026</strong><br>23 victories. One legacy. / 23 فوزًا. إرث واحد.</div>
     </header>
     <main>
-      <section id="theatre" class="theatre" aria-label="Animated World Cup trophy relay">
-        <canvas id="scene" role="img" aria-label="World Cup captains lifting and passing the trophy">Your browser does not support canvas.</canvas>
-        <span id="recording" class="recording" hidden>Recording</span>
+      <section id="theatre" class="theatre" aria-label="Animated World Cup trophy relay / تمرير كأس العالم التفاعلي">
+        <canvas id="scene" role="img" aria-label="World Cup captains lifting and passing the trophy / قادة كأس العالم يرفعون الكأس ويمررونها">Your browser does not support canvas.</canvas>
+        <span id="recording" class="recording" hidden>Recording / تسجيل</span>
       </section>
-      <section class="captions" aria-label="Captains in the current scene" aria-live="polite" aria-atomic="true">
+      <section class="captions" aria-label="Captains in the current scene / القادة في المشهد الحالي" aria-live="polite" aria-atomic="true">
         <div><div class="meta" id="currentYear"></div><h2 id="currentName"></h2><div class="country" id="currentCountry"></div></div>
         <div class="handoff" aria-hidden="true">&#8594;</div>
         <div class="next"><div class="meta" id="nextYear"></div><h2 id="nextName"></h2><div class="country" id="nextCountry"></div></div>
       </section>
-      <section class="transport" aria-label="Playback controls">
-        <div class="seek-row"><input id="seek" type="range" min="0" step="0.01" value="0" aria-label="Animation position"><output class="time" id="time"></output></div>
+      <section class="transport" aria-label="Playback controls / عناصر التحكم">
+        <div class="seek-row"><input id="seek" type="range" min="0" step="0.01" value="0" aria-label="Animation position / موضع الحركة"><output class="time" id="time"></output></div>
         <div class="controls">
           <div class="control-group">
-            <button id="restart" title="Restart" aria-label="Restart">&#8634;</button>
-            <button id="previous" title="Previous captain" aria-label="Previous captain">&#9198;</button>
-            <button id="play" title="Pause" aria-label="Pause">&#10074;&#10074;</button>
-            <button id="next" title="Next captain" aria-label="Next captain">&#9197;</button>
-            <button id="loop" title="Loop" aria-label="Loop" aria-pressed="false">&#8635;</button>
+            <button id="restart" title="Restart / إعادة التشغيل" aria-label="Restart / إعادة التشغيل">&#8634;</button>
+            <button id="previous" title="Previous captain / القائد السابق" aria-label="Previous captain / القائد السابق">&#9198;</button>
+            <button id="play" title="Pause / إيقاف مؤقت" aria-label="Pause / إيقاف مؤقت">&#10074;&#10074;</button>
+            <button id="next" title="Next captain / القائد التالي" aria-label="Next captain / القائد التالي">&#9197;</button>
+            <button id="loop" title="Loop / تكرار" aria-label="Loop / تكرار" aria-pressed="false">&#8635;</button>
           </div>
           <div class="control-group">
-            <label for="speed">Speed</label><select id="speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
-            <button id="export" title="Record and download video (WebM)" aria-label="Record and download video">&#8681;</button>
-            <button id="fullscreen" title="Full screen" aria-label="Full screen">&#9974;</button>
+            <label for="speed">Speed / السرعة</label><select id="speed"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select>
+            <button id="export" title="Record and download video (WebM) / تسجيل وتنزيل الفيديو" aria-label="Record and download video / تسجيل وتنزيل الفيديو">&#8681;</button>
+            <button id="exportTiktok" class="export-tiktok" title="Generate TikTok video (1080 × 1920) / إنشاء فيديو تيك توك" aria-label="Generate TikTok video in portrait format / إنشاء فيديو تيك توك عمودي">TikTok</button>
+            <button id="fullscreen" title="Full screen / ملء الشاشة" aria-label="Full screen / ملء الشاشة">&#9974;</button>
           </div>
         </div>
         <p id="status" role="status" hidden></p>
       </section>
-      <nav class="years" id="years" aria-label="Choose a World Cup year"></nav>
+      <nav class="years" id="years" aria-label="Choose a World Cup year / اختر سنة كأس العالم"></nav>
     </main>
-    <footer><span>Cartoon interpretations of the captains, not archival footage.<br>1942 &amp; 1946: no tournament (World War II).</span><span>Jules Rimet trophy: 1930&ndash;1970 / FIFA trophy: 1974&ndash;2026<br>Sources: <a href="https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_winning_players" target="_blank" rel="noopener noreferrer">World Cup winners</a> / <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup" target="_blank" rel="noopener noreferrer">2026 tournament</a></span></footer>
+    <footer><span>Cartoon interpretations of the captains, not archival footage. / تمثيلات كرتونية للقادة، وليست لقطات أرشيفية.<br>1942 &amp; 1946: no tournament (World War II). / 1942 و1946: لا توجد بطولة (الحرب العالمية الثانية).</span><span>Jules Rimet trophy: 1930&ndash;1970 / FIFA trophy: 1974&ndash;2026 / كأس جيل ريمي: 1930&ndash;1970 / كأس الفيفا: 1974&ndash;2026<br>Sources: <a href="https://en.wikipedia.org/wiki/List_of_FIFA_World_Cup_winning_players" target="_blank" rel="noopener noreferrer">World Cup winners / الفائزون بكأس العالم</a> / <a href="https://en.wikipedia.org/wiki/2026_FIFA_World_Cup" target="_blank" rel="noopener noreferrer">2026 tournament / بطولة 2026</a></span></footer>
   </div>
   <script>
     "use strict";
     const captains = [
-      { year: 1930, name: "Jos\u00e9 Nasazzi", country: "Uruguay", kit: "#79c9e6", shorts: "#20272b", skin: "#d8a580", hair: "#30251e", number: "", host: "Uruguay" },
-      { year: 1934, name: "Gianpiero Combi", country: "Italy", kit: "#363a3c", shorts: "#eeeeea", skin: "#dbab89", hair: "#27211e", number: "", host: "Italy" },
-      { year: 1938, name: "Giuseppe Meazza", country: "Italy", kit: "#2874c3", shorts: "#eeeeea", skin: "#dba37e", hair: "#28201d", number: "9", host: "France" },
-      { year: 1950, name: "Obdulio Varela", country: "Uruguay", kit: "#79c9e6", shorts: "#20272b", skin: "#b47a54", hair: "#28221e", number: "5", host: "Brazil" },
-      { year: 1954, name: "Fritz Walter", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#e5b492", hair: "#634936", number: "16", host: "Switzerland" },
-      { year: 1958, name: "Hilderaldo Bellini", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#c98e66", hair: "#25211d", number: "2", host: "Sweden" },
-      { year: 1962, name: "Mauro Ramos", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#bc825a", hair: "#29241f", number: "3", host: "Chile" },
-      { year: 1966, name: "Bobby Moore", country: "England", kit: "#d93f46", shorts: "#eeeeea", skin: "#edbb98", hair: "#be9558", number: "6", host: "England" },
-      { year: 1970, name: "Carlos Alberto", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#a56d46", hair: "#241f1b", number: "4", host: "Mexico" },
-      { year: 1974, name: "Franz Beckenbauer", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#e1ac88", hair: "#67462d", number: "5", host: "West Germany" },
-      { year: 1978, name: "Daniel Passarella", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#cf936d", hair: "#30231d", number: "19", host: "Argentina", stripes: true },
-      { year: 1982, name: "Dino Zoff", country: "Italy", kit: "#8a9499", shorts: "#242b30", skin: "#d5a281", hair: "#51463d", number: "1", host: "Spain" },
-      { year: 1986, name: "Diego Maradona", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#c58a60", hair: "#211c19", number: "10", host: "Mexico", stripes: true, curls: true },
-      { year: 1990, name: "Lothar Matth\u00e4us", country: "West Germany", kit: "#e8e8df", shorts: "#22262a", skin: "#ddaa85", hair: "#49301f", number: "10", host: "Italy" },
-      { year: 1994, name: "Dunga", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#d1a17f", hair: "#49301f", number: "8", host: "United States" },
-      { year: 1998, name: "Didier Deschamps", country: "France", kit: "#2765b7", shorts: "#eeeeea", skin: "#dfad88", hair: "#765a39", number: "7", host: "France" },
-      { year: 2002, name: "Cafu", country: "Brazil", kit: "#f3d54c", shorts: "#2764b4", skin: "#9e6543", hair: "#25201c", number: "2", host: "South Korea / Japan" },
-      { year: 2006, name: "Fabio Cannavaro", country: "Italy", kit: "#2874c3", shorts: "#2874c3", skin: "#d8a077", hair: "#35271f", number: "5", host: "Germany" },
-      { year: 2010, name: "Iker Casillas", country: "Spain", kit: "#53a668", shorts: "#3a8650", skin: "#dfad88", hair: "#493020", number: "1", host: "South Africa" },
-      { year: 2014, name: "Philipp Lahm", country: "Germany", kit: "#efefea", shorts: "#efefea", skin: "#e7b994", hair: "#69452d", number: "16", host: "Brazil" },
-      { year: 2018, name: "Hugo Lloris", country: "France", kit: "#e4c348", shorts: "#e4c348", skin: "#d7a181", hair: "#352a23", number: "1", host: "Russia", beard: true },
-      { year: 2022, name: "Lionel Messi", country: "Argentina", kit: "#f0f3ed", shorts: "#242b30", skin: "#dca47f", hair: "#3f2a21", number: "10", host: "Qatar", stripes: true, beard: true },
-      { year: 2026, name: "Rodri", country: "Spain", kit: "#c93640", shorts: "#254d81", skin: "#dba37f", hair: "#30231d", number: "16", host: "Canada / Mexico / United States" }
+      { year: 1930, name: "Jos\u00e9 Nasazzi", nameAr: "جوزيه نازازي", country: "Uruguay", countryAr: "أوروغواي", kit: "#79c9e6", shorts: "#20272b", skin: "#d8a580", hair: "#30251e", number: "", host: "Uruguay", hostAr: "أوروغواي" },
+      { year: 1934, name: "Gianpiero Combi", nameAr: "جيانبييرو كومبي", country: "Italy", countryAr: "إيطاليا", kit: "#363a3c", shorts: "#eeeeea", skin: "#dbab89", hair: "#27211e", number: "", host: "Italy", hostAr: "إيطاليا" },
+      { year: 1938, name: "Giuseppe Meazza", nameAr: "جوزيبي مياززا", country: "Italy", countryAr: "إيطاليا", kit: "#2874c3", shorts: "#eeeeea", skin: "#dba37e", hair: "#28201d", number: "9", host: "France", hostAr: "فرنسا" },
+      { year: 1950, name: "Obdulio Varela", nameAr: "أوبدوليو فاريلا", country: "Uruguay", countryAr: "أوروغواي", kit: "#79c9e6", shorts: "#20272b", skin: "#b47a54", hair: "#28221e", number: "5", host: "Brazil", hostAr: "البرازيل" },
+      { year: 1954, name: "Fritz Walter", nameAr: "فريتز والتر", country: "West Germany", countryAr: "ألمانيا الغربية", kit: "#e8e8df", shorts: "#22262a", skin: "#e5b492", hair: "#634936", number: "16", host: "Switzerland", hostAr: "سويسرا" },
+      { year: 1958, name: "Hilderaldo Bellini", nameAr: "هيلديرالدو بيليني", country: "Brazil", countryAr: "البرازيل", kit: "#f3d54c", shorts: "#2764b4", skin: "#c98e66", hair: "#25211d", number: "2", host: "Sweden", hostAr: "السويد" },
+      { year: 1962, name: "Mauro Ramos", nameAr: "ماورو راموس", country: "Brazil", countryAr: "البرازيل", kit: "#f3d54c", shorts: "#2764b4", skin: "#bc825a", hair: "#29241f", number: "3", host: "Chile", hostAr: "تشيلي" },
+      { year: 1966, name: "Bobby Moore", nameAr: "بوبي مور", country: "England", countryAr: "إنجلترا", kit: "#d93f46", shorts: "#eeeeea", skin: "#edbb98", hair: "#be9558", number: "6", host: "England", hostAr: "إنجلترا" },
+      { year: 1970, name: "Carlos Alberto", nameAr: "كارلوس ألبرتو", country: "Brazil", countryAr: "البرازيل", kit: "#f3d54c", shorts: "#2764b4", skin: "#a56d46", hair: "#241f1b", number: "4", host: "Mexico", hostAr: "المكسيك" },
+      { year: 1974, name: "Franz Beckenbauer", nameAr: "فرانز بيكنباور", country: "West Germany", countryAr: "ألمانيا الغربية", kit: "#e8e8df", shorts: "#22262a", skin: "#e1ac88", hair: "#67462d", number: "5", host: "West Germany", hostAr: "ألمانيا الغربية" },
+      { year: 1978, name: "Daniel Passarella", nameAr: "دانييل باساريللا", country: "Argentina", countryAr: "الأرجنتين", kit: "#f0f3ed", shorts: "#242b30", skin: "#cf936d", hair: "#30231d", number: "19", host: "Argentina", hostAr: "الأرجنتين", stripes: true },
+      { year: 1982, name: "Dino Zoff", nameAr: "دينو زوف", country: "Italy", countryAr: "إيطاليا", kit: "#8a9499", shorts: "#242b30", skin: "#d5a281", hair: "#51463d", number: "1", host: "Spain", hostAr: "إسبانيا" },
+      { year: 1986, name: "Diego Maradona", nameAr: "دييغو مارادونا", country: "Argentina", countryAr: "الأرجنتين", kit: "#f0f3ed", shorts: "#242b30", skin: "#c58a60", hair: "#211c19", number: "10", host: "Mexico", hostAr: "المكسيك", stripes: true, curls: true },
+      { year: 1990, name: "Lothar Matth\u00e4us", nameAr: "لوثار ماتيوس", country: "West Germany", countryAr: "ألمانيا الغربية", kit: "#e8e8df", shorts: "#22262a", skin: "#ddaa85", hair: "#49301f", number: "10", host: "Italy", hostAr: "إيطاليا" },
+      { year: 1994, name: "Dunga", nameAr: "دونغا", country: "Brazil", countryAr: "البرازيل", kit: "#f3d54c", shorts: "#2764b4", skin: "#d1a17f", hair: "#49301f", number: "8", host: "United States", hostAr: "الولايات المتحدة" },
+      { year: 1998, name: "Didier Deschamps", nameAr: "ديدييه دتشامب", country: "France", countryAr: "فرنسا", kit: "#2765b7", shorts: "#eeeeea", skin: "#dfad88", hair: "#765a39", number: "7", host: "France", hostAr: "فرنسا" },
+      { year: 2002, name: "Cafu", nameAr: "كافو", country: "Brazil", countryAr: "البرازيل", kit: "#f3d54c", shorts: "#2764b4", skin: "#9e6543", hair: "#25201c", number: "2", host: "South Korea / Japan", hostAr: "كوريا الجنوبية / اليابان" },
+      { year: 2006, name: "Fabio Cannavaro", nameAr: "فابيو كانافارو", country: "Italy", countryAr: "إيطاليا", kit: "#2874c3", shorts: "#2874c3", skin: "#d8a077", hair: "#35271f", number: "5", host: "Germany", hostAr: "ألمانيا" },
+      { year: 2010, name: "Iker Casillas", nameAr: "إيكر كاسياس", country: "Spain", countryAr: "إسبانيا", kit: "#53a668", shorts: "#3a8650", skin: "#dfad88", hair: "#493020", number: "1", host: "South Africa", hostAr: "جنوب أفريقيا" },
+      { year: 2014, name: "Philipp Lahm", nameAr: "فيليب لاهم", country: "Germany", countryAr: "ألمانيا", kit: "#efefea", shorts: "#efefea", skin: "#e7b994", hair: "#69452d", number: "16", host: "Brazil", hostAr: "البرازيل" },
+      { year: 2018, name: "Hugo Lloris", nameAr: "هوغو لوريس", country: "France", countryAr: "فرنسا", kit: "#e4c348", shorts: "#e4c348", skin: "#d7a181", hair: "#352a23", number: "1", host: "Russia", hostAr: "روسيا", beard: true },
+      { year: 2022, name: "Lionel Messi", nameAr: "ليونيل ميسي", country: "Argentina", countryAr: "الأرجنتين", kit: "#f0f3ed", shorts: "#242b30", skin: "#dca47f", hair: "#3f2a21", number: "10", host: "Qatar", hostAr: "قطر", stripes: true, beard: true },
+      { year: 2026, name: "Rodri", nameAr: "رودري", country: "Spain", countryAr: "إسبانيا", kit: "#c93640", shorts: "#254d81", skin: "#dba37f", hair: "#30231d", number: "16", host: "Canada / Mexico / United States", hostAr: "كندا / المكسيك / الولايات المتحدة" }
     ];
     const canvas = document.getElementById("scene");
-    const context = canvas.getContext("2d");
+    const tiktokCanvas = document.createElement("canvas");
+    tiktokCanvas.width = 1080;
+    tiktokCanvas.height = 1920;
+    let context = canvas.getContext("2d");
     const faceStyles = {
       1930: { width: 34, jaw: 28, hair: "slick", brow: 4, nose: 8, smile: 9 },
       1934: { width: 31, jaw: 25, hair: "slick", brow: 3, nose: 9, smile: 10 },
@@ -169,8 +174,8 @@
       2022: { width: 33, jaw: 27, hair: "fade", brow: 4, nose: 10, smile: 12, beard: true },
       2026: { width: 35, jaw: 31, hair: "crew", brow: 4, nose: 8, smile: 14 }
     };
-    const elements = Object.fromEntries(["play", "seek", "time", "previous", "next", "loop", "speed", "export", "status", "recording"].map(id => [id, document.getElementById(id)]));
-    const chapterLength = 5.6;
+    const elements = Object.fromEntries(["play", "seek", "time", "previous", "next", "loop", "speed", "export", "exportTiktok", "status", "recording"].map(id => [id, document.getElementById(id)]));
+    const chapterLength = 3.5;
     const duration = captains.length * chapterLength;
     let position = 0;
     let playing = !matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -180,6 +185,7 @@
     let recorder = null;
     let recordingChunks = [];
     let recordingCancelled = false;
+    let recordingFormat = "landscape";
     let stageWidth = 1200;
     let stageHeight = 570;
     elements.seek.max = duration;
@@ -192,7 +198,7 @@
     function setPlaying(value) {
       playing = value;
       elements.play.innerHTML = playing ? "&#10074;&#10074;" : "&#9654;";
-      elements.play.title = elements.play.ariaLabel = playing ? "Pause" : "Play";
+      elements.play.title = elements.play.ariaLabel = playing ? "Pause / إيقاف مؤقت" : "Play / تشغيل";
       lastTimestamp = null;
     }
 
@@ -207,14 +213,14 @@
       activeChapter = chapter;
       const current = captains[chapter];
       const next = captains[chapter + 1];
-      document.getElementById("currentYear").textContent = `${current.year} / World champion`;
-      document.getElementById("currentName").textContent = current.name;
-      document.getElementById("currentCountry").textContent = current.country;
-      document.getElementById("nextYear").textContent = next ? `${next.year} / Next champion` : "1930 - 2026";
-      document.getElementById("nextName").textContent = next ? next.name : "The legacy continues";
-      document.getElementById("nextCountry").textContent = next ? next.country : "23 World Cup victories";
+      document.getElementById("currentYear").textContent = `${current.year} / World champion / بطل العالم`;
+      document.getElementById("currentName").textContent = `${current.name} / ${current.nameAr}`;
+      document.getElementById("currentCountry").textContent = `${current.country} / ${current.countryAr}`;
+      document.getElementById("nextYear").textContent = next ? `${next.year} / Next champion / التالي` : "1930 - 2026 / 1930 - 2026";
+      document.getElementById("nextName").textContent = next ? `${next.name} / ${next.nameAr}` : "The legacy continues / الإرث مستمر";
+      document.getElementById("nextCountry").textContent = next ? `${next.country} / ${next.countryAr}` : "23 World Cup victories / 23 فوزًا بكأس العالم";
       document.querySelectorAll(".years button").forEach((button, index) => button.setAttribute("aria-current", String(index === chapter)));
-      canvas.setAttribute("aria-label", `${current.year}: ${current.name}, ${current.country}, lifts the trophy.${next ? ` Passes to ${next.name}, ${next.country}, ${next.year}.` : " End of the relay."}`);
+      canvas.setAttribute("aria-label", `${current.year}: ${current.name} / ${current.nameAr}, ${current.country} / ${current.countryAr}, lifts the trophy.${next ? ` Passes to ${next.name} / ${next.nameAr}, ${next.country} / ${next.countryAr}, ${next.year}.` : " End of the relay."}`);
     }
 
     function roundedRect(left, top, width, height, radius, color) {
@@ -379,10 +385,11 @@
       const labelWidth = stageWidth < 650 ? stageWidth * .38 : stageWidth * .35;
       const fontSize = stageWidth < 650 ? 17 : 23;
       context.font = `600 ${fontSize}px "Barlow Condensed", sans-serif`;
-      const fittedSize = Math.min(fontSize, fontSize * labelWidth / context.measureText(captain.name).width);
+      const displayName = `${captain.name} / ${captain.nameAr}`;
+      const fittedSize = Math.min(fontSize, fontSize * labelWidth / context.measureText(displayName).width);
       const labelX = Math.max(labelWidth / 2 + 8, Math.min(stageWidth - labelWidth / 2 - 8, left));
-      text(captain.name, labelX, floor + 30, fittedSize, "#f2f5ee", "center");
-      text(`${captain.country} / ${captain.year}`, labelX, floor + 49, stageWidth < 650 ? 10 : 12, "#b7efce", "center", "IBM Plex Sans");
+      text(displayName, labelX, floor + 30, fittedSize, "#f2f5ee", "center");
+      text(`${captain.country} / ${captain.countryAr} / ${captain.year}`, labelX, floor + 49, stageWidth < 650 ? 10 : 12, "#b7efce", "center", "IBM Plex Sans");
       context.restore();
     }
 
@@ -428,9 +435,9 @@
       }
       line([[0, stageHeight * .88], [stageWidth, stageHeight * .88]], "#abc3a438", 1);
       text(String(captains[chapter].year), stageWidth / 2, stageHeight * .3, stageWidth < 650 ? 110 : 160, "#d4e8cd15", "center");
-      text("FIFA WORLD CUP", 24, 30, 12, "#b7efce", "left", "IBM Plex Mono");
+      text("FIFA WORLD CUP / كأس العالم FIFA", 24, 30, 12, "#b7efce", "left", "IBM Plex Mono");
       text(`${String(chapter + 1).padStart(2, "0")} / 23`, stageWidth - 24, 30, 12, "#d4dfd5", "right", "IBM Plex Mono");
-      if (stageWidth >= 650) text(`HOST: ${captains[chapter].host.toUpperCase()}`, 24, 52, 10, "#a4b2aa", "left", "IBM Plex Mono");
+      if (stageWidth >= 650) text(`HOST: ${captains[chapter].host.toUpperCase()} / المضيف: ${captains[chapter].hostAr.toUpperCase()}`, 24, 52, 10, "#a4b2aa", "left", "IBM Plex Mono");
       if (progress > .23 && progress < .72) {
         const confettiTime = (progress - .23) / .49;
         for (let piece = 0; piece < 65; piece++) {
@@ -444,10 +451,7 @@
       }
     }
 
-    function render() {
-      const chapter = Math.min(captains.length - 1, Math.floor(position / chapterLength));
-      const progress = Math.min(1, (position - chapter * chapterLength) / chapterLength);
-      updateCaptions(chapter);
+    function drawScene(chapter, progress) {
       drawStadium(chapter, progress);
       const compact = stageWidth < 650;
       const floor = stageHeight * .79;
@@ -472,13 +476,41 @@
       }
       drawCaptain(captains[chapter], currentX, floor, scale, currentLeft, currentRight, 1 - transfer);
       drawTrophy(trophyX, trophyY, scale, captains[chapter].year);
-      const phase = !next && progress > .58 ? "THE LEGACY CONTINUES" : progress < .25 ? "THE LIFT" : progress < .58 ? "WORLD CHAMPIONS" : "PASSING THE LEGACY";
+      const phase = !next && progress > .58 ? "THE LEGACY CONTINUES / الإرث مستمر" : progress < .25 ? "THE LIFT / الرفع" : progress < .58 ? "WORLD CHAMPIONS / أبطال العالم" : "PASSING THE LEGACY / تمرير الإرث";
       text(phase, center, stageHeight - 22, compact ? 11 : 13, "#e9c16e", "center", "IBM Plex Mono");
+    }
+
+    function render() {
+      const chapter = Math.min(captains.length - 1, Math.floor(position / chapterLength));
+      const progress = Math.min(1, (position - chapter * chapterLength) / chapterLength);
+      updateCaptions(chapter);
+      drawScene(chapter, progress);
       elements.seek.value = position;
       elements.seek.setAttribute("aria-valuetext", `${captains[chapter].year}, ${captains[chapter].name}, ${clock(position)}`);
       elements.time.textContent = `${clock(position)} / ${clock(duration)}`;
       elements.previous.disabled = chapter === 0;
       elements.next.disabled = chapter === captains.length - 1;
+    }
+
+    function renderTikTokFrame() {
+      const portraitContext = tiktokCanvas.getContext("2d");
+      if (!portraitContext) throw new Error("Canvas rendering is unavailable");
+      const previousContext = context;
+      const previousWidth = stageWidth;
+      const previousHeight = stageHeight;
+      context = portraitContext;
+      stageWidth = 720;
+      stageHeight = 1280;
+      try {
+        context.setTransform(1.5, 0, 0, 1.5, 0, 0);
+        const chapter = Math.min(captains.length - 1, Math.floor(position / chapterLength));
+        const progress = Math.min(1, (position - chapter * chapterLength) / chapterLength);
+        drawScene(chapter, progress);
+      } finally {
+        context = previousContext;
+        stageWidth = previousWidth;
+        stageHeight = previousHeight;
+      }
     }
 
     function resize() {
@@ -500,6 +532,7 @@
           else setPlaying(false);
         }
         render();
+        if (recorder && recordingFormat === "tiktok") renderTikTokFrame();
       }
       lastTimestamp = timestamp;
       requestAnimationFrame(frame);
@@ -508,8 +541,8 @@
     captains.forEach((captain, chapter) => {
       const button = document.createElement("button");
       button.textContent = captain.year;
-      button.title = `${captain.name} / ${captain.country}`;
-      button.setAttribute("aria-label", `${captain.year}: ${captain.name}, ${captain.country}`);
+      button.title = `${captain.name} / ${captain.nameAr} / ${captain.country} / ${captain.countryAr}`;
+      button.setAttribute("aria-label", `${captain.year}: ${captain.name} / ${captain.nameAr}, ${captain.country} / ${captain.countryAr}`);
       button.addEventListener("click", () => jump(chapter));
       document.getElementById("years").append(button);
     });
@@ -524,30 +557,36 @@
       try {
         if (document.fullscreenElement) await document.exitFullscreen();
         else await document.getElementById("theatre").requestFullscreen();
-      } catch { elements.status.hidden = false; elements.status.textContent = "Full screen is unavailable in this browser."; }
+      } catch { elements.status.hidden = false; elements.status.textContent = "Full screen is unavailable in this browser. / لا يتوفر ملء الشاشة في هذا المتصفح."; }
     });
-    elements.export.addEventListener("click", () => {
+    function exportVideo(tiktok) {
       if (recorder) { recordingCancelled = true; recorder.stop(); setPlaying(false); return; }
-      if (!canvas.captureStream || typeof MediaRecorder === "undefined") {
-        elements.status.hidden = false; elements.status.textContent = "Video export is unavailable. Open this page in a recent Chrome or Edge browser."; return;
+      const recordingCanvas = tiktok ? tiktokCanvas : canvas;
+      if (!recordingCanvas.captureStream || typeof MediaRecorder === "undefined") {
+        elements.status.hidden = false; elements.status.textContent = "Video export is unavailable. Open this page in a recent Chrome or Edge browser. / لا يتوفر تصدير الفيديو. افتح هذه الصفحة في متصفح Chrome أو Edge حديث."; return;
       }
+      const activeButton = tiktok ? elements.exportTiktok : elements.export;
       let stream;
       try {
         const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find(type => MediaRecorder.isTypeSupported(type));
         if (!mimeType) throw new Error("WebM is not supported");
-        stream = canvas.captureStream(30);
+        recordingFormat = tiktok ? "tiktok" : "landscape";
+        if (tiktok) renderTikTokFrame();
+        stream = recordingCanvas.captureStream(30);
         recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 6000000 });
         recordingChunks = []; recordingCancelled = false;
         recorder.ondataavailable = event => { if (event.data.size) recordingChunks.push(event.data); };
+        const filename = tiktok ? "world-cup-captains-tiktok-1930-2026.webm" : "world-cup-captains-1930-2026.webm";
         const finishRecording = () => {
           stream.getTracks().forEach(track => track.stop());
           recorder = null; elements.recording.hidden = true;
-          elements.export.innerHTML = "&#8681;"; elements.export.title = elements.export.ariaLabel = "Record and download video";
+          elements.export.innerHTML = "&#8681;"; elements.export.title = elements.export.ariaLabel = "Record and download video / تسجيل وتنزيل الفيديو";
+          elements.exportTiktok.textContent = "TikTok"; elements.exportTiktok.title = elements.exportTiktok.ariaLabel = "Generate TikTok video in portrait format / إنشاء فيديو تيك توك عمودي";
           document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = false; });
-          elements.status.textContent = recordingCancelled ? "Recording cancelled." : "Video downloaded: world-cup-captains-1930-2026.webm";
+          elements.status.textContent = recordingCancelled ? "Recording cancelled. / تم إلغاء التسجيل." : `Video downloaded: ${filename} / تم تنزيل الفيديو: ${filename}`;
           if (!recordingCancelled) {
             const url = URL.createObjectURL(new Blob(recordingChunks, { type: mimeType }));
-            const link = document.createElement("a"); link.href = url; link.download = "world-cup-captains-1930-2026.webm";
+            const link = document.createElement("a"); link.href = url; link.download = filename;
             document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000);
           }
           recordingChunks = []; render();
@@ -555,17 +594,26 @@
         recorder.onstop = finishRecording;
         recorder.onerror = () => { recordingCancelled = true; if (recorder && recorder.state !== "inactive") recorder.stop(); };
         jump(0); setPlaying(true);
-        document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = control !== elements.export; });
-        elements.export.innerHTML = "&#9632;"; elements.export.title = elements.export.ariaLabel = "Cancel video recording";
+        if (tiktok) renderTikTokFrame();
+        document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = control !== activeButton; });
+        if (tiktok) elements.exportTiktok.textContent = "Stop";
+        else elements.export.innerHTML = "&#9632;";
+        activeButton.title = activeButton.ariaLabel = "Cancel video recording";
         elements.recording.hidden = false; elements.status.hidden = false;
-        elements.status.textContent = "Recording 2:08 at 1x speed. Keep this tab visible. The video downloads when finished.";
+        elements.status.textContent = `Recording ${tiktok ? "portrait 1080 × 1920 TikTok video" : "video"} for ${clock(duration)} at 1x speed. Keep this tab visible. The video downloads when finished.`;
         recorder.start();
-      } catch {
+      } catch (error) {
         if (stream) stream.getTracks().forEach(track => track.stop());
         recorder = null; elements.status.hidden = false;
-        elements.status.textContent = "Could not start video export. Try a recent Chrome or Edge browser.";
+        elements.recording.hidden = true;
+        elements.export.innerHTML = "&#8681;"; elements.export.title = elements.export.ariaLabel = "Record and download video / تسجيل وتنزيل الفيديو";
+        elements.exportTiktok.textContent = "TikTok"; elements.exportTiktok.title = elements.exportTiktok.ariaLabel = "Generate TikTok video in portrait format / إنشاء فيديو تيك توك عمودي";
+        document.querySelectorAll(".transport button, .transport select, .transport input, .years button").forEach(control => { control.disabled = false; });
+        elements.status.textContent = `Could not start video export: ${error.message || "Try a recent Chrome or Edge browser."}`;
       }
-    });
+    }
+    elements.export.addEventListener("click", () => exportVideo(false));
+    elements.exportTiktok.addEventListener("click", () => exportVideo(true));
     new ResizeObserver(resize).observe(canvas);
     setPlaying(playing); resize(); requestAnimationFrame(frame);
   </script>

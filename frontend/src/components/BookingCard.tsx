@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CalendarPlus, MapPin, MessageSquare, Video } from 'lucide-react';
 import { api, errorMessage } from '@/api/client';
 import { bookingApi, instructorApi, meApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import type { Booking } from '@/api/types';
-import { dateTime, modeLabel, money } from '@/lib/format';
+import { dateTime, modeLabel } from '@/lib/format';
 import { Button, Card, ErrorText, Input, StatusBadge, Stars, Textarea } from './ui';
 
 async function downloadIcs(id: number) {
@@ -18,6 +19,7 @@ async function downloadIcs(id: number) {
 
 /** Booking row with role-aware actions (customer vs instructor). */
 export default function BookingCard({ b, as }: { b: Booking; as: 'customer' | 'instructor' }) {
+  const money = useMoney();
   const qc = useQueryClient();
   const [panel, setPanel] = useState<'none' | 'cancel' | 'reschedule' | 'review'>('none');
   const [text, setText] = useState('');

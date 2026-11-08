@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Historical Timeline</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:'Segoe UI',Tahoma,sans-serif;
+    color:#f8fafc;
+
+    background:
+        radial-gradient(circle at top left,
+            rgba(59,130,246,.18),
+            transparent 40%),
+        radial-gradient(circle at bottom right,
+            rgba(14,165,233,.15),
+            transparent 40%),
+        linear-gradient(
+            135deg,
+            #0f172a 0%,
+            #111827 50%,
+            #1e293b 100%
+        );
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.03),
+            transparent
+        );
+    pointer-events:none;
+    z-index:0;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 22%),
+        radial-gradient(circle at 80% 30%, rgba(59,130,246,.08), transparent 25%),
+        radial-gradient(circle at 60% 80%, rgba(14,165,233,.08), transparent 30%);
+    animation:skyGlow 12s ease-in-out infinite alternate;
+    pointer-events:none;
+}
+
+@keyframes skyGlow{
+    from{
+        opacity:.6;
+        transform:scale(1);
+    }
+    to{
+        opacity:1;
+        transform:scale(1.05);
+    }
+}
+
+.header{
+    position:absolute;
+    top:15px;
+    width:100%;
+    text-align:center;
+    z-index:1000;
+}
+
+.header h1{
+    font-size:34px;
+    font-weight:700;
+}
+
+.header p{
+    color:#94a3b8;
+}
+
+.country-controls{
+    position:absolute;
+    top:15px;
+    width:100%;
+    text-align:center;
+    z-index:1000;
+}
+
+.country-controls label{
+    color:#e2e8f0;
+    font-weight:600;
+    margin-right:10px;
+}
+
+.country-controls select{
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid #334155;
+    background:#1e293b;
+    color:white;
+    font-size:15px;
+    min-width:180px;
+    outline:none;
+}
+
+#countryStatus{
+    margin-top:6px;
+    font-size:14px;
+    color:#94a3b8;
+}
+
+.wrapper{
+    display:flex;
+    height:100vh;
+    padding-top:76px;
+}
+
+.side{
+    width:27%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.card{
+    width:340px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.08),
+            rgba(255,255,255,.04)
+        );
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    border-radius:24px;
+
+    padding:24px;
+
+    text-align:center;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.35);
+
+    transition:.4s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.45);
+}
+
+.card img{
+    width:250px;
+    height:320px;
+    object-fit:cover;
+
+    border-radius:18px;
+
+    border:2px solid rgba(255,255,255,.15);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.35);
+}
+
+.title{
+    margin-top:18px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:#94a3b8;
+}
+
+.name{
+    margin-top:8px;
+    font-size:28px;
+    color:#ffffff;
+    font-weight:700;
+    line-height:1.25;
+}
+
+#presidentArabicName,
+#pmArabicName,
+#speakerArabicName{
+    color:#38bdf8;
+    font-size:24px;
+    direction:rtl;
+}
+
+.period{
+    margin-top:14px;
+
+    display:inline-block;
+
+    padding:7px 18px;
+
+    border-radius:999px;
+
+    background:rgba(56,189,248,.15);
+
+    color:#7dd3fc;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.periodSmall{
+    margin-top:6px;
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.timeline-column{
+    width:19%;
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+}
+
+.timeline{
+    width:100%;
+    flex:1;
+    min-height:0;
+    position:relative;
+    overflow:hidden;
+}
+
+.wrapper:has(.incident-bubble){
+    overflow-x:auto;
+}
+
+.wrapper:has(.incident-bubble) .side{
+    flex:1 0 330px;
+}
+
+.timeline-column:has(.incident-bubble){
+    width:330px;
+    flex-shrink:0;
+}
+
+.timeline:has(.incident-bubble) .line,
+.timeline:has(.incident-bubble) .center-year{
+    left:70px;
+}
+
+.timeline:has(.incident-bubble) .year{
+    justify-content:flex-start;
+    padding-left:45px;
+}
+
+.timeline:has(.incident-bubble) .year.active{
+    color:transparent;
+}
+
+.line{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:5px;
+    height:100%;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #38bdf8,
+            #2563eb
+        );
+}
+
+.center-year{
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:130px;
+    height:130px;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #0ea5e9
+        );
+
+    border:4px solid rgba(255,255,255,.2);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:34px;
+    font-weight:800;
+
+    color:white;
+
+    box-shadow:
+        0 0 40px rgba(37,99,235,.45);
+
+    z-index:100;
+}
+
+.years{
+    position:absolute;
+    width:100%;
+    transition:transform 1.2s linear;
+}
+
+.year{
+    position:relative;
+    height:80px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:20px;
+    color:#64748b;
+
+    transition:.4s;
+}
+
+.year.active{
+    color:white;
+    font-size:42px;
+    font-weight:800;
+
+    text-shadow:
+        0 0 20px rgba(56,189,248,.85);
+}
+
+.controls{
+    position:absolute;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+}
+
+button{
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    margin:0 5px;
+
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+.pause{
+    background:#dc2626;
+    color:white;
+}
+
+.play{
+    background:#16a34a;
+    color:white;
+}
+
+.year-value{
+    font-size:48px;
+    font-weight:bold;
+    color:white;
+}
+
+.incident-bubble{
+    position:absolute;
+
+    left:150px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:190px;
+
+    padding:10px 12px;
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.12),
+            rgba(255,255,255,.05)
+        );
+
+    backdrop-filter:blur(15px);
+
+    border:1px solid rgba(255,255,255,.1);
+
+    border-left:4px solid #38bdf8;
+
+    color:#e2e8f0;
+
+    font-size:11px;
+
+    line-height:1.3;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25);
+}
+
+.incident-bubble::before{
+    content:"";
+    position:absolute;
+    left:-7px;
+    top:50%;
+    width:12px;
+    height:12px;
+    background:#38bdf8;
+    transform:translateY(-50%) rotate(45deg);
+}
+
+.year.active .incident-bubble{
+    box-shadow:
+        0 10px 28px rgba(0,0,0,.28),
+        0 0 0 1px rgba(56,189,248,.4);
+}
+
+.incident-bubble span{
+    display:block;
+}
+
+.incident-bubble [lang="en"]{
+    font-weight:700;
+}
+
+.incident-bubble [lang="ar"]{
+    margin-top:5px;
+    color:#cbd5e1;
+    direction:rtl;
+}
+
+.flag-container{
+    flex:0 0 130px;
+
+    display:grid;
+
+    grid-template-columns:70px 140px 70px;
+
+    gap:12px;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:10px 0 24px;
+}
+
+.flag-container[hidden]{
+    display:none;
+}
+
+.flag-slot{
+    text-align:center;
+    opacity:.3;
+    transition:.3s;
+}
+
+.flag-slot.current{
+    opacity:1;
+}
+
+.flag-container img{
+    width:70px;
+    height:45px;
+    object-fit:contain;
+    border-radius:6px;
+}
+
+.flag-slot.current img{
+    width:140px;
+    height:90px;
+
+    border-radius:10px;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.40);
+}
+
+.flag-slot figcaption{
+    margin-top:6px;
+    font-size:11px;
+    color:#94a3b8;
+}
+
+</style>
+</head>
+<body>
+
+<div class="country-controls">
+    <label for="countrySelect">Country</label>
+    <select id="countrySelect">
+        <option value="Lebanon">Lebanon</option>
+        <option value="Syria">Syria</option>
+        <option value="Egypt">Egypt</option>
+        <option value="KSA">KSA</option>
+        <option value="Jordan">Jordan</option>
+        <option value="Iraq">Iraq</option>
+		<option value="UAE">UAE</option>
+		<option value="Qatar">Qatar</option>
+		<option value="Bahrain">Bahrain</option>
+		<option value="Oman">Oman</option>
+		<option value="Algeria">Algeria</option>
+		<option value="Morocco">Morocco</option>
+		<option value="Tunisia">Tunisia</option>
+		<option value="Rashidun">Rashidun</option>
+		<option value="Umayyad">Umayyad</option>
+		<option value="USA1960">USA1960</option>
+		<option value="USSR">USSR</option>
+		<option value="France1947">France1947</option>
+		
+		
+    </select>
+    <div id="countryStatus" role="status"></div>
+</div>
+
+<!--div class="header">
+    <h1>Lebanon Historical Timeline</h1>
+    <p>Presidents  (1943 - Present)</p>
+</div-->
+
+<div class="wrapper">
+
+    <!-- PRESIDENT -->
+
+
+    <div class="side">
+		<div class="card">
+		
+            <img id="presidentImg"
+                 src="images/bechara-khoury.jpg"
+                 alt="President">
+
+            <div class="title" id="presidentTitle">
+                PRESIDENT-رئيس جمهورية
+            </div>
+
+            <div class="name" id="presidentName">
+                Bechara El Khoury
+            </div>
+
+            <div class="name"
+                 id="presidentArabicName">
+                 بشارة الخوري
+            </div>
+			
+			 <div class="period"
+                 id="presidentPeriod">
+                
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TIMELINE -->
+
+    <div class="timeline-column">
+        <div id="flagContainer" class="flag-container" aria-label="Historical flags">
+            <figure id="previousFlagSlot" class="flag-slot">
+                <img id="previousFlagImage" alt="Previous flag">
+                <figcaption id="previousFlagPeriod"></figcaption>
+            </figure>
+            <figure id="flagSlot" class="flag-slot current">
+                <img id="flagImage" alt="Current flag">
+                <figcaption id="flagPeriod"></figcaption>
+            </figure>
+            <figure id="nextFlagSlot" class="flag-slot">
+                <img id="nextFlagImage" alt="Next flag">
+                <figcaption id="nextFlagPeriod"></figcaption>
+            </figure>
+        </div>
+        <div class="timeline">
+
+        <div class="line"></div>
+
+        <div class="center-year"
+             id="currentYear">
+            1943
+        </div>
+
+        <div class="years"
+             id="years"></div>
+
+        </div>
+    </div>
+
+    <!-- PRIME MINISTER -->
+
+    <div class="side" id="pmSection">
+        <div class="card">
+
+            
+			<img id="pmImg"
+                 src="images/RiadSolh.jpg"
+                 alt="Prime Minister">
+            <div class="title" id="pmTitle">
+                PRIME MINISTER-رئيس حكومة
+            </div>
+
+            <div class="name"
+                 id="pmName">
+                Riad Al Solh
+            </div>
+
+            <div class="name"
+                 id="pmArabicName">
+                رياض الصلح
+            </div>
+
+			 <div class="period"
+                 id="pmPeriod">
+                
+            </div>
+        </div>
+    </div>
+	
+	<div class="side" id="speakerSection">
+    <div class="card">
+
+        <img id="speakerImg"
+             src="images/default.jpg"
+			  alt="Speaker of the Parliament">
+           <div class="title" id="speakerTitle">
+                Speaker of the Parliament-رئيس مجلس النواب
+            </div>
+
+        <div class="name"
+             id="speakerName">
+            -
+        </div>
+
+        <div class="name"
+             id="speakerArabicName">
+            -
+        </div>
+
+			 <div class="period"
+                 id="speakerPeriod">
+                
+            </div>
+    </div>
+</div>
+
+</div>
+
+<!--div class="controls">
+
+    <button class="pause"
+            onclick="pauseTimeline()">
+        Pause
+    </button>
+
+    <button class="play"
+            onclick="resumeTimeline()">
+        Resume
+    </button>
+
+</div-->
+
+<script>
+
+const presidents = [
+    { start: 1943, end: 1952, name: "Bechara El Khoury", arabicName: "بشارة الخوري", img: "images/bechara-khoury.jpg" },
+    { start: 1952, end: 1958, name: "Camille Chamoun", arabicName: "كميل شمعون", img: "images/Camille_chamoun.jpg" },
+    { start: 1958, end: 1964, name: "Fouad Chehab", arabicName: "فؤاد شهاب", img: "images/fouad-chehab.jpg" },
+    { start: 1964, end: 1970, name: "Charles Helou", arabicName: "شارل حلو", img: "images/charles-helou.jpg" },
+    { start: 1970, end: 1976, name: "Suleiman Frangieh", arabicName: "سليمان فرنجية", img: "images/suleiman-frangieh.jpg" },
+    { start: 1976, end: 1982, name: "Elias Sarkis", arabicName: "الياس سركيس", img: "images/elias-sarkis.jpg" },
+    { start: 1982, end: 1982, name: "Bachir Gemayel", arabicName: "بشير الجميل", img: "images/BachirGemayel.jpg" },
+    { start: 1982, end: 1988, name: "Amine Gemayel", arabicName: "أمين الجميل", img: "images/amine-gemayel.jpg" },
+    { start: 1989, end: 1989, name: "Rene Moawad", arabicName: "رينيه معوض", img: "images/ReneMoawad.jpg" },
+    { start: 1989, end: 1998, name: "Elias Hrawi", arabicName: "الياس الهراوي", img: "images/elias-hrawi.jpg" },
+    { start: 1998, end: 2007, name: "Emile Lahoud", arabicName: "إميل لحود", img: "images/emile-lahoud.jpg" },
+    { start: 2008, end: 2014, name: "Michel Suleiman", arabicName: "ميشال سليمان", img: "images/michel-suleiman.jpg" },
+    { start: 2016, end: 2022, name: "Michel Aoun", arabicName: "ميشال عون", img: "images/michel-aoun.jpg" },
+    { start: 2025, end: 2030, name: "Joseph Aoun", arabicName: "جوزاف عون", img: "images/joseph-aoun.jpg" }
+];
+
+const primeMinisters = [
+    { start: 1943, end: 1945, name: "Riad Al Solh", arabicName: "رياض الصلح", img: "images/RiadSolh.jpg" },
+    { start: 1945, end: 1945, name: "Abdul Hamid Karami", arabicName: "عبدالحميد كرامي", img: "images/AbdulHamidKarami.jpg" },
+    { start: 1945, end: 1945, name: "Sami Solh", arabicName: "سامي الصلح", img: "images/SamiSolh.jpg" },
+    { start: 1945, end: 1946, name: "Saadi Munla", arabicName: "سعدي المنلا", img: "images/SaadiMunla.jpg" },
+    { start: 1946, end: 1951, name: "Riad Al Solh", arabicName: "رياض الصلح", img: "images/RiadSolh.jpg" },
+    { start: 1951, end: 1951, name: "Hussein Oweini", arabicName: "حسين العويني", img: "images/HusseinOweini.jpg" },
+    { start: 1951, end: 1952, name: "Abdallah Yafi", arabicName: "عبدالله اليافي", img: "images/AbdallahYafi.jpg" },
+    { start: 1952, end: 1952, name: "Sami Solh", arabicName: "سامي الصلح", img: "images/SamiSolh.jpg" },
+    { start: 1952, end: 1952, name: "Nazem Akkari", arabicName: "ناظم عكاري", img: "images/NazemAkkari.jpg" },
+    { start: 1952, end: 1952, name: "Saeb Salam", arabicName: "صائب سلام", img: "images/saeb-salam.jpg" },
+    { start: 1952, end: 1952, name: "Fouad Chehab", arabicName: "فؤاد شهاب", img: "images/fouad-chehab.jpg" },
+    { start: 1952, end: 1953, name: "Khaled Chehab", arabicName: "خالد شهاب", img: "images/KhaledChehab.jpg" },
+    { start: 1953, end: 1953, name: "Saeb Salam", arabicName: "صائب سلام", img: "images/saeb-salam.jpg" },
+    { start: 1953, end: 1954, name: "Abdallah Yafi", arabicName: "عبدالله اليافي", img: "images/AbdallahYafi.jpg" },
+    { start: 1954, end: 1955, name: "Sami Solh", arabicName: "سامي الصلح", img: "images/SamiSolh.jpg" },
+    { start: 1955, end: 1956, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1956, end: 1956, name: "Abdallah Yafi", arabicName: "عبدالله اليافي", img: "images/AbdallahYafi.jpg" },
+    { start: 1956, end: 1958, name: "Sami Solh", arabicName: "سامي الصلح", img: "images/SamiSolh.jpg" },
+    { start: 1958, end: 1958, name: "Khalil Hibri", arabicName: "سامي الصلح", img: "images/KhalilHibri.jpg" },
+    { start: 1958, end: 1960, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1960, end: 1960, name: "Ahmad Daouk", arabicName: "أحمد الداعوق", img: "images/AhmadDaouk.jpg" },
+    { start: 1960, end: 1961, name: "Saeb Salam", arabicName: "صائب سلام", img: "images/saeb-salam.jpg" },
+    { start: 1961, end: 1964, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1964, end: 1965, name: "Hussein Oweini", arabicName: "حسين العويني", img: "images/HusseinOweini.jpg" },
+    { start: 1965, end: 1966, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1966, end: 1966, name: "Abdallah Yafi", arabicName: "عبدالله اليافي", img: "images/AbdallahYafi.jpg" },
+    { start: 1966, end: 1968, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1968, end: 1969, name: "Abdallah Yafi", arabicName: "عبدالله اليافي", img: "images/AbdallahYafi.jpg" },
+    { start: 1969, end: 1970, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1970, end: 1973, name: "Saeb Salam", arabicName: "صائب سلام", img: "images/saeb-salam.jpg" },
+    { start: 1973, end: 1973, name: "Amin Hafez", arabicName: "أمين الحافظ", img: "images/AminHafez.jpg" },
+    { start: 1973, end: 1974, name: "Takieddine Solh", arabicName: "تقي الدين الصلح", img: "images/TakieddineSolh.jpg" },
+    { start: 1974, end: 1975, name: "Rashid Solh", arabicName: "رشيد الصلح", img: "images/RashidSolh.jpg" },
+    { start: 1975, end: 1975, name: "Nureddine Rifai", arabicName: "نورالدين الرفاعي", img: "images/NureddineRifai.jpg" },
+    { start: 1975, end: 1976, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1976, end: 1980, name: "Salim Hoss", arabicName: "سليم الحص", img: "images/SalimHoss.jpg" },
+    { start: 1980, end: 1980, name: "Takieddine Solh", arabicName: "تقي الدين الصلح", img: "images/TakieddineSolh.jpg" },
+    { start: 1980, end: 1984, name: "Shafik Wazzan", arabicName: "شفيق الوزان", img: "images/ShafikWazzan.jpg" },
+    { start: 1984, end: 1987, name: "Rashid Karami", arabicName: "رشيد كرامي", img: "images/RashidKarami.jpg" },
+    { start: 1987, end: 1990, name: "Salim Hoss", arabicName: "سليم الحص", img: "images/SalimHoss.jpg" },
+    { start: 1990, end: 1992, name: "OmarKarami", arabicName: "عمر كرامي", img: "images/OmarKarami.jpg" },
+    { start: 1992, end: 1992, name: "Rashid Solh", arabicName: "رشيد الصلح", img: "images/RashidSolh.jpg" },
+    { start: 1992, end: 1998, name: "Rafic Hariri", arabicName: "رفيق الحريري", img: "images/rafic-hariri.jpg" },
+    { start: 1998, end: 2000, name: "Salim Hoss", arabicName: "سليم الحص", img: "images/SalimHoss.jpg" },
+    { start: 2000, end: 2004, name: "Rafic Hariri", arabicName: "رفيق الحريري", img: "images/rafic-hariri.jpg" },
+    { start: 2004, end: 2005, name: "Omar Karami", arabicName: "عمر كرامي", img: "images/OmarKarami.jpg" },
+    { start: 2005, end: 2005, name: "Najib Mikati", arabicName: "نجيب ميقاتي", img: "images/NajibMikati.jpg" },
+    { start: 2005, end: 2009, name: "Fouad Siniora", arabicName: "فؤاد السنيورة", img: "images/FouadSaniora.jpg" },
+    { start: 2009, end: 2011, name: "Saad Hariri", arabicName: "سعد الحريري", img: "images/saad-hariri.jpg" },
+    { start: 2011, end: 2014, name: "Najib Mikati", arabicName: "نجيب ميقاتي", img: "images/NajibMikati.jpg" },
+    { start: 2014, end: 2016, name: "Tammam Salam", arabicName: "تمّام سلام", img: "images/TammamSalam.jpg" },
+    { start: 2016, end: 2020, name: "Saad Hariri", arabicName: "سعد الحريري", img: "images/saad-hariri.jpg" },
+    { start: 2020, end: 2021, name: "Hassan Diab", arabicName: "حسّان دياب", img: "images/HassanDiab.jpg" },
+    { start: 2021, end: 2025, name: "Najib Mikati", arabicName: "نجيب ميقاتي", img: "images/NajibMikati.jpg" },
+    { start: 2025, end: 2030, name: "Nawaf Salam", arabicName: "نواف سلام", img: "images/nawaf-salam.jpg" }
+];
+
+const parliamentPresidents = [
+    { start: 1943, end: 1946, name: "Sabri Hamadeh", arabicName: "صبري حماده", img: "images/SabriHamadeh.jpg" },
+    { start: 1946, end: 1947, name: "Habib Abou Shahla", arabicName: "حبيب أبو شهلا", img: "images/Habib_Abou_shahla.jpg" },
+    { start: 1947, end: 1951, name: "Sabri Hamadeh", arabicName: "صبري حماده", img: "images/SabriHamadeh.jpg" },
+    { start: 1951, end: 1953, name: "Ahmed Al Asaad", arabicName: "أحمد الأسعد", img: "images/AhmedAlAsaad.jpg" },
+    { start: 1953, end: 1959, name: "Adel Osseiran", arabicName: "عادل عسيران", img: "images/Adel_Osseiran.jpg" },
+    { start: 1959, end: 1964, name: "Sabri Hamadeh", arabicName: "صبري حماده", img: "images/SabriHamadeh.jpg" },
+    { start: 1964, end: 1964, name: "Kamel Asaad", arabicName: "كامل الأسعد", img: "images/KamelAsaad.jpg" },
+    { start: 1964, end: 1968, name: "Sabri Hamadeh", arabicName: "صبري حماده", img: "images/SabriHamadeh.jpg" },
+    { start: 1968, end: 1968, name: "Kamel Asaad", arabicName: "كامل الأسعد", img: "images/KamelAsaad.jpg" },
+    { start: 1968, end: 1970, name: "Sabri Hamadeh", arabicName: "صبري حماده", img: "images/SabriHamadeh.jpg" },
+    { start: 1970, end: 1984, name: "Kamel Asaad", arabicName: "كامل الأسعد", img: "images/KamelAsaad.jpg" },
+    { start: 1984, end: 1992, name: "Hussein El Husseini", arabicName: "حسين الحسيني", img: "images/HusseinElHusseini.jpg" },
+    { start: 1992, end: 2030, name: "Nabih Berri", arabicName: "نبيه بري", img: "images/NabihBeri.jpg" }
+];
+
+
+const flags = [
+    { start: 1943, end: 9999, img: "images/lebanon1.jpg" }
+];
+
+const incidents = [
+    { year: 1943, name: "Independence", "name-arabic": "الاستقلال" },
+    { year: 1958, name: "1958 crisis", "name-arabic": "أزمة 1958" },
+    { year: 1975, name: "Civil war begins", "name-arabic": "بداية الحرب الأهلية" },
+    { year: 1982, name: "Israeli invasion", "name-arabic": "الاجتياح الإسرائيلي" },
+    { year: 1989, name: "Taif Agreement", "name-arabic": "اتفاق الطائف" },
+    { year: 1990, name: "Civil war ends", "name-arabic": "نهاية الحرب الأهلية" },
+    { year: 2000, name: "Israeli withdrawal from southern Lebanon", "name-arabic": "الانسحاب الإسرائيلي من جنوب لبنان" },
+    { year: 2005, name: "Rafic Hariri assassination", "name-arabic": "اغتيال رفيق الحريري" },
+    { year: 2006, name: "July war", "name-arabic": "حرب تموز" },
+    { year: 2019, name: "October protests", "name-arabic": "احتجاجات تشرين الأول" },
+    { year: 2020, name: "Beirut port explosion", "name-arabic": "انفجار مرفأ بيروت" },
+    { year: 2025, name: "Joseph Aoun elected president", "name-arabic": "انتخاب جوزاف عون رئيسا" }
+];
+
+const countryData = {
+    Lebanon: {
+        startYear: 1943,
+        showSpeakers: true,
+        presidents,
+        primeMinisters,
+        parliamentPresidents,
+        flags,
+        incidents
+    },
+    Syria: {
+        startYear: 1946,
+        showSpeakers: false,
+        presidents: [
+            { start: 1946, end: 1949, name: "Shukri Al Quwatli", arabicName: "شكري القوتلي", img: "images/ShukriAlQuwatli.jpg" },
+            { start: 1949, end: 1949, name: "Husni Al Zaim", arabicName: "حسني الزعيم", img: "images/HusniAlZaim.jpg" },
+            { start: 1949, end: 1949, name: "Sami Al Hinnawi", arabicName: "سامي الحناوي", img: "images/SamiAlHinnawi.jpg" },
+            { start: 1949, end: 1951, name: "Hashim Al Atassi", arabicName: "هاشم الأتاسي", img: "images/HashimAlAtassi.jpg" },
+            { start: 1951, end: 1951, name: "Adib Shishakli", arabicName: "أديب الشيشكلي", img: "images/AdibShishakli.jpg" },
+            { start: 1951, end: 1953, name: "Fawzi Selu ", arabicName: "فوزي سلو", img: "images/FawziSelu.jpg" },
+            { start: 1953, end: 1954, name: "Adib Shishakli", arabicName: "أديب الشيشكلي", img: "images/AdibShishakli.jpg" },
+            { start: 1954, end: 1954, name: "Maamun Al Kuzbari", arabicName: "مأمون الكزبري", img: "images/MaamunAlKuzbari.jpg" },
+            { start: 1954, end: 1955, name: "Hashim Al Atassi", arabicName: "هاشم الأتاسي", img: "images/HashimAlAtassi.jpg" },
+            { start: 1955, end: 1958, name: "Shukri Al Quwatli", arabicName: "شكري القوتلي", img: "images/ShukriAlQuwatli.jpg" },
+            { start: 1958, end: 1961, name: "Gamal Abdel Nasser", arabicName: "جمال عبد الناصر", img: "images/GamalAbdelNasser.jpg" },
+            { start: 1961, end: 1961, name: "Maamun Al Kuzbari", arabicName: "مأمون الكزبري", img: "images/MaamunAlKuzbari.jpg" },
+            { start: 1961, end: 1963, name: "Nazim Al Qudsi", arabicName: "ناظم القدسي", img: "images/NazimAlQudsi.jpg" },
+            { start: 1963, end: 1963, name: "Luay Al Atassi", arabicName: "لؤي الأتاسي", img: "images/LuayAlAtassi.jpg" },
+            { start: 1963, end: 1966, name: "Amin Al Hafiz", arabicName: "أمين الحافظ", img: "images/AminAlHafiz.jpg" },
+            { start: 1966, end: 1970, name: "Noureddin Al Atassi", arabicName: "نور الدين الأتاسي", img: "images/NoureddinAlAtassi.jpg" },
+            { start: 1970, end: 1971, name: "Ahmad Al Khatib", arabicName: "حافظ الأسد", img: "images/AhmadAlKhatib.jpg" },
+            { start: 1971, end: 2000, name: "Hafez Asad", arabicName: "حافظ الأسد", img: "images/HafezAsad.jpg" },
+            { start: 2000, end: 2000, name: "Abdul Halim Khaddam", arabicName: "عبدالحليم خدام", img: "images/AbdulHalimKhaddam.jpg" },
+            { start: 2000, end: 2024, name: "Bashar Al Asad", arabicName: "بشار الأسد", img: "images/BasharAlAsad.jpg" },
+            { start: 2025, end: 9999, name: "Ahmed Al Sharaa", arabicName: "أحمد الشرع", img: "images/AhmedAlSharaa.jpg" }
+        ],
+        primeMinisters: [
+            { start: 1945, end: 1946, name: "Saadallah al-Jabiri", arabicName: "سعد الله الجابري", img: "images/SaadallahalJabiri.jpg" },
+            { start: 1946, end: 1946, name: "Khalid al-Azm (Acting)", arabicName: "خالد العظم - بالوكالة", img: "images/KhalidalAzm.jpg" },
+            { start: 1946, end: 1948, name: "Jamil Mardam Bey", arabicName: "جميل مردم بك", img: "images/JamilMardamBey.jpg" },
+            { start: 1948, end: 1949, name: "Khalid al-Azm", arabicName: "خالد العظم", img: "images/KhalidalAzm.jpg" },
+            { start: 1949, end: 1949, name: "Husni al-Zaim", arabicName: "حسني الزعيم", img: "images/HusniAlZaim.jpg" },
+            { start: 1949, end: 1949, name: "Muhsin al-Barazi", arabicName: "محسن البرازي", img: "images/MuhsinalBarazi.jpg" },
+            { start: 1949, end: 1949, name: "Hashim al-Atassi", arabicName: "هاشم الأتاسي", img: "images/HashimAlAtassi.jpg" },
+            { start: 1949, end: 1949, name: "Nazim al-Qudsi", arabicName: "ناظم القدسي", img: "images/NazimAlQudsi.jpg" },
+            { start: 1949, end: 1950, name: "Khalid al-Azm", arabicName: "خالد العظم", img: "images/KhalidalAzm.jpg" },
+            { start: 1950, end: 1951, name: "Nazim al-Qudsi", arabicName: "ناظم القدسي", img: "images/NazimAlQudsi.jpg" },
+            { start: 1951, end: 1951, name: "Khalid al-Azm", arabicName: "خالد العظم", img: "images/KhalidalAzm.jpg" },
+            { start: 1951, end: 1951, name: "Hassan al-Hakim", arabicName: "حسن الحكيم", img: "images/HassanalHakim.jpg" },
+            { start: 1951, end: 1951, name: "Zaki al-Khatib (Acting)", arabicName: "زكي الخطيب - بالوكالة", img: "images/ZakialKhatib.jpg" },
+            { start: 1951, end: 1951, name: "Maarouf al-Dawalibi", arabicName: "معروف الدواليبي", img: "images/MaaroufalDawalibi.jpg" },
+            { start: 1951, end: 1953, name: "Fawzi Selu", arabicName: "فوزي سلو", img: "images/FawziSelu.jpg" },
+            { start: 1954, end: 1954, name: "Sabri al-Asali", arabicName: "صبري العسلي", img: "images/SabrialAsali.jpg" },
+            { start: 1954, end: 1954, name: "Said al-Ghazzi", arabicName: "سعيد الغزي", img: "images/SaidalGhazzi.jpg" },
+            { start: 1954, end: 1955, name: "Fares al-Khoury", arabicName: "فارس الخوري", img: "images/FaresalKhoury.jpg" },
+            { start: 1955, end: 1955, name: "Sabri al-Asali", arabicName: "صبري العسلي", img: "images/SabrialAsali.jpg" },
+            { start: 1955, end: 1956, name: "Said al-Ghazzi", arabicName: "سعيد الغزي", img: "images/SaidalGhazzi.jpg" },
+            { start: 1956, end: 1958, name: "Sabri al-Asali", arabicName: "صبري العسلي", img: "images/SabrialAsali.jpg" },
+            { start: 1958, end: 1960, name: "Nur al-Din Kahala (UAR Syrian Executive Council)", arabicName: "نور الدين كحالة - المجلس التنفيذي السوري", img: "images/NuralDinKahala.jpg" },
+            { start: 1960, end: 1961, name: "Abdel Hamid al-Sarraj (UAR Syrian Executive Council)", arabicName: "عبد الحميد السراج - المجلس التنفيذي السوري", img: "images/AbdelHamidalSarraj.jpg" },
+            { start: 1961, end: 1961, name: "Maamun al-Kuzbari", arabicName: "مأمون الكزبري", img: "images/MaamunAlKuzbari.jpg" },
+            { start: 1961, end: 1961, name: "Izzat al-Nuss", arabicName: "عزت النص", img: "images/IzzatalNuss.jpg" },
+            { start: 1961, end: 1962, name: "Maarouf al-Dawalibi", arabicName: "معروف الدواليبي", img: "images/MaaroufalDawalibi.jpg" },
+            { start: 1962, end: 1962, name: "Bashir al-Azma", arabicName: "بشير العظمة", img: "images/BashiralAzma.jpg" },
+            { start: 1962, end: 1963, name: "Khalid al-Azm", arabicName: "خالد العظم", img: "images/KhalidalAzm.jpg" },
+            { start: 1963, end: 1963, name: "Salah al-Din al-Bitar", arabicName: "صلاح الدين البيطار", img: "images/SalahalDinalBitar.jpg" },
+            { start: 1963, end: 1963, name: "Sami al-Jundi (Acting)", arabicName: "سامي الجندي - بالوكالة", img: "images/SamialJundi.jpg" },
+            { start: 1963, end: 1963, name: "Salah al-Din al-Bitar", arabicName: "صلاح الدين البيطار", img: "images/SalahalDinalBitar.jpg" },
+            { start: 1963, end: 1964, name: "Amin al-Hafiz", arabicName: "أمين الحافظ", img: "images/AminAlHafiz.jpg" },
+            { start: 1964, end: 1964, name: "Salah al-Din al-Bitar", arabicName: "صلاح الدين البيطار", img: "images/SalahalDinalBitar.jpg" },
+            { start: 1964, end: 1965, name: "Amin al-Hafiz", arabicName: "أمين الحافظ", img: "images/AminAlHafiz.jpg" },
+            { start: 1965, end: 1965, name: "Yusuf Zuayyin", arabicName: "يوسف زعين", img: "images/YusufZuayyin.jpg" },
+            { start: 1966, end: 1966, name: "Salah al-Din al-Bitar", arabicName: "صلاح الدين البيطار", img: "images/SalahalDinalBitar.jpg" },
+            { start: 1966, end: 1968, name: "Yusuf Zuayyin", arabicName: "يوسف زعين", img: "images/YusufZuayyin.jpg" },
+            { start: 1968, end: 1970, name: "Nureddin al-Atassi", arabicName: "نور الدين الأتاسي", img: "images/NoureddinAlAtassi.jpg" },
+            { start: 1970, end: 1971, name: "Hafez al-Assad", arabicName: "حافظ الأسد", img: "images/HafezAsad.jpg" },
+            { start: 1971, end: 1972, name: "Abdul Rahman Khleifawi", arabicName: "عبد الرحمن خليفاوي", img: "images/AbdulRahmanKhleifawi.jpg" },
+            { start: 1972, end: 1976, name: "Mahmoud al-Ayyubi", arabicName: "محمود الأيوبي", img: "images/MahmoudalAyyubi.jpg" },
+            { start: 1976, end: 1978, name: "Abdul Rahman Khleifawi", arabicName: "عبد الرحمن خليفاوي", img: "images/AbdulRahmanKhleifawi.jpg" },
+            { start: 1978, end: 1980, name: "Muhammad Ali al-Halabi", arabicName: "محمد علي الحلبي", img: "images/MuhammadAlialHalabi.jpg" },
+            { start: 1980, end: 1987, name: "Abdul Rauf al-Kasm", arabicName: "عبد الرؤوف الكسم", img: "images/AbdulRaufalKasm.jpg" },
+            { start: 1987, end: 2000, name: "Mahmoud al-Zoubi", arabicName: "محمود الزعبي", img: "images/MahmoudalZoubi.jpg" },
+            { start: 2000, end: 2003, name: "Muhammad Mustafa Mero", arabicName: "محمد مصطفى ميرو", img: "images/MuhammadMustafaMero.jpg" },
+            { start: 2003, end: 2011, name: "Muhammad Naji al-Otari", arabicName: "محمد ناجي عطري", img: "images/MuhammadNajialOtari.jpg" },
+            { start: 2011, end: 2012, name: "Adel Safar", arabicName: "عادل سفر", img: "images/AdelSafar.jpg" },
+            { start: 2012, end: 2012, name: "Riyad Hijab", arabicName: "رياض حجاب", img: "images/RiyadHijab.jpg" },
+            { start: 2012, end: 2016, name: "Wael al-Halqi", arabicName: "وائل الحلقي", img: "images/WaelalHalqi.jpg" },
+            { start: 2016, end: 2020, name: "Imad Khamis", arabicName: "عماد خميس", img: "images/ImadKhamis.jpg" },
+            { start: 2020, end: 2024, name: "Hussein Arnous", arabicName: "حسين عرنوس", img: "images/HusseinArnous.jpg" },
+            { start: 2024, end: 2024, name: "Mohammad Ghazi al-Jalali", arabicName: "محمد غازي الجلالي", img: "images/MohammadGhazialJalali.jpg" },
+            { start: 2024, end: 2025, name: "Mohammed al-Bashir (Caretaker)", arabicName: "محمد البشير - تصريف أعمال", img: "images/MohammedalBashir.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1946, end: 1958, img: "images/syria1.jpg" },
+            { start: 1958, end: 1961, img: "images/syria5.jpg" },
+            { start: 1961, end: 1963, img: "images/syria1.jpg" },
+            { start: 1963, end: 1972, img: "images/syria3.jpg" },
+            { start: 1972, end: 1980, img: "images/syria4.jpg" },
+            { start: 1980, end: 2024, img: "images/syria5.jpg" },
+            { start: 2024, end: 9999, img: "images/syria1.jpg" }
+        ],
+        incidents: [
+            { year: 1946, name: "Independence", "name-arabic": "الاستقلال" },
+            { year: 1949, name: "Three military coups", "name-arabic": "ثلاثة انقلابات عسكرية" },
+            { year: 1958, name: "Union with Egypt", "name-arabic": "الوحدة مع مصر" },
+            { year: 1961, name: "Separation from Egypt", "name-arabic": "الانفصال عن مصر" },
+            { year: 1963, name: "Baath Party takes power", "name-arabic": "وصول حزب البعث إلى السلطة" },
+            { year: 1967, name: "Six-Day War", "name-arabic": "حرب حزيران" },
+            { year: 1970, name: "Hafez al-Assad takes power", "name-arabic": "وصول حافظ الأسد إلى السلطة" },
+            { year: 1973, name: "October war", "name-arabic": "حرب تشرين" },
+            { year: 2000, name: "Bashar al-Assad succeeds his father", "name-arabic": "بشار الأسد يخلف والده" },
+            { year: 2011, name: "Uprising begins", "name-arabic": "بداية الانتفاضة" },
+            { year: 2024, name: "Fall of the Assad government", "name-arabic": "سقوط حكم الأسد" },
+            { year: 2025, name: "Transitional government formed", "name-arabic": "تشكيل الحكومة الانتقالية" }
+        ]
+    },
+    Egypt: {
+        startYear: 1952,
+        showSpeakers: false,
+        presidents:  [
+            { start: 1953, end: 1954, name: "Mohamed Naguib", arabicName: "محمد نجيب", img: "images/MohamedNaguib.jpg" },
+            { start: 1954, end: 1970, name: "Gamal Abdel Nasser", arabicName: "جمال عبد الناصر", img: "images/GamalAbdelNasser.jpg" },
+            { start: 1970, end: 1981, name: "Anwar Sadat", arabicName: "أنور السادات", img: "images/AnwarSadat.jpg" },
+            { start: 1981, end: 2011, name: "Hosni Mubarak", arabicName: "حسني مبارك", img: "images/HosniMubarak.jpg" },
+            { start: 2011, end: 2012, name: "Mohamed Hussein Tantawi", arabicName: "محمد حسين طنطاوي", img: "images/MohamedHusseinTantawi.jpg" },
+            { start: 2012, end: 2013, name: "Mohamed Morsi", arabicName: "محمد مرسي", img: "images/MohamedMorsi.jpg" },
+            { start: 2013, end: 2014, name: "Adly Mansour", arabicName: "عدلي منصور", img: "images/AdlyMansour.jpg" },
+            { start: 2014, end: 9999, name: "Abdel Fattah ElSisi", arabicName: "عبد الفتاح السيسي", img: "images/AbdelFattahElSisi.jpg" }
+        ],
+        primeMinisters: [
+            { start: 1952, end: 1954, name: "Mohamed Naguib", arabicName: "محمد نجيب", img: "images/MohamedNaguib.jpg" },
+            { start: 1954, end: 1962, name: "Gamal Abdel Nasser", arabicName: "جمال عبد الناصر", img: "images/GamalAbdelNasser.jpg" },
+            { start: 1962, end: 1965, name: "Ali Sabri", arabicName: "علي صبري", img: "images/AliSabri.jpg" },
+            { start: 1965, end: 1966, name: "Zakaria Mohieddin", arabicName: "زكريا محيي الدين", img: "images/ZakariaMohieddin.jpg" },
+            { start: 1966, end: 1967, name: "Mohamed Sedki Sulayman", arabicName: "محمد صدقي سليمان", img: "images/MohamedSedkiSulayman.jpg" },
+            { start: 1967, end: 1970, name: "Gamal Abdel Nasser", arabicName: "جمال عبد الناصر", img: "images/GamalAbdelNasser.jpg" },
+            { start: 1970, end: 1972, name: "Mahmoud Fawzi", arabicName: "محمود فوزي", img: "images/MahmoudFawzi.jpg" },
+            { start: 1972, end: 1973, name: "Aziz Sedky", arabicName: "عزيز صدقي", img: "images/AzizSedky.jpg" },
+            { start: 1973, end: 1974, name: "Anwar Sadat", arabicName: "أنور السادات", img: "images/AnwarSadat.jpg" },
+            { start: 1974, end: 1975, name: "Abdel Aziz Hegazy", arabicName: "عبد العزيز حجازي", img: "images/AbdelAzizHegazy.jpg" },
+            { start: 1975, end: 1978, name: "Mamdouh Salem", arabicName: "ممدوح سالم", img: "images/MamdouhSalem.jpg" },
+            { start: 1978, end: 1980, name: "Mustafa Khalil", arabicName: "مصطفى خليل", img: "images/MustafaKhalil.jpg" },
+            { start: 1980, end: 1981, name: "Anwar Sadat", arabicName: "أنور السادات", img: "images/AnwarSadat.jpg" },
+            { start: 1981, end: 1982, name: "Hosni Mubarak", arabicName: "حسني مبارك", img: "images/HosniMubarak.jpg" },
+            { start: 1982, end: 1984, name: "Ahmad Fuad Mohieddin", arabicName: "أحمد فؤاد محيي الدين", img: "images/AhmadFuadMohieddin.jpg" },
+            { start: 1984, end: 1985, name: "Kamal Hassan Ali", arabicName: "كمال حسن علي", img: "images/KamalHassanAli.jpg" },
+            { start: 1985, end: 1986, name: "Ali Lotfy", arabicName: "علي لطفي", img: "images/AliLotfy.jpg" },
+            { start: 1986, end: 1996, name: "Atef Sedky", arabicName: "عاطف صدقي", img: "images/AtefSedky.jpg" },
+            { start: 1996, end: 1999, name: "Kamal Ganzouri", arabicName: "كمال الجنزوري", img: "images/KamalGanzouri.jpg" },
+            { start: 1999, end: 2004, name: "Atef Ebeid", arabicName: "عاطف عبيد", img: "images/AtefEbeid.jpg" },
+            { start: 2004, end: 2011, name: "Ahmed Nazif", arabicName: "أحمد نظيف", img: "images/AhmedNazif.jpg" },
+            { start: 2011, end: 2011, name: "Ahmed Shafik", arabicName: "أحمد شفيق", img: "images/AhmedShafik.jpg" },
+            { start: 2011, end: 2011, name: "Essam Sharaf", arabicName: "عصام شرف", img: "images/EssamSharaf.jpg" },
+            { start: 2011, end: 2012, name: "Kamal Ganzouri", arabicName: "كمال الجنزوري", img: "images/KamalGanzouri.jpg" },
+            { start: 2012, end: 2013, name: "Hesham Qandil", arabicName: "هشام قنديل", img: "images/HeshamQandil.jpg" },
+            { start: 2013, end: 2014, name: "Hazem El Beblawi", arabicName: "حازم الببلاوي", img: "images/HazemElBeblawi.jpg" },
+            { start: 2014, end: 2015, name: "Ibrahim Mahlab", arabicName: "إبراهيم محلب", img: "images/IbrahimMahlab.jpg" },
+            { start: 2015, end: 2018, name: "Sherif Ismail", arabicName: "شريف إسماعيل", img: "images/SherifIsmail.jpg" },
+            { start: 2018, end: 9999, name: "Mostafa Madbouly", arabicName: "مصطفى مدبولي", img: "images/MostafaMadbouly.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1952, end: 1958, img: "images/egypt1.jpg" },
+            { start: 1958, end: 1972, img: "images/egypt2.jpg" },
+            { start: 1972, end: 1984, img: "images/egypt3.jpg" },
+            { start: 1984, end: 9999, img: "images/egypt4.jpg" }
+        ],
+        incidents: [
+            { year: 1952, name: "July revolution", "name-arabic": "ثورة يوليو" },
+            { year: 1953, name: "Republic proclaimed", "name-arabic": "إعلان الجمهورية" },
+            { year: 1956, name: "Suez nationalization and crisis", "name-arabic": "تأميم قناة السويس والعدوان الثلاثي" },
+            { year: 1958, name: "Union with Syria", "name-arabic": "الوحدة مع سوريا" },
+            { year: 1967, name: "Six-Day War", "name-arabic": "حرب يونيو" },
+            { year: 1970, name: "Death of Gamal Abdel Nasser", "name-arabic": "وفاة جمال عبد الناصر" },
+            { year: 1973, name: "October war", "name-arabic": "حرب أكتوبر" },
+            { year: 1979, name: "Peace treaty with Israel", "name-arabic": "معاهدة السلام مع إسرائيل" },
+            { year: 1981, name: "Anwar Sadat assassination", "name-arabic": "اغتيال أنور السادات" },
+            { year: 2011, name: "January revolution", "name-arabic": "ثورة يناير" },
+            { year: 2013, name: "Mohamed Morsi removed from office", "name-arabic": "عزل محمد مرسي" },
+            { year: 2015, name: "New Suez Canal opens", "name-arabic": "افتتاح قناة السويس الجديدة" }
+        ]
+    },
+    Iraq: {
+        startYear: 1958,
+        showSpeakers: false,
+        presidents: [
+            { start: 1958, end: 1963, name: "Muhammad Najib ar-Rubai ", arabicName: "محمد نجيب الربيعي ", img: "images/MuhammadNajibarRubai.jpg" },
+            { start: 1963, end: 1966, name: "Abdul Salam Arif", arabicName: "عبد السلام عارف", img: "images/AbdulSalamArif.jpg" },
+            { start: 1966, end: 1966, name: "Abd al-Rahman al-Bazzaz", arabicName: "عبد الرحمن البزاز ", img: "images/AbdalRahmanalBazzaz.jpg" },
+            { start: 1966, end: 1968, name: "Abdul Rahman Arif", arabicName: "عبد الرحمن عارف", img: "images/AbdulRahmanArif.jpg" },
+            { start: 1968, end: 1979, name: "Ahmed Hassan al-Bakr", arabicName: "أحمد حسن البكر", img: "images/AhmedHassanalBakr.jpg" },
+            { start: 1979, end: 2003, name: "Saddam Hussein", arabicName: "صدام حسين", img: "images/SaddamHussein.jpg" },
+            { start: 2004, end: 2005, name: "Ghazi al-Yawar", arabicName: "غازي الياور ", img: "images/GhazialYawar.jpg" },
+            { start: 2005, end: 2014, name: "Jalal Talabani", arabicName: "جلال طالباني", img: "images/JalalTalabani.jpg" },
+            { start: 2014, end: 2018, name: "Fuad Masum", arabicName: "فؤاد معصوم", img: "images/FuadMasum.jpg" },
+            { start: 2018, end: 2022, name: "Barham Salih", arabicName: "برهم صالح", img: "images/BarhamSalih.jpg" },
+            { start: 2022, end: 2026, name: "Abdul Latif Rashid", arabicName: "عبد اللطيف رشيد", img: "images/AbdulLatifRashid.jpg" },
+            { start: 2026, end: 9999, name: "NizarAmidi", arabicName: "نزار آميدي", img: "images/NizarAmidi.jpg" }
+        ],
+        primeMinisters: [
+            { start: 1958, end: 1963, name: "Abd al-Karim Qasim", arabicName: "عبد الكريم قاسم", img: "images/AbdalKarimQasim.jpg" },
+            { start: 1963, end: 1963, name: "Ahmed Hassan al-Bakr", arabicName: "أحمد حسن البكر", img: "images/AhmedHassanalBakr.jpg" },
+            { start: 1963, end: 1965, name: "Tahir Yahya", arabicName: "طاهر يحيى", img: "images/TahirYahya.jpg" },
+            { start: 1965, end: 1965, name: "Arif Abd ar-Razzaq", arabicName: "عارف عبد الرزاق", img: "images/ArifAbdarRazzaq.jpg" },
+            { start: 1965, end: 1966, name: "Abd al-Rahman al-Bazzaz", arabicName: "عبد الرحمن البزاز", img: "images/AbdalRahmanalBazzaz.jpg" },
+            { start: 1966, end: 1967, name: "Naji Talib", arabicName: "ناجي طالب", img: "images/NajiTalib.jpg" },
+            { start: 1967, end: 1967, name: "Abdul Rahman Arif", arabicName: "عبد الرحمن عارف", img: "images/AbdulRahmanArif.jpg" },
+            { start: 1967, end: 1968, name: "Tahir Yahya", arabicName: "طاهر يحيى", img: "images/TahirYahya.jpg" },
+            { start: 1968, end: 1968, name: "Abdul Razzaq an-Naif", arabicName: "عبد الرزاق النايف", img: "images/AbdulRazzaqanNaif.jpg" },
+            { start: 1968, end: 1979, name: "Ahmed Hassan al-Bakr", arabicName: "أحمد حسن البكر", img: "images/AhmedHassanalBakr.jpg" },
+            { start: 1979, end: 1991, name: "Saddam Hussein", arabicName: "صدام حسين", img: "images/SaddamHussein.jpg" },
+            { start: 1991, end: 1991, name: "Sa'dun Hammadi", arabicName: "سعدون حمادي", img: "images/SadunHammadi.jpg" },
+            { start: 1991, end: 1993, name: "Muhammad Hamza az-Zubaydi", arabicName: "محمد حمزة الزبيدي", img: "images/MuhammadHamzaazZubaydi.jpg" },
+            { start: 1993, end: 1994, name: "Ahmad Husayn Khudayir as-Samarrai", arabicName: "أحمد حسين خضير السامرائي", img: "images/AhmadHusaynKhudayirasSamarrai.jpg" },
+            { start: 1994, end: 2003, name: "Saddam Hussein", arabicName: "صدام حسين", img: "images/SaddamHussein.jpg" },
+            { start: 2004, end: 2005, name: "Ayad Allawi", arabicName: "إياد علاوي", img: "images/AyadAllawi.jpg" },
+            { start: 2005, end: 2006, name: "Ibrahim al-Jaafari", arabicName: "إبراهيم الجعفري", img: "images/IbrahimalJaafari.jpg" },
+            { start: 2006, end: 2014, name: "Nouri al-Maliki", arabicName: "نوري المالكي", img: "images/NourialMaliki.jpg" },
+            { start: 2014, end: 2018, name: "Haider al-Abadi", arabicName: "حيدر العبادي", img: "images/HaideralAbadi.jpg" },
+            { start: 2018, end: 2020, name: "Adil Abdul-Mahdi", arabicName: "عادل عبد المهدي", img: "images/AdilAbdulMahdi.jpg" },
+            { start: 2020, end: 2022, name: "Mustafa al-Kadhimi", arabicName: "مصطفى الكاظمي", img: "images/MustafaalKadhimi.jpg" },
+            { start: 2022, end: 2026, name: "Mohammed Shia' al-Sudani", arabicName: "محمد شياع السوداني", img: "images/MohammedShiaalSudani.jpg" },
+            { start: 2026, end: 9999, name: "Ali al-Zaidi", arabicName: "علي الزيدي", img: "images/AalialZaidi.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [    { start: 1958, end: 1963, img: "images/iraq1.jpg" },
+            { start: 1963, end: 1991, img: "images/iraq2.jpg" },
+            { start: 1991, end: 2004, img: "images/iraq3.jpg" },
+            { start: 2004, end: 2008, img: "images/iraq4.jpg" },
+            { start: 2008, end: 9999, img: "images/iraq5.jpg" }
+        ],
+        incidents: [
+            { year: 1958, name: "July revolution; republic proclaimed", "name-arabic": "ثورة تموز وإعلان الجمهورية" },
+            { year: 1963, name: "February coup", "name-arabic": "انقلاب شباط" },
+            { year: 1968, name: "Baath Party returns to power", "name-arabic": "عودة حزب البعث إلى السلطة" },
+            { year: 1979, name: "Saddam Hussein becomes president", "name-arabic": "صدام حسين يتولى الرئاسة" },
+            { year: 1980, name: "Iran-Iraq War begins", "name-arabic": "بداية الحرب العراقية الإيرانية" },
+            { year: 1988, name: "Iran-Iraq War ends", "name-arabic": "نهاية الحرب العراقية الإيرانية" },
+            { year: 1990, name: "Invasion of Kuwait", "name-arabic": "غزو الكويت" },
+            { year: 1991, name: "Gulf War", "name-arabic": "حرب الخليج" },
+            { year: 2003, name: "US-led invasion; Saddam government falls", "name-arabic": "الغزو بقيادة الولايات المتحدة وسقوط حكم صدام" },
+            { year: 2005, name: "New constitution approved", "name-arabic": "إقرار الدستور الجديد" },
+            { year: 2014, name: "ISIS captures Mosul", "name-arabic": "سيطرة داعش على الموصل" },
+            { year: 2017, name: "Mosul recaptured from ISIS", "name-arabic": "استعادة الموصل من داعش" },
+            { year: 2019, name: "October protests", "name-arabic": "احتجاجات تشرين" }
+        ]
+    },
+    Jordan: {
+        startYear: 1946,
+        showSpeakers: false,
+        presidents: [
+            { start: 1946, end: 1951, name: "Abdullah I", arabicName: " عبد الله الأول", img: "images/Abdullah1Jordan.jpg" },
+            { start: 1951, end: 1952, name: "Talal", arabicName: " طلال", img: "images/TalalJordan.jpg" },
+            { start: 1952, end: 1999, name: "Hussein", arabicName: "الحسين", img: "images/HusseinJordan.jpg" },
+            { start: 1999, end: 9999, name: "Abdullah II", arabicName: "عبد الله الثاني", img: "images/Abdullah2Jordan.jpg" }
+        ],
+        primeMinisters: [
+            { start: 1946, end: 1951, name: "Talal", arabicName: " طلال", img: "images/TalalJordan.jpg" },
+            { start: 1951, end: 1952, name: "Hussein", arabicName: "الحسين", img: "images/HusseinJordan.jpg" },
+            { start: 1952, end: 1962, name: "Muhammad", arabicName: " محمد", img: "images/MuhamadJordan.jpg" },
+            { start: 1962, end: 1965, name: "Abdullah II", arabicName: "عبد الله الثاني", img: "images/Abdullah2Jordan.jpg" },
+            { start: 1965, end: 1999, name: "Hassan", arabicName: " الحسن", img: "images/HassanJordan.jpg" },
+            { start: 1999, end: 1999, name: "Abdullah II", arabicName: "عبد الله الثاني", img: "images/Abdullah2Jordan.jpg" },
+            { start: 1999, end: 2004, name: "Hamzah", arabicName: " حمزة", img: "images/HamzaJordan.jpg" },
+            { start: 2009, end: 9999, name: "Hussein bin Abdullah II", arabicName: "الحسين بن عبد الله الثاني", img: "images/Hussein2Jordan.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1946, end: 9999, img: "images/jordan1.jpg" }
+        ],
+        incidents: [
+            { year: 1946, name: "Independence", "name-arabic": "الاستقلال" },
+            { year: 1951, name: "King Abdullah I assassination", "name-arabic": "اغتيال الملك عبد الله الأول" },
+            { year: 1952, name: "King Hussein accedes to the throne", "name-arabic": "الملك الحسين يتولى العرش" },
+            { year: 1967, name: "Six-Day War; West Bank lost", "name-arabic": "حرب حزيران وفقدان الضفة الغربية" },
+            { year: 1970, name: "Black September conflict", "name-arabic": "أحداث أيلول الأسود" },
+            { year: 1988, name: "Disengagement from the West Bank", "name-arabic": "فك الارتباط مع الضفة الغربية" },
+            { year: 1989, name: "Parliamentary elections resume", "name-arabic": "استئناف الانتخابات النيابية" },
+            { year: 1994, name: "Peace treaty with Israel", "name-arabic": "معاهدة السلام مع إسرائيل" },
+            { year: 1999, name: "King Abdullah II accedes to the throne", "name-arabic": "الملك عبد الله الثاني يتولى العرش" },
+            { year: 2009, name: "Prince Hussein named crown prince", "name-arabic": "تعيين الأمير الحسين وليا للعهد" },
+            { year: 2011, name: "Protests and constitutional amendments", "name-arabic": "احتجاجات وتعديلات دستورية" }
+        ]
+    },
+	
+    UAE: {
+        startYear: 1971,
+        showSpeakers: false,
+        presidents: [
+            { start: 1971, end: 2004, name: "Zayed bin Sultan Al Nahyan", arabicName: "زايد بن سلطان آل نهيان", img: "images/ZayedbinSultan.jpg" },
+            { start: 2004, end: 2022, name: "Khalifa bin Zayed Al Nahyan", arabicName: "خليفة بن زايد آل نهيان", img: "images/KhalifabinZayed.jpg" },
+            { start: 2022, end: 9999, name: "Mohamed bin Zayed Al Nahyan", arabicName: "محمد بن زايد آل نهيان", img: "images/MohamedbinZayed.jpg" }
+        ],
+        primeMinisters: [
+            { start: 1971, end: 1990, name: "Rashid bin Saeed Al Maktoum", arabicName: "راشد بن سعيد آل مكتوم", img: "images/RashidbinSaeedAlMaktoum.jpg" },
+            { start: 1990, end: 2006, name: "Maktoum bin Rashid Al Maktoum", arabicName: "مكتوم بن راشد آل مكتوم", img: "images/MaktoumbinRashidAlMaktoum.jpg" },
+            { start: 2006, end: 2023, name: "Mohammed bin Rashid Al Maktoum", arabicName: "محمد بن راشد آل مكتوم", img: "images/MohammedbinRashidAlMaktoum.jpg" },
+            { start: 2023, end: 9999, name: "Mansour bin Zayed Al Nahyan", arabicName: "منصور بن زايد آل نهيان", img: "images/MansourbinZayedAlNahyan.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1971, end: 9999, img: "images/uae1.jpg" }
+        ],
+        incidents: [
+		{ year: 1971, name: "Founding of the United Arab Emirates", "name-arabic": "تأسيس دولة الإمارات العربية المتحدة" },
+		{ year: 1972, name: "Ras Al Khaimah Joins the UAE", "name-arabic": "انضمام رأس الخيمة إلى دولة الإمارات" },
+		{ year: 1973, name: "Introduction of the UAE Dirham", "name-arabic": "إصدار الدرهم الإماراتي" },
+		{ year: 1981, name: "Founding of the Gulf Cooperation Council", "name-arabic": "تأسيس مجلس التعاون الخليجي" },
+		{ year: 1985, name: "Launch of Emirates Airline", "name-arabic": "تأسيس طيران الإمارات" },
+		{ year: 1990, name: "UAE Participates in the Gulf War Coalition", "name-arabic": "مشاركة الإمارات في تحرير الكويت" },
+		{ year: 1996, name: "Abu Dhabi Confirmed as Permanent Capital", "name-arabic": "اعتماد أبوظبي عاصمة دائمة للدولة" },
+		{ year: 2004, name: "Death of Sheikh Zayed bin Sultan Al Nahyan", "name-arabic": "وفاة الشيخ زايد بن سلطان آل نهيان" },
+		{ year: 2006, name: "First Federal National Council Elections", "name-arabic": "أول انتخابات للمجلس الوطني الاتحادي" },
+		{ year: 2009, name: "Opening of Dubai Metro", "name-arabic": "افتتاح مترو دبي" },
+		{ year: 2010, name: "Opening of Burj Khalifa", "name-arabic": "افتتاح برج خليفة" },
+		{ year: 2014, name: "Launch of UAE Mars Mission Project", "name-arabic": "إطلاق مشروع مسبار الأمل إلى المريخ" },
+		{ year: 2015, name: "UAE Joins Arab Coalition in Yemen", "name-arabic": "مشاركة الإمارات في التحالف العربي باليمن" },
+		{ year: 2020, name: "Abraham Accords Signed", "name-arabic": "توقيع اتفاقيات إبراهيم" },
+		{ year: 2020, name: "Launch of Hope Probe to Mars", "name-arabic": "إطلاق مسبار الأمل إلى المريخ" },
+		{ year: 2021, name: "UAE Celebrates Golden Jubilee", "name-arabic": "اليوبيل الذهبي لدولة الإمارات" },
+		{ year: 2021, name: "Hope Probe Reaches Mars", "name-arabic": "وصول مسبار الأمل إلى المريخ" },
+		{ year: 2023, name: "COP28 Hosted in Dubai", "name-arabic": "استضافة مؤتمر المناخ COP28 في دبي" }
+		]
+    },
+	Qatar :{
+	       startYear: 1960,
+        showSpeakers: false,
+        presidents: [
+			{"start":1960,"end":1972,"name":"Ahmad Bin Ali Al Thani","arabicName":"أحمد بن علي آل ثاني","img":"images/AhmadBinAliAlThani.jpg"},
+			{"start":1972,"end":1995,"name":"Khalifa Bin Hamad Al Thani","arabicName":"خليفة بن حمد آل ثاني","img":"images/KhalifaBinHamadAlThani.jpg"},
+			{"start":1995,"end":2013,"name":"Hamad Bin Khalifa Al Thani","arabicName":"حمد بن خليفة آل ثاني","img":"images/HamadBinKhalifaAlThani.jpg"},
+			{"start":2013,"end":9999,"name":"Tamim Bin Hamad Al Thani","arabicName":"تميم بن حمد آل ثاني","img":"images/TamimBinHamadAlThani.jpg"}
+		
+        ],
+        primeMinisters: [
+					{"start":1960,"end":1972,"name":"Khalifa Bin Hamad Al Thani","arabicName":"خليفة بن حمد آل ثاني","img":"images/KhalifaBinHamadAlThani.jpg"},
+					{"start":1972,"end":1995,"name":"Hamad Bin Khalifa Al Thani","arabicName":"حمد بن خليفة آل ثاني","img":"images/HamadBinKhalifaAlThani.jpg"},
+					{"start":1995,"end":2003,"name":"Jassim Bin Hamad Al Thani","arabicName":"جاسم بن حمد آل ثاني","img":"images/JassimBinHamadAlThani.jpg"},
+					{"start":2003,"end":2013,"name":"Tamim Bin Hamad Al Thani","arabicName":"تميم بن حمد آل ثاني","img":"images/TamimBinHamadAlThani.jpg"},
+					{"start":2014,"end":9999,"name":"Abdullah Bin Hamad Al Thani","arabicName":"عبد الله بن حمد آل ثاني","img":"images/AbdullahBinHamadAlThani.jpg"}
+		        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1960, end: 1971, img: "images/qatar1.jpg" },
+			{ start: 1971, end: 9999, img: "images/qatar1.jpg" }
+        ],
+        incidents: [
+			{ year: 1968, name: "Britain Announces Gulf Withdrawal", "name-arabic": "إعلان بريطانيا الانسحاب من الخليج" },
+			{ year: 1971, name: "Qatar Independence", "name-arabic": "استقلال دولة قطر" },
+			{ year: 1973, name: "Qatar Joins United Nations", "name-arabic": "انضمام قطر إلى الأمم المتحدة" },
+			{ year: 1981, name: "Founding of the Gulf Cooperation Council", "name-arabic": "تأسيس مجلس التعاون الخليجي" },
+			{ year: 1996, name: "Launch of Al Jazeera", "name-arabic": "إطلاق شبكة الجزيرة" },
+			{ year: 1999, name: "First Municipal Elections", "name-arabic": "أول انتخابات بلدية" },
+			{ year: 2001, name: "Border Disputes Resolved with Bahrain", "name-arabic": "حل النزاع الحدودي مع البحرين" },
+			{ year: 2003, name: "Approval of Permanent Constitution", "name-arabic": "إقرار الدستور الدائم" },
+			{ year: 2005, name: "Constitution Comes into Force", "name-arabic": "دخول الدستور الدائم حيز التنفيذ" },
+			{ year: 2006, name: "Doha Hosts Asian Games", "name-arabic": "استضافة الدوحة للألعاب الآسيوية" },
+			{ year: 2010, name: "Qatar Wins FIFA World Cup 2022 Bid", "name-arabic": "فوز قطر باستضافة كأس العالم 2022" },
+			{ year: 2017, name: "Gulf Diplomatic Crisis", "name-arabic": "الأزمة الخليجية" },
+			{ year: 2021, name: "Al-Ula Agreement Ends Gulf Crisis", "name-arabic": "اتفاق العلا وإنهاء الأزمة الخليجية" },
+			{ year: 2021, name: "First Shura Council Elections", "name-arabic": "أول انتخابات لمجلس الشورى" },
+			{ year: 2022, name: "Qatar Hosts FIFA World Cup", "name-arabic": "استضافة كأس العالم FIFA 2022" },
+			{ year: 2025, name: "North Field LNG Expansion", "name-arabic": "توسعة حقل الشمال للغاز الطبيعي المسال" }
+
+        ]
+ 
+	},
+		Bahrain :{
+	       startYear: 1961,
+        showSpeakers: false,
+        presidents:[
+			{ start: 1961, end: 1999, name: "Isa Bin Salman Al Khalifa", arabicName: "عيسى بن سلمان آل خليفة", img: "images/IsaBinSalmanAlKhalifa.jpg" },
+			{ start: 1999, end: 9999, name: "Hamad Bin Isa Al Khalifa", arabicName: "حمد بن عيسى آل خليفة", img: "images/HamadBinIsaAlKhalifa.jpg" }
+			],
+        primeMinisters:[
+					{ start: 1964, end: 1999, name: "Hamad Bin Isa Al Khalifa", arabicName: "حمد بن عيسى آل خليفة", img: "images/HamadBinIsaAlKhalifa.jpg" },
+					{ start: 1999, end: 9999, name: "Salman Bin Hamad Al Khalifa", arabicName: "سلمان بن حمد آل خليفة", img: "images/SalmanBinHamadAlKhalifa.jpg" }
+					]
+					,
+        parliamentPresidents: [],
+        flags: [
+            { start: 1960, end: 1972, img: "images/bahrain2.jpg" },
+			{ start: 1972, end: 2002, img: "images/bahrain3.jpg" },
+			{ start: 2002, end: 9999, img: "images/bahrain4.jpg" }
+        ],
+        incidents: [
+		{ year: 1970, name: "UN survey confirms Bahrain's desire for independence", "name-arabic": "استطلاع الأمم المتحدة يؤكد رغبة البحرين في الاستقلال" },
+		{ year: 1971, name: "Bahrain declares independence from the United Kingdom", "name-arabic": "استقلال البحرين عن المملكة المتحدة" },
+		{ year: 1973, name: "First Constitution of Bahrain adopted", "name-arabic": "إقرار أول دستور للبحرين" },
+		{ year: 1975, name: "National Assembly dissolved", "name-arabic": "حل المجلس الوطني" },
+		{ year: 1981, name: "Bahrain joins the Gulf Cooperation Council", "name-arabic": "انضمام البحرين إلى مجلس التعاون الخليجي" },
+		{ year: 1986, name: "Opening of the King Fahd Causeway with Saudi Arabia", "name-arabic": "افتتاح جسر الملك فهد مع السعودية" },
+		{ year: 1991, name: "Bahrain participates in Operation Desert Storm", "name-arabic": "مشاركة البحرين في عملية عاصفة الصحراء" },
+		{ year: 1994, name: "Beginning of the 1990s political unrest", "name-arabic": "بداية الاضطرابات السياسية في التسعينيات" },
+		{ year: 2001, name: "National Action Charter approved by referendum", "name-arabic": "إقرار ميثاق العمل الوطني بالاستفتاء" },
+		{ year: 2002, name: "Bahrain becomes a Kingdom", "name-arabic": "تحول البحرين إلى مملكة" },
+		{ year: 2002, name: "Promulgation of the amended Constitution", "name-arabic": "إصدار الدستور المعدل" },
+		{ year: 2006, name: "First parliamentary elections under constitutional reforms", "name-arabic": "أول انتخابات نيابية في ظل الإصلاحات الدستورية" },
+		{ year: 2011, name: "Bahrain uprising during the Arab Spring", "name-arabic": "احتجاجات البحرين خلال الربيع العربي" },
+		{ year: 2014, name: "Opening of Bahrain International Circuit expansion projects", "name-arabic": "توسعات حلبة البحرين الدولية" },
+		{ year: 2020, name: "Bahrain signs the Abraham Accords", "name-arabic": "توقيع البحرين على اتفاقيات أبراهام" },
+		{ year: 2021, name: "20th anniversary of the National Action Charter", "name-arabic": "الذكرى العشرون لميثاق العمل الوطني" },
+		{ year: 2022, name: "Parliamentary and municipal elections", "name-arabic": "الانتخابات النيابية والبلدية" }
+		]
+ 
+	},
+  
+		Oman :{
+	       startYear: 1970,
+        showSpeakers: false,
+        presidents:[
+		{ start: 1970, end: 2020, name: "Qaboos Bin Said Al Said", arabicName: " قابوس بن سعيد", img: "images/QaboosBinSaidAlSaid.jpg" },
+		{ start: 2020, end: 9999, name: "Haitham Bin Tariq Al Said", arabicName: " هيثم بن طارق", img: "images/HaithamBinTariqAlSaid.jpg" }
+		],
+        primeMinisters:[
+			{ start: 2021, end: 9999, name: "Theyazin Bin Haitham Al Said", arabicName: "ذي يزن بن هيثم آل سعيد", img: "images/TheyazinBinHaithamAlSaid.jpg" }
+			]
+					,
+        parliamentPresidents: [],
+        flags: [
+            { start: 1970, end: 1985, img: "images/Oman1.jpg" },
+			{ start: 1985, end: 2004, img: "images/Oman2.jpg" },
+			{ start: 2004, end: 9999, img: "images/Oman3.jpg" }
+        ],
+        incidents:[
+			{ year: 1970, name: "Accession of Sultan Qaboos and beginning of the Omani Renaissance", "name-arabic": "تولي السلطان قابوس الحكم وبداية النهضة العمانية" },
+			{ year: 1975, name: "End of the Dhofar Rebellion", "name-arabic": "انتهاء تمرد ظفار" },
+			{ year: 1980, name: "Oman signs military facilities agreement with the United States", "name-arabic": "توقيع اتفاقية التسهيلات العسكرية مع الولايات المتحدة" },
+			{ year: 1981, name: "Oman joins the Gulf Cooperation Council", "name-arabic": "انضمام عمان إلى مجلس التعاون الخليجي" },
+			{ year: 1986, name: "Opening of Sultan Qaboos Port modernization projects", "name-arabic": "افتتاح مشاريع تطوير ميناء السلطان قابوس" },
+			{ year: 1995, name: "Celebration of the 25th National Day and modernization achievements", "name-arabic": "الاحتفال بالعيد الوطني الخامس والعشرين وإنجازات النهضة" },
+			{ year: 1996, name: "Promulgation of the Basic Law of the State", "name-arabic": "إصدار النظام الأساسي للدولة" },
+			{ year: 2000, name: "Oman joins the World Trade Organization", "name-arabic": "انضمام عمان إلى منظمة التجارة العالمية" },
+			{ year: 2001, name: "Opening of Muscat Securities Market reforms", "name-arabic": "إصلاحات سوق مسقط للأوراق المالية" },
+			{ year: 2007, name: "Cyclone Gonu strikes Oman", "name-arabic": "إعصار جونو يضرب عمان" },
+			{ year: 2011, name: "Nationwide protests and economic reforms", "name-arabic": "احتجاجات شعبية وإصلاحات اقتصادية" },
+			{ year: 2014, name: "Opening of Muscat International Airport expansion works", "name-arabic": "توسعة مطار مسقط الدولي" },
+			{ year: 2018, name: "New Muscat International Airport terminal opens", "name-arabic": "افتتاح مبنى مطار مسقط الدولي الجديد" },
+			{ year: 2021, name: "Appointment of Theyazin bin Haitham as the first Crown Prince", "name-arabic": "تعيين ذي يزن بن هيثم أول ولي عهد" },
+			{ year: 2022, name: "Oman Vision 2040 implementation phase begins", "name-arabic": "بدء مرحلة تنفيذ رؤية عمان 2040" }
+			]
+ 
+	},
+    KSA: {
+        startYear: 1932,
+        showSpeakers: false,
+        presidents: [
+            { start: 1932, end: 1953, name: "Abdulaziz Al Saud", arabicName: "عبد العزيز آل سعود", img: "images/AbdulazizAlSaud.jpg" },
+            { start: 1953, end: 1964, name: "Saud Bin Abdulaziz", arabicName: "سعود بن عبد العزيز", img: "images/SaudBinAbdulaziz.jpg" },
+            { start: 1964, end: 1975, name: "Faisal Bin Abdulaziz", arabicName: "فيصل بن عبد العزيز", img: "images/FaisalBinAbdulaziz.jpg" },
+            { start: 1975, end: 1982, name: "Khalid Bin Abdulaziz", arabicName: "خالد بن عبد العزيز", img: "images/KhalidBinAbdulaziz.jpg" },
+            { start: 1982, end: 2005, name: "Fahd Bin Abdulaziz", arabicName: "فهد بن عبد العزيز", img: "images/FahdBinAbdulaziz.jpg" },
+            { start: 2005, end: 2015, name: "Abdullah Bin Abdulaziz", arabicName: "عبد الله بن عبد العزيز", img: "images/AbdullahBinAbdulaziz.jpg" },
+            { start: 2015, end: 9999, name: "Salman Bin Abdulaziz", arabicName: "سلمان بن عبد العزيز", img: "images/SalmanBinAbdulaziz.jpg" }
+        ],
+        primeMinisters: [
+		
+            { start: 1933, end: 1953, name: "Saud Bin Abdulaziz", arabicName: "سعود بن عبد العزيز", img: "images/SaudBinAbdulaziz.jpg" },
+            { start: 1953, end: 1964, name: "Faisal Bin Abdulaziz", arabicName: "فيصل بن عبد العزيز", img: "images/FaisalBinAbdulaziz.jpg" },
+			{ start: 1964, end: 1975, name: "Khalid Bin Abdulaziz", arabicName: "خالد بن عبد العزيز", img: "images/KhalidBinAbdulaziz.jpg" },
+            { start: 1975, end: 1982, name: "Fahd Bin Abdulaziz", arabicName: "فهد بن عبد العزيز", img: "images/FahdBinAbdulaziz.jpg" },
+            { start: 1982, end: 2005, name: "Abdullah Bin Abdulaziz", arabicName: "عبد الله بن عبد العزيز", img: "images/AbdullahBinAbdulaziz.jpg" },
+            { start: 2005, end: 2011, name: "Sultan Bin Abdulaziz", arabicName: "سلطان بن عبدالعزيز", img: "images/SultanBinAbdulaziz.jpg" },
+            { start: 2011, end: 2012, name: "Nayef Bin Abdulaziz", arabicName: "نايف بن عبدالعزيز", img: "images/NayefBinAbdulaziz.jpg" },
+            { start: 2012, end: 2015, name: "Salman Bin Abdulaziz", arabicName: "سلمان بن عبد العزيز", img: "images/SalmanBinAbdulaziz.jpg" },
+            { start: 2015, end: 2015, name: "Muqrin Bin Abdulaziz", arabicName: "مقرن بن عبدالعزيز", img: "images/MuqrinBinAbdulaziz.jpg" },
+            { start: 2015, end: 2017, name: "Muhammad Bin Nayef", arabicName: "محمد بن نايف", img: "images/MuhammadBinNayef.jpg" },
+            { start: 2017, end: 9999, name: "Mohammad Bin Salman", arabicName: "محمد بن سلمان", img: "images/MohammadBinSalman.jpg" }
+        ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1932, end: 1934, img: "images/saudia1.jpg" },
+            { start: 1934, end: 1938, img: "images/saudia2.jpg" },
+            { start: 1938, end: 1973, img: "images/saudia3.jpg" },
+            { start: 1973, end: 9999, img: "images/saudia4.jpg" }
+        ],
+        incidents: [
+            { year: 1932, name: "Kingdom of Saudi Arabia proclaimed", "name-arabic": "إعلان المملكة العربية السعودية" },
+            { year: 1938, name: "Commercial oil discovered", "name-arabic": "اكتشاف النفط بكميات تجارية" },
+            { year: 1945, name: "King Abdulaziz meets President Roosevelt", "name-arabic": "لقاء الملك عبد العزيز والرئيس روزفلت" },
+            { year: 1973, name: "Oil embargo", "name-arabic": "الحظر النفطي" },
+            { year: 1975, name: "King Faisal assassination", "name-arabic": "اغتيال الملك فيصل" },
+            { year: 1979, name: "Grand Mosque seizure", "name-arabic": "حادثة اقتحام الحرم المكي" },
+            { year: 1990, name: "Foreign troops deployed during Gulf crisis", "name-arabic": "انتشار قوات أجنبية خلال أزمة الخليج" },
+            { year: 2005, name: "King Abdullah accedes to the throne", "name-arabic": "الملك عبد الله يتولى العرش" },
+            { year: 2015, name: "King Salman accedes to the throne", "name-arabic": "الملك سلمان يتولى العرش" },
+            { year: 2016, name: "Vision 2030 launched", "name-arabic": "إطلاق رؤية 2030" },
+            { year: 2017, name: "Mohammad bin Salman named crown prince", "name-arabic": "تعيين محمد بن سلمان وليا للعهد" },
+            { year: 2018, name: "Women permitted to drive", "name-arabic": "السماح للنساء بقيادة السيارات" },
+            { year: 2022, name: "Mohammad bin Salman becomes prime minister", "name-arabic": "تعيين محمد بن سلمان رئيسا للوزراء" }
+        ]
+    },
+	
+	  Algeria: {
+        startYear: 1963,
+        showSpeakers: false,
+        presidents: [
+    		{ start: 1963, end: 1965, name: "Ahmed Ben Bella", arabicName: "أحمد بن بلة", img: "images/AhmedBenBella.jpg" },
+			{ start: 1965, end: 1978, name: "Houari Boumediene", arabicName: "هواري بومدين", img: "images/HouariBoumediene.jpg" },
+			{ start: 1978, end: 1979, name: "Rabah Bitat", arabicName: "رابح بيطاط", img: "images/RabahBitat.jpg" },
+			{ start: 1979, end: 1992, name: "Chadli Bend jedid", arabicName: "الشاذلي بن جديد", img: "images/ChadliBendjedid.jpg" },
+			{ start: 1992, end: 1992, name: "Mohamed Boudiaf", arabicName: "محمد بوضياف", img: "images/MohamedBoudiaf.jpg" },
+			{ start: 1992, end: 1994, name: "Ali Kafi", arabicName: "علي كافي", img: "images/AliKafi.jpg" },
+			{ start: 1994, end: 1999, name: "Liamine Zeroual", arabicName: "اليمين زروال", img: "images/LiamineZeroual.jpg" },
+			{ start: 1999, end: 2019, name: "Abdelaziz Bouteflika", arabicName: "عبد العزيز بوتفليقة", img: "images/AbdelazizBouteflika.jpg" },
+			{ start: 2019, end: 2019, name: "Abdelkader Bensalah", arabicName: "عبد القادر بن صالح", img: "images/AbdelkaderBensalah.jpg" },
+			{ start: 2019, end: 2026, name: "Abdelmadjid Tebboune", arabicName: "عبد المجيد تبون", img: "images/AbdelmadjidTebboune.jpg" }
+
+        ],
+        primeMinisters: [
+			{ start: 1962, end: 1963, name: "Ahmed Ben Bella", arabicName: "أحمد بن بلة", img: "images/AhmedBenBella.jpg" },
+			{ start: 1979, end: 1984, name: "Mohamed Ben Ahmed Abdelghani", arabicName: "محمد بن أحمد عبد الغني", img: "images/MohamedBenAhmedAbdelghani.jpg" },
+			{ start: 1984, end: 1988, name: "Abdelhamid Brahimi", arabicName: "عبد الحميد براهيمي", img: "images/AbdelhamidBrahimi.jpg" },
+			{ start: 1988, end: 1989, name: "Kasdi Merbah", arabicName: "قاصدي مرباح", img: "images/KasdiMerbah.jpg" },
+			{ start: 1989, end: 1991, name: "Mouloud Hamrouche", arabicName: "مولود حمروش", img: "images/MouloudHamrouche.jpg" },
+			{ start: 1991, end: 1992, name: "Sid Ahmed Ghozali", arabicName: "سيد أحمد غزالي", img: "images/SidAhmedGhozali.jpg" },
+			{ start: 1992, end: 1993, name: "Belaid Abdessalam", arabicName: "بلعيد عبد السلام", img: "images/BelaidAbdessalam.jpg" },
+			{ start: 1993, end: 1994, name: "Redha Malek", arabicName: "رضا مالك", img: "images/RedhaMalek.jpg" },
+			{ start: 1994, end: 1995, name: "Mokdad Sifi", arabicName: "مقداد سيفي", img: "images/MokdadSifi.jpg" },
+			{ start: 1995, end: 1998, name: "Ahmed Ouyahia", arabicName: "أحمد أويحيى", img: "images/AhmedOuyahia.jpg" },
+			{ start: 1998, end: 1999, name: "Smail Hamdani", arabicName: "إسماعيل حمداني", img: "images/SmailHamdani.jpg" },
+			{ start: 1999, end: 2000, name: "Ahmed Benbitour", arabicName: "أحمد بن بيتور", img: "images/AhmedBenbitour.jpg" },
+			{ start: 2000, end: 2003, name: "Ali Benflis", arabicName: "علي بن فليس", img: "images/AliBenflis.jpg" },
+			{ start: 2003, end: 2006, name: "Ahmed Ouyahia", arabicName: "أحمد أويحيى", img: "images/AhmedOuyahia.jpg" },
+			{ start: 2006, end: 2008, name: "Abdelaziz Belkhadem", arabicName: "عبد العزيز بلخادم", img: "images/AbdelazizBelkhadem.jpg" },
+			{ start: 2008, end: 2012, name: "Ahmed Ouyahia", arabicName: "أحمد أويحيى", img: "images/AhmedOuyahia.jpg" },
+			{ start: 2012, end: 2014, name: "Abdelmalek Sellal", arabicName: "عبد المالك سلال", img: "images/AbdelmalekSellal.jpg" },
+			{ start: 2014, end: 2014, name: "Youcef Yousfi", arabicName: "يوسف يوسفي", img: "images/YoucefYousfi.jpg" },
+			{ start: 2014, end: 2017, name: "Abdelmalek Sellal", arabicName: "عبد المالك سلال", img: "images/AbdelmalekSellal.jpg" },
+			{ start: 2017, end: 2017, name: "Abdelmadjid Tebboune", arabicName: "عبد المجيد تبون", img: "images/AbdelmadjidTebboune.jpg" },
+			{ start: 2017, end: 2019, name: "Ahmed Ouyahia", arabicName: "أحمد أويحيى", img: "images/AhmedOuyahia.jpg" },
+			{ start: 2019, end: 2019, name: "Noureddine Bedoui", arabicName: "نور الدين بدوي", img: "images/NoureddineBedoui.jpg" },
+			{ start: 2019, end: 2019, name: "Sabri Boukadoum", arabicName: "صبري بوقادوم", img: "images/SabriBoukadoum.jpg" },
+			{ start: 2019, end: 2021, name: "Abdelaziz Djerad", arabicName: "عبد العزيز جراد", img: "images/AbdelazizDjerad.jpg" },
+			{ start: 2021, end: 2023, name: "Aymen Ben Abderrahmane", arabicName: "أيمن بن عبد الرحمن", img: "images/AymenBenabderrahmane.jpg" },
+			{ start: 2023, end: 2025, name: "Nadir Larbaoui", arabicName: "نذير العرباوي", img: "images/NadirLerbaoui.jpg" },
+			{ start: 2025, end: 9999, name: "Sifi Ghrieb", arabicName: "سيفي غريب", img: "images/SifiGhrieb.jpg" }
+			
+          ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1962, end: 9999, img: "images/Algeria1.jpg" }
+        ],
+        incidents: [
+				{ year: 1963, name: "First Constitution of Algeria", "name-arabic": "اعتماد أول دستور للجزائر" },
+				{ year: 1971, name: "Nationalization of Oil and Gas", "name-arabic": "تأميم النفط والغاز" },
+				{ year: 1976, name: "New Constitution Approved", "name-arabic": "إقرار دستور جديد" },
+				{ year: 1980, name: "Berber Spring Protests", "name-arabic": "احتجاجات الربيع الأمازيغي" },
+				{ year: 1988, name: "October Riots", "name-arabic": "أحداث أكتوبر 1988" },
+				{ year: 1989, name: "Transition to Multi-Party System", "name-arabic": "الانتقال إلى التعددية الحزبية" },
+				{ year: 1991, name: "First Multi-Party Parliamentary Elections", "name-arabic": "أول انتخابات برلمانية تعددية" },
+				{ year: 1992, name: "Election Cancellation and Start of Civil War", "name-arabic": "إلغاء الانتخابات وبداية الحرب الأهلية" },
+				{ year: 1992, name: "Assassination of Mohamed Boudiaf", "name-arabic": "اغتيال محمد بوضياف" },
+				{ year: 1995, name: "Presidential Elections During Civil War", "name-arabic": "انتخابات رئاسية أثناء الحرب الأهلية" },
+				{ year: 2001, name: "Black Spring Protests", "name-arabic": "أحداث الربيع الأسود" },
+				{ year: 2005, name: "Charter for Peace and National Reconciliation", "name-arabic": "ميثاق السلم والمصالحة الوطنية" },
+				{ year: 2011, name: "Arab Spring Demonstrations in Algeria", "name-arabic": "مظاهرات الربيع العربي في الجزائر" },
+				{ year: 2013, name: "In Amenas Gas Facility Attack", "name-arabic": "هجوم منشأة عين أميناس للغاز" },
+				{ year: 2014, name: "Bouteflika Re-Elected for Fourth Term", "name-arabic": "إعادة انتخاب بوتفليقة لولاية رابعة" },
+				{ year: 2019, name: "Hirak Protest Movement Begins", "name-arabic": "انطلاق الحراك الشعبي" },
+				{ year: 2019, name: "Resignation of Abdelaziz Bouteflika", "name-arabic": "استقالة عبد العزيز بوتفليقة" },
+				{ year: 2020, name: "Constitutional Referendum", "name-arabic": "الاستفتاء الدستوري" },
+				{ year: 2021, name: "Diplomatic Relations Severed with Morocco", "name-arabic": "قطع العلاقات الدبلوماسية مع المغرب" },
+				{ year: 2022, name: "60th Anniversary of Independence", "name-arabic": "الذكرى الستون للاستقلال" }
+				]
+    },
+	  Morocco: {
+        startYear: 1957,
+        showSpeakers: false,
+        presidents:  [
+			{ start: 1957, end: 1961, name: "MohammedV", arabicName: "محمد الخامس", img: "images/MohammedV.jpg" },
+			{ start: 1961, end: 1999, name: "HassanII", arabicName: "الحسن الثاني", img: "images/HassanII.jpg" },
+			{ start: 1999, end: 2026, name: "MohammedVI", arabicName: "محمد السادس", img: "images/MohammedVI.jpg" }
+
+        ],
+        primeMinisters: [
+			{ start: 1957, end: 1961, name: "HassanII", arabicName: "الحسن الثاني", img: "images/HassanII.jpg" },
+			{ start: 1963, end: 1999, name: "MohammedVI", arabicName: "محمد السادس", img: "images/MohammedVI.jpg" },
+			{ start: 1999, end: 2003, name: "Rachid Ben Hassan", arabicName: "رشيد بن الحسن", img: "images/MoulayRachid.jpg" },
+			{ start: 2003, end: 9999, name: "Moulay Hassan", arabicName: "مولاي الحسن", img: "images/MoulayHassan.jpg" }
+          ],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1957, end: 9999, img: "images/Morocco1.jpg" }
+        ],
+        incidents: [
+			{ year: 1957, name: "Morocco Becomes a Kingdom", "name-arabic": "إعلان المملكة المغربية" },
+			{ year: 1958, name: "Tarfaya Returned by Spain", "name-arabic": "استرجاع طرفاية من إسبانيا" },
+			{ year: 1961, name: "King Hassan II Ascends the Throne", "name-arabic": "اعتلاء الملك الحسن الثاني العرش" },
+			{ year: 1963, name: "Sand War with Algeria", "name-arabic": "حرب الرمال مع الجزائر" },
+			{ year: 1965, name: "Casablanca Riots and State of Emergency", "name-arabic": "أحداث الدار البيضاء وإعلان حالة الاستثناء" },
+			{ year: 1971, name: "Skhirat Coup Attempt", "name-arabic": "محاولة انقلاب الصخيرات" },
+			{ year: 1972, name: "Second Coup Attempt Against Hassan II", "name-arabic": "محاولة الانقلاب الثانية ضد الحسن الثاني" },
+			{ year: 1975, name: "Green March", "name-arabic": "المسيرة الخضراء" },
+			{ year: 1975, name: "Western Sahara Conflict Begins", "name-arabic": "بداية نزاع الصحراء الغربية" },
+			{ year: 1979, name: "Recovery of Oued Eddahab", "name-arabic": "استرجاع وادي الذهب" },
+			{ year: 1984, name: "Bread Riots", "name-arabic": "انتفاضة الخبز" },
+			{ year: 1991, name: "UN-Brokered Western Sahara Ceasefire", "name-arabic": "وقف إطلاق النار في الصحراء الغربية" },
+			{ year: 1998, name: "First Government of Political Alternation", "name-arabic": "أول حكومة تناوب توافقي" },
+			{ year: 1999, name: "Mohammed VI Becomes King", "name-arabic": "اعتلاء الملك محمد السادس العرش" },
+			{ year: 2001, name: "Creation of the Royal Institute of Amazigh Culture", "name-arabic": "إنشاء المعهد الملكي للثقافة الأمازيغية" },
+			{ year: 2003, name: "Casablanca Terrorist Bombings", "name-arabic": "تفجيرات الدار البيضاء الإرهابية" },
+			{ year: 2004, name: "Family Code Reform (Moudawana)", "name-arabic": "إصلاح مدونة الأسرة" },
+			{ year: 2011, name: "Constitutional Reform Following Arab Spring Protests", "name-arabic": "الإصلاح الدستوري بعد احتجاجات الربيع العربي" },
+			{ year: 2015, name: "Launch of Noor Ouarzazate Solar Complex", "name-arabic": "إطلاق مشروع نور ورزازات للطاقة الشمسية" },
+			{ year: 2016, name: "Death of Mohcine Fikri and Rif Protests", "name-arabic": "وفاة محسن فكري واحتجاجات الريف" },
+			{ year: 2020, name: "Normalization of Relations with Israel", "name-arabic": "تطبيع العلاقات مع إسرائيل" },
+			{ year: 2020, name: "United States Recognizes Moroccan Sovereignty over Western Sahara", "name-arabic": "اعتراف الولايات المتحدة بسيادة المغرب على الصحراء الغربية" },
+			{ year: 2021, name: "Major Diplomatic Crisis with Algeria", "name-arabic": "أزمة دبلوماسية كبيرة مع الجزائر" },
+			{ year: 2022, name: "Morocco Reaches FIFA World Cup Semi-Finals", "name-arabic": "وصول المغرب إلى نصف نهائي كأس العالم" },
+			{ year: 2023, name: "Marrakesh-Safi Earthquake", "name-arabic": "زلزال الحوز - مراكش آسفي" },
+			{ year: 2025, name: "Preparations for 2030 FIFA World Cup", "name-arabic": "الاستعدادات لكأس العالم 2030" }
+			]
+    },  Tunisia: {
+        startYear: 1957,
+        showSpeakers: false,
+        presidents:  [
+			{ start: 1957, end: 1987, name: "Habib Bourguiba", arabicName: "الحبيب بورقيبة", img: "images/HabibBourguiba.jpg" },
+			{ start: 1987, end: 2011, name: "Zine El Abidine Ben Ali", arabicName: "زين العابدين بن علي", img: "images/ZineElAbidineBenAli.jpg" },
+			{ start: 2011, end: 2011, name: "Fouad Mebazaa", arabicName: "فؤاد المبزع", img: "images/FouadMebazaa.jpg" },
+			{ start: 2011, end: 2014, name: "Moncef Marzouki", arabicName: "المنصف المرزوقي", img: "images/MoncefMarzouki.jpg" },
+			{ start: 2014, end: 2019, name: "Beji Caid Essebsi", arabicName: "الباجي قائد السبسي", img: "images/BejiCaidEssebsi.jpg" },
+			{ start: 2019, end: 2019, name: "Mohamed Ennaceur (Acting)", arabicName: "محمد الناصر (مؤقت)", img: "images/MohamedEnnaceur.jpg" },
+			{ start: 2019, end: 9999, name: "Kais Saied", arabicName: "قيس سعيّد", img: "images/KaisSaied.jpg" }
+			],
+        primeMinisters: [
+				{ start: 1956, end: 1957, name: "Habib Bourguiba", arabicName: "الحبيب بورقيبة", img: "images/HabibBourguiba.jpg" },
+				{ start: 1969, end: 1970, name: "Bahi Ladgham", arabicName: "الباهي الأدغم", img: "images/BahiLadgham.jpg" },
+				{ start: 1970, end: 1980, name: "Hedi Nouira", arabicName: "الهادي نويرة", img: "images/HediNouira.jpg" },
+				{ start: 1980, end: 1986, name: "Mohamed Mzali", arabicName: "محمد المزالي", img: "images/MohamedMzali.jpg" },
+				{ start: 1986, end: 1987, name: "Rachid Sfar", arabicName: "رشيد صفر", img: "images/RachidSfar.jpg" },
+				{ start: 1987, end: 1987, name: "Zine El Abidine Ben Ali", arabicName: "زين العابدين بن علي", img: "images/ZineElAbidineBenAli.jpg" },
+				{ start: 1987, end: 1989, name: "Hedi Baccouche", arabicName: "الهادي البكوش", img: "images/HediBaccouche.jpg" },
+				{ start: 1989, end: 1999, name: "Hamed Karoui", arabicName: "حامد القروي", img: "images/HamedKaroui.jpg" },
+				{ start: 1999, end: 2011, name: "Mohamed Ghannouchi", arabicName: "محمد الغنوشي", img: "images/MohamedGhannouchi.jpg" },
+				{ start: 2011, end: 2011, name: "Beji Caid Essebsi", arabicName: "الباجي قائد السبسي", img: "images/BejiCaidEssebsi.jpg" },
+				{ start: 2011, end: 2013, name: "Hamadi Jebali", arabicName: "حمادي الجبالي", img: "images/HamadiJebali.jpg" },
+				{ start: 2013, end: 2014, name: "Ali Laarayedh", arabicName: "علي العريض", img: "images/AliLaarayedh.jpg" },
+				{ start: 2014, end: 2015, name: "Mehdi Jomaa", arabicName: "مهدي جمعة", img: "images/MehdiJomaa.jpg" },
+				{ start: 2015, end: 2016, name: "Habib Essid", arabicName: "الحبيب الصيد", img: "images/HabibEssid.jpg" },
+				{ start: 2016, end: 2020, name: "Youssef Chahed", arabicName: "يوسف الشاهد", img: "images/YoussefChahed.jpg" },
+				{ start: 2020, end: 2020, name: "Elyes Fakhfakh", arabicName: "إلياس الفخفاخ", img: "images/ElyesFakhfakh.jpg" },
+				{ start: 2020, end: 2021, name: "Hichem Mechichi", arabicName: "هشام المشيشي", img: "images/HichemMechichi.jpg" },
+				{ start: 2021, end: 2023, name: "Najla Bouden", arabicName: "نجلاء بودن", img: "images/NajlaBouden.jpg" },
+				{ start: 2023, end: 2024, name: "Ahmed Hachani", arabicName: "أحمد الحشاني", img: "images/AhmedHachani.jpg" },
+				{ start: 2024, end: 2025, name: "Kamel Madouri", arabicName: "كمال المدوري", img: "images/KamelMadouri.jpg" },
+				{ start: 2025, end: 9999, name: "Sara Zaafarani", arabicName: "سارة زعفراني", img: "images/SaraZaafarani.jpg" }
+				],
+        parliamentPresidents: [],
+        flags: [
+            { start: 1957, end: 9999, img: "images/Tunisia1.jpg" }
+        ],
+        incidents: [
+				{ year: 1957, name: "Proclamation of the Republic of Tunisia", "name-arabic": "إعلان الجمهورية التونسية" },
+				{ year: 1959, name: "Adoption of the First Republican Constitution", "name-arabic": "اعتماد أول دستور للجمهورية" },
+				{ year: 1963, name: "Evacuation of the French Base at Bizerte", "name-arabic": "جلاء القاعدة الفرنسية من بنزرت" },
+				{ year: 1975, name: "Habib Bourguiba Declared President for Life", "name-arabic": "إعلان الحبيب بورقيبة رئيساً مدى الحياة" },
+				{ year: 1984, name: "Bread Riots", "name-arabic": "انتفاضة الخبز" },
+				{ year: 1987, name: "Ben Ali Removes Bourguiba", "name-arabic": "إزاحة بورقيبة ووصول بن علي إلى السلطة" },
+				{ year: 1989, name: "First Multiparty Presidential Elections", "name-arabic": "أول انتخابات رئاسية تعددية" },
+				{ year: 1995, name: "Partnership Agreement with the European Union", "name-arabic": "اتفاقية الشراكة مع الاتحاد الأوروبي" },
+				{ year: 2002, name: "Constitutional Referendum Expands Presidential Powers", "name-arabic": "استفتاء دستوري يوسع صلاحيات الرئيس" },
+				{ year: 2005, name: "World Summit on the Information Society in Tunis", "name-arabic": "القمة العالمية لمجتمع المعلومات في تونس" },
+				{ year: 2010, name: "Mohamed Bouazizi Self-Immolation", "name-arabic": "إحراق محمد البوعزيزي لنفسه" },
+				{ year: 2011, name: "Tunisian Revolution and Fall of Ben Ali", "name-arabic": "الثورة التونسية وسقوط بن علي" },
+				{ year: 2011, name: "Election of the Constituent Assembly", "name-arabic": "انتخاب المجلس التأسيسي" },
+				{ year: 2013, name: "Assassination of Chokri Belaid", "name-arabic": "اغتيال شكري بلعيد" },
+				{ year: 2013, name: "National Dialogue Quartet Process", "name-arabic": "إطلاق الحوار الوطني" },
+				{ year: 2014, name: "Adoption of the New Constitution", "name-arabic": "اعتماد الدستور الجديد" },
+				{ year: 2014, name: "First Democratic Presidential Election", "name-arabic": "أول انتخابات رئاسية ديمقراطية" },
+				{ year: 2015, name: "Bardo Museum Terrorist Attack", "name-arabic": "هجوم متحف باردو" },
+				{ year: 2015, name: "Sousse Resort Terrorist Attack", "name-arabic": "هجوم سوسة الإرهابي" },
+				{ year: 2015, name: "National Dialogue Quartet Wins Nobel Peace Prize", "name-arabic": "فوز الرباعي الراعي للحوار بجائزة نوبل للسلام" },
+				{ year: 2021, name: "President Saied Suspends Parliament", "name-arabic": "قيس سعيّد يعلق عمل البرلمان" },
+				{ year: 2022, name: "Approval of the New Constitution", "name-arabic": "إقرار الدستور الجديد" },
+				{ year: 2024, name: "Presidential Election Won by Kais Saied", "name-arabic": "فوز قيس سعيّد بولاية رئاسية جديدة" }
+				]
+    },
+	Rashidun: {
+        startYear: 632,
+		endYear:661,
+        showSpeakers: false,
+        presidents:  [
+		{ start: 632, end: 634, name: "Abu Bakr", arabicName: "أبو بكر الصديق", img: "images/AbuBakr.jpg" },
+			{ start: 634, end: 644, name: "Umar ibn al-Khattab", arabicName: "عمر بن الخطاب", img: "images/UmarIbnAlKhattab.jpg" },
+			{ start: 644, end: 656, name: "Uthman ibn Affan", arabicName: "عثمان بن عفان", img: "images/UthmanIbnAffan.jpg" },
+			{ start: 656, end: 661, name: "Ali ibn Abi Talib", arabicName: "علي بن أبي طالب", img: "images/AliIbnAbiTalib.jpg" }
+			
+			],
+        primeMinisters: [
+				],
+        parliamentPresidents: [],
+        flags: [
+            { start: 632, end: 661, img: "images/Rashidun1.jpg" }
+        ],
+        incidents: [
+				{ year: 632, name: "Death of Prophet Muhammad and Abu Bakr's Caliphate Begins", "name-arabic": "وفاة النبي محمد وبداية خلافة أبي بكر" },
+				{ year: 632, name: "Ridda Wars (Wars of Apostasy)", "name-arabic": "حروب الردة" },
+				{ year: 633, name: "Beginning of the Conquest of Iraq", "name-arabic": "بداية فتح العراق" },
+				{ year: 634, name: "Death of Abu Bakr and Accession of Umar", "name-arabic": "وفاة أبي بكر وتولي عمر بن الخطاب" },
+				{ year: 636, name: "Battle of Yarmouk", "name-arabic": "معركة اليرموك" },
+				{ year: 636, name: "Battle of al-Qadisiyyah", "name-arabic": "معركة القادسية" },
+				{ year: 638, name: "Conquest of Jerusalem", "name-arabic": "فتح القدس" },
+				{ year: 639, name: "Beginning of the Conquest of Egypt", "name-arabic": "بداية فتح مصر" },
+				{ year: 642, name: "Battle of Nahavand", "name-arabic": "معركة نهاوند" },
+				{ year: 644, name: "Assassination of Umar and Accession of Uthman", "name-arabic": "اغتيال عمر بن الخطاب وتولي عثمان" },
+				{ year: 650, name: "Standardization of the Quran", "name-arabic": "جمع وتوحيد المصحف الشريف" },
+				{ year: 655, name: "Battle of the Masts", "name-arabic": "معركة ذات الصواري" },
+				{ year: 656, name: "Assassination of Uthman", "name-arabic": "اغتيال عثمان بن عفان" },
+				{ year: 656, name: "Ali Becomes Caliph", "name-arabic": "تولي علي بن أبي طالب الخلافة" },
+				{ year: 656, name: "Battle of the Camel", "name-arabic": "معركة الجمل" },
+				{ year: 657, name: "Battle of Siffin", "name-arabic": "معركة صفين" },
+				{ year: 658, name: "Battle of Nahrawan", "name-arabic": "معركة النهروان" },
+				{ year: 661, name: "Assassination of Ali", "name-arabic": "استشهاد علي بن أبي طالب" },
+				{ year: 661, name: "End of the Rashidun Caliphate and Beginning of the Umayyad Caliphate", "name-arabic": "نهاية الخلافة الراشدة وبداية الدولة الأموية" }
+				]
+    },
+	
+	Umayyad: {
+        startYear: 661,
+		endYear:750,
+        showSpeakers: false,
+        presidents:  [
+			{ start: 661, end: 680, name: "Muawiya I", arabicName: "معاوية بن أبي سفيان", img: "images/MuawiyaI.jpg" },
+			{ start: 680, end: 683, name: "Yazid I", arabicName: "يزيد بن معاوية", img: "images/YazidI.jpg" },
+			{ start: 683, end: 684, name: "Muawiya II", arabicName: "معاوية بن يزيد", img: "images/MuawiyaII.jpg" },
+			{ start: 684, end: 685, name: "Marwan I", arabicName: "مروان بن الحكم", img: "images/MarwanI.jpg" },
+			{ start: 685, end: 705, name: "Abd al-Malik", arabicName: "عبد الملك بن مروان", img: "images/AbdAlMalik.jpg" },
+			{ start: 705, end: 715, name: "Al-Walid I", arabicName: "الوليد بن عبد الملك", img: "images/AlWalidI.jpg" },
+			{ start: 715, end: 717, name: "Sulayman ibn Abd al-Malik", arabicName: "سليمان بن عبد الملك", img: "images/SulaymanI.jpg" },
+			{ start: 717, end: 720, name: "Umar II", arabicName: "عمر بن عبد العزيز", img: "images/UmarII.jpg" },
+			{ start: 720, end: 724, name: "Yazid II", arabicName: "يزيد بن عبد الملك", img: "images/YazidII.jpg" },
+			{ start: 724, end: 743, name: "Hisham ibn Abd al-Malik", arabicName: "هشام بن عبد الملك", img: "images/HishamIbnAbdAlMalik.jpg" },
+			{ start: 743, end: 744, name: "Al-Walid II", arabicName: "الوليد بن يزيد", img: "images/AlWalidII.jpg" },
+			{ start: 744, end: 744, name: "Yazid III", arabicName: "يزيد بن الوليد", img: "images/YazidIII.jpg" },
+			{ start: 744, end: 744, name: "Ibrahim ibn al-Walid", arabicName: "إبراهيم بن الوليد", img: "images/IbrahimIbnAlWalid.jpg" },
+			{ start: 744, end: 750, name: "Marwan II", arabicName: "مروان بن محمد", img: "images/MarwanII.jpg" }
+			],
+        primeMinisters: [
+				],
+        parliamentPresidents: [],
+        flags: [
+            { start: 661, end: 750, img: "images/Umayyad1.jpg" }
+        ],
+        incidents: [
+					{ year: 661, name: "Beginning of the Umayyad Caliphate", "name-arabic": "بداية الدولة الأموية" },
+					{ year: 680, name: "Death of Muawiya I and Accession of Yazid I", "name-arabic": "وفاة معاوية وتولي يزيد بن معاوية" },
+					{ year: 680, name: "Battle of Karbala", "name-arabic": "معركة كربلاء" },
+					{ year: 683, name: "Siege of Mecca", "name-arabic": "حصار مكة" },
+					{ year: 685, name: "Abd al-Malik Becomes Caliph", "name-arabic": "تولي عبد الملك بن مروان الخلافة" },
+					{ year: 691, name: "Construction of the Dome of the Rock", "name-arabic": "بناء قبة الصخرة" },
+					{ year: 692, name: "End of the Second Fitna", "name-arabic": "نهاية الفتنة الثانية" },
+					{ year: 696, name: "Introduction of Islamic Coinage", "name-arabic": "إصدار العملة الإسلامية" },
+					{ year: 711, name: "Conquest of Al-Andalus", "name-arabic": "فتح الأندلس" },
+					{ year: 711, name: "Conquest of Sindh", "name-arabic": "فتح السند" },
+					{ year: 712, name: "Capture of Toledo", "name-arabic": "فتح طليطلة" },
+					{ year: 717, name: "Umar II Becomes Caliph", "name-arabic": "تولي عمر بن عبد العزيز الخلافة" },
+					{ year: 717, name: "Siege of Constantinople", "name-arabic": "حصار القسطنطينية" },
+					{ year: 720, name: "Death of Umar II", "name-arabic": "وفاة عمر بن عبد العزيز" },
+					{ year: 732, name: "Battle of Tours", "name-arabic": "معركة بلاط الشهداء" },
+					{ year: 740, name: "Berber Revolt", "name-arabic": "ثورة البربر" },
+					{ year: 744, name: "Third Fitna Begins", "name-arabic": "بداية الفتنة الثالثة" },
+					{ year: 747, name: "Abbasid Revolution Begins", "name-arabic": "بداية الثورة العباسية" },
+					{ year: 750, name: "Battle of the Zab", "name-arabic": "معركة الزاب" },
+					{ year: 750, name: "Fall of the Umayyad Caliphate", "name-arabic": "سقوط الدولة الأموية" }
+					]
+    },
+	USA1960: {
+        startYear: 1961,
+        showSpeakers: false,
+        presidents:  
+				[
+			  { start: 1961, end: 1963, name: "John FK ennedy", arabicName: "جون كينيدي", img: "images/JohnFKennedy.jpg" },
+			  { start: 1963, end: 1969, name: "Lyndon Johnson", arabicName: "ليندون جونسون", img: "images/LyndonJohnson.jpg" },
+			  { start: 1969, end: 1974, name: "Richard Nixon", arabicName: "ريتشارد نيكسون", img: "images/RichardNixon.jpg" },
+			  { start: 1974, end: 1977, name: "Gerald Ford", arabicName: "جيرالد فورد", img: "images/GeraldFord.jpg" },
+			  { start: 1977, end: 1981, name: "Jimmy Carter", arabicName: "جيمي كارتر", img: "images/JimmyCarter.jpg" },
+			  { start: 1981, end: 1989, name: "Ronald Reagan", arabicName: "رونالد ريغان", img: "images/RonaldReagan.jpg" },
+			  { start: 1989, end: 1993, name: "George H W Bush", arabicName: "جورج بوش الأب", img: "images/GeorgeHWBush.jpg" },
+			  { start: 1993, end: 2001, name: "Bill Clinton", arabicName: "بيل كلينتون", img: "images/BillClinton.jpg" },
+			  { start: 2001, end: 2009, name: "George W Bush", arabicName: "جورج بوش الابن", img: "images/GeorgeWBush.jpg" },
+			  { start: 2009, end: 2017, name: "Barack Obama", arabicName: "باراك أوباما", img: "images/BarackObama.jpg" },
+			  { start: 2017, end: 2021, name: "Donald Trump", arabicName: "دونالد ترامب", img: "images/DonaldTrump.jpg" },
+			  { start: 2021, end: 2025, name: "Joe Biden", arabicName: "جو بايدن", img: "images/JoeBiden.jpg" },
+			  { start: 2025, end: 9999, name: "Donald Trump", arabicName: "دونالد ترامب", img: "images/DonaldTrump.jpg" }
+			],
+        primeMinisters: [
+		 { start: 1961, end: 1963, name: "Lyndon Johnson", arabicName: "ليندون جونسون", img: "images/LyndonJohnson.jpg" },
+			  { start: 1965, end: 1969, name: "Hubert Humphrey", arabicName: "هيوبرت همفري", img: "images/HubertHumphrey.jpg" },
+			  { start: 1969, end: 1973, name: "Spiro Agnew", arabicName: "سبيرو أغنيو", img: "images/SpiroAgnew.jpg" },
+			  { start: 1973, end: 1974, name: "Gerald Ford", arabicName: "جيرالد فورد", img: "images/GeraldFord.jpg" },
+			  { start: 1974, end: 1977, name: "Nelson Rockefeller", arabicName: "نيلسون روكفلر", img: "images/NelsonRockefeller.jpg" },
+			  { start: 1977, end: 1981, name: "Walter Mondale", arabicName: "والتر مونديل", img: "images/WalterMondale.jpg" },
+			  { start: 1981, end: 1989, name: "George H W Bush", arabicName: "جورج بوش الأب", img: "images/GeorgeHWBush.jpg" },
+			  { start: 1989, end: 1993, name: "Dan Quayle", arabicName: "دان كويل", img: "images/DanQuayle.jpg" },
+			  { start: 1993, end: 2001, name: "Al Gore", arabicName: "آل غور", img: "images/AlGore.jpg" },
+			  { start: 2001, end: 2009, name: "Dick Cheney", arabicName: "ديك تشيني", img: "images/DickCheney.jpg" },
+			  { start: 2009, end: 2017, name: "JoeB iden", arabicName: "جو بايدن", img: "images/JoeBiden.jpg" },
+			  { start: 2017, end: 2021, name: "Mike Pence", arabicName: "مايك بنس", img: "images/MikePence.jpg" },
+			  { start: 2021, end: 2025, name: "Kamala Harris", arabicName: "كامالا هاريس", img: "images/KamalaHarris.jpg" },
+			  { start: 2025, end: 9999, name: "J D Vance", arabicName: "جي دي فانس", img: "images/JDVance.jpg" }
+				],
+        parliamentPresidents: [
+			 
+			],
+        flags: [
+            { start: 1961, end: 9999, img: "images/USA1.jpg" }
+        ],
+        incidents: [
+			  { year: 1961, name: "Bay of Pigs Invasion", "name-arabic": "غزو خليج الخنازير" },
+			  { year: 1962, name: "Cuban Missile Crisis", "name-arabic": "أزمة الصواريخ الكوبية" },
+			  { year: 1963, name: "Assassination of John F. Kennedy", "name-arabic": "اغتيال جون كينيدي" },
+			  { year: 1964, name: "Civil Rights Act Signed", "name-arabic": "إقرار قانون الحقوق المدنية" },
+			  { year: 1965, name: "Voting Rights Act", "name-arabic": "قانون حقوق التصويت" },
+			  { year: 1969, name: "Apollo 11 Moon Landing", "name-arabic": "هبوط أبولو 11 على القمر" },
+			  { year: 1972, name: "Watergate Scandal Begins", "name-arabic": "بداية فضيحة ووترغيت" },
+			  { year: 1973, name: "Paris Peace Accords and Vietnam Withdrawal", "name-arabic": "اتفاقيات باريس والانسحاب من فيتنام" },
+			  { year: 1974, name: "Resignation of Richard Nixon", "name-arabic": "استقالة ريتشارد نيكسون" },
+			  { year: 1979, name: "Three Mile Island Nuclear Accident", "name-arabic": "حادثة محطة ثري مايل آيلاند النووية" },
+			  { year: 1981, name: "Assassination Attempt on Ronald Reagan", "name-arabic": "محاولة اغتيال رونالد ريغان" },
+			  { year: 1986, name: "Space Shuttle Challenger Disaster", "name-arabic": "كارثة المكوك الفضائي تشالنجر" },
+			  { year: 1989, name: "Fall of the Berlin Wall", "name-arabic": "سقوط جدار برلين" },
+			  { year: 1991, name: "Gulf War Victory", "name-arabic": "الانتصار في حرب الخليج" },
+			  { year: 1995, name: "Oklahoma City Bombing", "name-arabic": "تفجير أوكلاهوما سيتي" },
+			  { year: 1998, name: "Clinton Impeachment", "name-arabic": "مساءلة الرئيس بيل كلينتون" },
+			  { year: 2001, name: "September 11 Terrorist Attacks", "name-arabic": "هجمات 11 سبتمبر الإرهابية" },
+			  { year: 2001, name: "War in Afghanistan Begins", "name-arabic": "بداية الحرب في أفغانستان" },
+			  { year: 2003, name: "Iraq War Begins", "name-arabic": "بداية حرب العراق" },
+			  { year: 2005, name: "Hurricane Katrina", "name-arabic": "إعصار كاترينا" },
+			  { year: 2008, name: "Global Financial Crisis", "name-arabic": "الأزمة المالية العالمية" },
+			  { year: 2021, name: "Capitol Attack", "name-arabic": "اقتحام مبنى الكابيتول" },
+			  { year: 2021, name: "Withdrawal from Afghanistan", "name-arabic": "الانسحاب من أفغانستان" },
+			  { year: 2022, name: "Inflation Reduction Act", "name-arabic": "إقرار قانون خفض التضخم" }
+			]
+    },
+	USSR: {
+        startYear: 1917,
+		endYear: 1991,
+        showSpeakers: false,
+        presidents:  
+			[
+			  { start: 1917, end: 1924, name: "Vladimir Lenin", arabicName: "فلاديمير لينين", img: "images/VladimirLenin.jpg" },
+			  { start: 1924, end: 1953, name: "Joseph Stalin", arabicName: "جوزيف ستالين", img: "images/JosephStalin.jpg" },
+			  { start: 1953, end: 1955, name: "Georgy Malenkov", arabicName: "غيورغي مالينكوف", img: "images/GeorgyMalenkov.jpg" },
+			  { start: 1955, end: 1964, name: "Nikita Khrushchev", arabicName: "نيكيتا خروتشوف", img: "images/NikitaKhrushchev.jpg" },
+			  { start: 1964, end: 1982, name: "Leonid Brezhnev", arabicName: "ليونيد بريجنيف", img: "images/LeonidBrezhnev.jpg" },
+			  { start: 1982, end: 1984, name: "Yuri Andropov", arabicName: "يوري أندروبوف", img: "images/YuriAndropov.jpg" },
+			  { start: 1984, end: 1985, name: "Konstantin Chernenko", arabicName: "كونستانتين تشيرنينكو", img: "images/KonstantinChernenko.jpg" },
+			  { start: 1985, end: 1991, name: "Mikhail Gorbachev", arabicName: "ميخائيل غورباتشوف", img: "images/MikhailGorbachev.jpg" }
+			],
+        primeMinisters: [
+				  { start: 1917, end: 1924, name: "Vladimir Lenin", arabicName: "فلاديمير لينين", img: "images/VladimirLenin.jpg" },
+				  { start: 1924, end: 1930, name: "Alexei Rykov", arabicName: "أليكسي ريكوف", img: "images/AlexeiRykov.jpg" },
+				  { start: 1930, end: 1941, name: "Vyacheslav Molotov", arabicName: "فياتشيسلاف مولوتوف", img: "images/VyacheslavMolotov.jpg" },
+				  { start: 1941, end: 1953, name: "Joseph Stalin", arabicName: "جوزيف ستالين", img: "images/JosephStalin.jpg" },
+				  { start: 1953, end: 1955, name: "Georgy Malenkov", arabicName: "غيورغي مالينكوف", img: "images/GeorgyMalenkov.jpg" },
+				  { start: 1955, end: 1958, name: "Nikolai Bulganin", arabicName: "نيكولاي بولغانين", img: "images/NikolaiBulganin.jpg" },
+				  { start: 1958, end: 1964, name: "Nikita Khrushchev", arabicName: "نيكيتا خروتشوف", img: "images/NikitaKhrushchev.jpg" },
+				  { start: 1964, end: 1980, name: "Alexei Kosygin", arabicName: "أليكسي كوسيغين", img: "images/AlexeiKosygin.jpg" },
+				  { start: 1980, end: 1985, name: "Nikolai Tikhonov", arabicName: "نيكولاي تيخونوف", img: "images/NikolaiTikhonov.jpg" },
+				  { start: 1985, end: 1991, name: "Nikolai Ryzhkov", arabicName: "نيكولاي ريجكوف", img: "images/NikolaiRyzhkov.jpg" },
+				  { start: 1991, end: 1991, name: "Valentin Pavlov", arabicName: "فالنتين بافلوف", img: "images/ValentinPavlov.jpg" },
+				  { start: 1991, end: 1991, name: "Ivan Silayev", arabicName: "إيفان سيلاييف", img: "images/IvanSilayev.jpg.jpg" }
+				],
+        parliamentPresidents: [
+			 
+			],
+        flags: [
+            { start: 1917, end: 1991, img: "images/USSR1.jpg" }
+        ],
+        incidents: [
+			  { year: 1917, name: "October Revolution", "name-arabic": "ثورة أكتوبر البلشفية" },
+			  { year: 1918, name: "Russian Civil War Begins", "name-arabic": "بداية الحرب الأهلية الروسية" },
+			  { year: 1922, name: "Formation of the Soviet Union", "name-arabic": "تأسيس الاتحاد السوفيتي" },
+			  { year: 1924, name: "Death of Lenin", "name-arabic": "وفاة فلاديمير لينين" },
+			  { year: 1928, name: "First Five-Year Plan", "name-arabic": "إطلاق الخطة الخمسية الأولى" },
+			  { year: 1932, name: "Soviet Famine (Holodomor)", "name-arabic": "المجاعة السوفيتية (هولودومور)" },
+			  { year: 1936, name: "Great Purge Begins", "name-arabic": "بداية التطهير الكبير" },
+			  { year: 1939, name: "Molotov-Ribbentrop Pact", "name-arabic": "اتفاق مولوتوف-ريبنتروب" },
+			  { year: 1941, name: "Nazi Germany Invades USSR", "name-arabic": "الغزو الألماني للاتحاد السوفيتي" },
+			  { year: 1943, name: "Victory at Stalingrad", "name-arabic": "الانتصار في ستالينغراد" },
+			  { year: 1945, name: "Victory in World War II", "name-arabic": "النصر في الحرب العالمية الثانية" },
+			  { year: 1947, name: "Beginning of the Cold War", "name-arabic": "بداية الحرب الباردة" },
+			  { year: 1949, name: "First Soviet Atomic Bomb", "name-arabic": "أول قنبلة ذرية سوفيتية" },
+			  { year: 1953, name: "Death of Stalin", "name-arabic": "وفاة جوزيف ستالين" },
+			  { year: 1957, name: "Launch of Sputnik 1", "name-arabic": "إطلاق سبوتنيك 1" },
+			  { year: 1961, name: "Yuri Gagarin First Human in Space", "name-arabic": "يوري غاغارين أول إنسان في الفضاء" },
+			  { year: 1962, name: "Cuban Missile Crisis", "name-arabic": "أزمة الصواريخ الكوبية" },
+			  { year: 1968, name: "Prague Spring Crushed", "name-arabic": "قمع ربيع براغ" },
+			  { year: 1972, name: "SALT I Treaty Signed", "name-arabic": "توقيع اتفاقية سالت الأولى" },
+			  { year: 1979, name: "Soviet Invasion of Afghanistan", "name-arabic": "الغزو السوفيتي لأفغانستان" },
+			  { year: 1985, name: "Gorbachev Launches Perestroika", "name-arabic": "غورباتشوف يطلق البيريسترويكا" },
+			  { year: 1986, name: "Chernobyl Nuclear Disaster", "name-arabic": "كارثة تشيرنوبيل النووية" },
+			  { year: 1989, name: "Fall of the Berlin Wall", "name-arabic": "سقوط جدار برلين" },
+			  { year: 1990, name: "Lithuania Declares Independence", "name-arabic": "إعلان ليتوانيا الاستقلال" },
+			  { year: 1991, name: "August Coup Attempt", "name-arabic": "محاولة الانقلاب في أغسطس" },
+			  { year: 1991, name: "Dissolution of the Soviet Union", "name-arabic": "تفكك الاتحاد السوفيتي" }
+			]
+    },
+	France1947: {
+        startYear: 1947,
+        showSpeakers: false,
+        presidents:  
+			[
+				  {
+					"start": 1947,
+					"end": 1954,
+					"name": "Vincent Auriol",
+					"name-arabic": "فنسان أوريول",
+					"img": "https://en.wikipedia.org/wiki/List_of_presidents_of_France#/media/File:Portrait_officiel_Vincent_Auriol_(3x4_cropped).jpg"
+				  },
+				  {
+					"start": 1954,
+					"end": 1959,
+					"name": "René Coty",
+					"name-arabic": "رينيه كوتي",
+					"img": "https://upload.wikimedia.org/wikipedia/commons/7/75/Rene_Coty_1954.jpg"
+				  },
+				  {
+					"start": 1959,
+					"end": 1969,
+					"name": "Charles de Gaulle",
+					"name-arabic": "شارل ديغول",
+					"img": "https://www.elysee.fr/cdn-cgi/image/format=auto,quality=100,width=720,height=1080/images/default/0001/02/2b14cc268d0be2c7c7605bca866fea0c24d55d09.jpeg"
+				  },
+				  {
+					"start": 1969,
+					"end": 1974,
+					"name": "Georges Pompidou",
+					"name-arabic": "جورج بومبيدو",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/0/05/Georges_Pompidou_1969.jpg"
+				  },
+				  {
+					"start": 1974,
+					"end": 1981,
+					"name": "Valéry Giscard d'Estaing",
+					"name-arabic": "فاليري جيسكار ديستان",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/3/32/Valery_Giscard_dEstaing_1978.jpg"
+				  },
+				  {
+					"start": 1981,
+					"end": 1995,
+					"name": "François Mitterrand",
+					"name-arabic": "فرانسوا ميتران",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/8/86/Francois_Mitterrand_1984.jpg"
+				  },
+				  {
+					"start": 1995,
+					"end": 2007,
+					"name": "Jacques Chirac",
+					"name-arabic": "جاك شيراك",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Jacques_Chirac_1997.jpg"
+				  },
+				  {
+					"start": 2007,
+					"end": 2012,
+					"name": "Nicolas Sarkozy",
+					"name-arabic": "نيكولا ساركوزي",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Nicolas_Sarkozy_2008.jpg"
+				  },
+				  {
+					"start": 2012,
+					"end": 2017,
+					"name": "François Hollande",
+					"name-arabic": "فرانسوا هولاند",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/5/56/Francois_Hollande_2013.jpg"
+				  },
+				  {
+					"start": 2017,
+					"end": null,
+					"name": "Emmanuel Macron",
+					"name-arabic": "إيمانويل ماكرون",
+					"image": "https://upload.wikimedia.org/wikipedia/commons/b/b7/Emmanuel_Macron_2017.jpg"
+				  }
+				]
+,
+        primeMinisters: [
+				 
+				],
+        parliamentPresidents: [
+			 
+			],
+        flags: [
+            { start: 1947, end: 9999, img: "images/USSR1.jpg" }
+        ],
+        incidents: [
+			 
+			]
+    }
+};
+
+let activeCountry = countryData.Lebanon;
+let END_YEAR = 2026;
+let yearTimer;
+
+function getIncident(year) {
+    return activeCountry.incidents.find(i => i.year === year);
+}
+const yearsContainer =
+document.getElementById("years");
+
+function buildYears() {
+let END_YEAR = 2026;
+yearsContainer.replaceChildren();
+END_YEAR = activeCountry.endYear!=null?activeCountry.endYear:END_YEAR;
+for(let year=activeCountry.startYear; year<=END_YEAR; year++){
+
+    const div=document.createElement("div");
+
+    div.className="year";
+    div.id="year-"+year;
+    div.textContent=year;
+
+    const incident = getIncident(year);
+    if (incident) {
+        const bubble = document.createElement("div");
+        bubble.className = "incident-bubble";
+        const name = document.createElement("span");
+        name.lang = "en";
+        name.textContent = incident.name;
+        const arabicName = document.createElement("span");
+        arabicName.lang = "ar";
+        arabicName.dir = "rtl";
+        arabicName.textContent = incident["name-arabic"];
+        bubble.appendChild(name);
+        bubble.appendChild(arabicName);
+        div.appendChild(bubble);
+    }
+
+    yearsContainer.appendChild(div);
+
+}
+
+}
+
+let currentYear = activeCountry.startYear;
+let currentIndex = 0;
+
+const PERSON_DURATION = 700; // 1 second per person
+
+function findPersons(list, year) {
+return list.filter(
+x => year >= x.start && year <= x.end
+);
+}
+
+function updateYearDisplay(){
+
+    document.getElementById("currentYear")
+            .textContent=currentYear;
+
+    document
+      .querySelectorAll(".year")
+      .forEach(y => y.classList.remove("active"));
+
+    const active =
+       document.getElementById(
+           "year-"+currentYear
+       );
+
+    if(active){
+        active.classList.add("active");
+    }
+
+    const offset =
+    ((currentYear-activeCountry.startYear)*80)
+    - (document.querySelector(".timeline").clientHeight/2)
+       + 40;
+
+    yearsContainer.style.transform =
+        `translateY(${-offset}px)`;
+		
+		
+    updateFlags();
+		
+	/*	
+		
+	const incident = getIncident(currentYear);
+
+yearsContainer.innerHTML = `
+    <div class="year-value">${currentYear}</div>
+    ${
+      incident
+        ? `<div class="incident-bubble">${incident.incident}</div>`
+        : ''
+    }
+`;*/
+/*
+    const president =
+        findPerson(
+            presidents,
+            currentYear
+        );
+
+    document.getElementById("presidentName")
+            .textContent =
+            president.name;
+
+    document.getElementById("presidentArabicName")
+            .textContent =
+            president.arabicName;
+
+    document.getElementById("presidentImg")
+            .src =
+            president.img;
+
+    const pm =
+        findPerson(
+            primeMinisters,
+            currentYear
+        );
+
+    document.getElementById("pmName")
+            .textContent =
+            pm.name;
+
+    document.getElementById("pmArabicName")
+            .textContent =
+            pm.arabicName;
+
+    document.getElementById("pmImg")
+            .src =
+            pm.img;*/
+}
+
+function playYear() {
+    clearInterval(yearTimer);
+
+    const presidentsForYear =
+        findPersons(activeCountry.presidents, currentYear);
+
+    const pmsForYear =
+        findPersons(activeCountry.primeMinisters, currentYear);
+
+  
+	const speakersForYear =
+    findPersons(
+        activeCountry.parliamentPresidents,
+        currentYear
+    );
+
+const count = Math.max(
+    presidentsForYear.length || 1,
+    pmsForYear.length || 1,
+    speakersForYear.length || 1
+);
+
+    currentIndex = 0;
+
+    updateYearDisplay();
+    showCurrentPerson();
+	END_YEAR =  activeCountry.endYear?activeCountry.endYear:2026;
+    yearTimer = setInterval(() => {
+
+        currentIndex++;
+
+        if (currentIndex >= count) {
+
+            clearInterval(yearTimer);
+
+            currentYear++;
+
+            if (currentYear > END_YEAR) {
+                currentYear = activeCountry.startYear;
+            }
+
+            playYear();
+            return;
+        }
+
+        showCurrentPerson();
+
+    }, PERSON_DURATION); // always 1 second per person
+}
+
+function showCurrentPerson() {
+
+    const presidentsForYear =
+        findPersons(activeCountry.presidents, currentYear);
+
+    const pmsForYear =
+        findPersons(activeCountry.primeMinisters, currentYear);
+		
+	const speakersForYear =
+    findPersons(
+        activeCountry.parliamentPresidents,
+        currentYear
+    );
+
+const maxCount = Math.max(
+    presidentsForYear.length || 1,
+    pmsForYear.length || 1,
+    speakersForYear.length || 1
+);
+
+
+    // PRESIDENT
+    if (presidentsForYear.length > 0) {
+
+        let presidentIndex = Math.floor(
+            (currentIndex * presidentsForYear.length) / maxCount
+        );
+
+        if (presidentIndex >= presidentsForYear.length) {
+            presidentIndex = presidentsForYear.length - 1;
+        }
+
+        const president =
+            presidentsForYear[presidentIndex];
+
+        document.getElementById("presidentName")
+            .textContent = president.name;
+
+        document.getElementById("presidentArabicName")
+            .textContent = president.arabicName;
+			
+			
+        document.getElementById("presidentPeriod")
+            .textContent = "[" + president.start +"-"+(president.end>2026?"":""+president.end)+"]";
+
+        document.getElementById("presidentImg")
+            .src = president.img;
+
+    } else {
+
+        document.getElementById("presidentName")
+            .textContent = "-";
+
+        document.getElementById("presidentArabicName")
+            .textContent = "-";
+			
+			
+        document.getElementById("presidentPeriod")
+            .textContent = "-";
+
+
+        document.getElementById("presidentImg")
+            .src = "images/default.jpg";
+    }
+
+    // PRIME MINISTER
+    if (pmsForYear.length > 0) {
+
+        let pmIndex = Math.floor(
+            (currentIndex * pmsForYear.length) / maxCount
+        );
+
+        if (pmIndex >= pmsForYear.length) {
+            pmIndex = pmsForYear.length - 1;
+        }
+
+        const pm =
+            pmsForYear[pmIndex];
+
+        document.getElementById("pmName")
+            .textContent = pm.name;
+
+        document.getElementById("pmArabicName")
+            .textContent = pm.arabicName;
+			
+			
+        document.getElementById("pmPeriod")
+			 .textContent = "[" + pm.start +"-"+(pm.end>2026?"":""+pm.end)+"]";
+
+        document.getElementById("pmImg")
+            .src = pm.img;
+
+    } else {
+
+        document.getElementById("pmName")
+            .textContent = "-";
+
+        document.getElementById("pmArabicName")
+            .textContent = "-";
+
+        document.getElementById("pmPeriod")
+            .textContent = "-";
+
+        document.getElementById("pmImg")
+            .src = "images/default.jpg";
+    }
+	
+
+
+if (speakersForYear.length > 0) {
+
+    let speakerIndex = Math.floor(
+        (currentIndex * speakersForYear.length)
+        / maxCount
+    );
+
+    if (speakerIndex >= speakersForYear.length) {
+        speakerIndex =
+            speakersForYear.length - 1;
+    }
+
+    const speaker =
+        speakersForYear[speakerIndex];
+
+    document.getElementById("speakerName")
+        .textContent = speaker.name;
+
+    document.getElementById("speakerArabicName")
+        .textContent = speaker.arabicName;
+
+
+        document.getElementById("speakerPeriod")
+            .textContent = "[" + speaker.start +"-"+(speaker.end>2026?"":""+speaker.end)+"]";
+
+    document.getElementById("speakerImg")
+        .src = speaker.img;
+
+} else {
+
+    document.getElementById("speakerName")
+        .textContent = "-";
+
+    document.getElementById("speakerArabicName")
+        .textContent = "-";
+		
+		
+        document.getElementById("speakerPeriod")
+            .textContent = "-";
+
+
+    document.getElementById("speakerImg")
+        .src = "images/default.jpg";
+}
+}
+
+
+function findFlag(year) {
+    return activeCountry.flags.find(
+    f => year >= f.start && year < f.end
+  );
+}
+
+function updateFlagPreview(prefix, flag) {
+    const slot = document.getElementById(prefix + "Slot");
+    const image = document.getElementById(prefix + "Image");
+    const period = document.getElementById(prefix + "Period");
+    slot.style.visibility = flag ? "visible" : "hidden";
+    if (flag) {
+        image.src = flag.img;
+        image.alt = document.getElementById("countrySelect").value + " flag (" + flag.start + "-" + (flag.end > END_YEAR ? "present" : flag.end) + ")";
+        period.textContent = "[" + flag.start + "-" + (flag.end > END_YEAR ? "" : flag.end) + "]";
+    } else {
+        image.removeAttribute("src");
+        period.textContent = "";
+    }
+}
+
+function updateFlags() {
+    const flag = findFlag(currentYear);
+    const index = activeCountry.flags.indexOf(flag);
+    document.getElementById("flagContainer").hidden = !flag;
+    updateFlagPreview("flag", flag);
+    updateFlagPreview("previousFlag", index > 0 ? activeCountry.flags[index - 1] : null);
+    updateFlagPreview("nextFlag", index >= 0 ? activeCountry.flags[index + 1] : null);
+}
+
+
+function changeCountry() {
+    clearInterval(yearTimer);
+    const country = document.getElementById("countrySelect").value;
+    activeCountry = countryData[country];
+    currentYear = activeCountry.startYear;
+    currentIndex = 0;
+    document.title = country + " Historical Timeline";
+    const isMonarchy = country === "KSA" || country === "Jordan" || country === "Bahrain"  || country ==="Morocco";
+	const isSultan = country ==="Oman";
+	const isKhalifa = country ==="Rashidun" || country ==="Umayyad";
+	const isAmir = country === "Qatar" ;
+	const vicePresident = country === "UAE" || country === "USA1960";
+    document.getElementById("presidentTitle").textContent = isMonarchy
+        ? "KING-ملك" : (isSultan?"Sultan - سلطان  ":(isAmir?"Amir - أمير":(isKhalifa?"الخليفة -  Caliph":"PRESIDENT-رئيس جمهورية")));
+    document.getElementById("speakerSection").style.display = activeCountry.showSpeakers === false
+        ? "none" : "";
+	/*document.getElementById("pmSection").style.display = isKhalifa
+        ? "none" : "";*/
+    document.getElementById("speakerTitle").textContent = country === "KSA"
+        ? "Speaker of the Shura Council-رئيس مجلس الشورى"
+        : "Speaker of the Parliament-رئيس مجلس النواب";
+    document.getElementById("pmTitle").textContent = isMonarchy || isSultan || isAmir
+        ? "Crown Prince - ولي العهد"
+        :(vicePresident? "Vice President - نائب الرئيس":"PRIME MINISTER-رئيس حكومة");
+    const hasRecords = activeCountry.presidents.length > 0
+        || activeCountry.primeMinisters.length > 0
+        || activeCountry.parliamentPresidents.length > 0;
+    document.getElementById("countryStatus").textContent = hasRecords
+        ? "" : "No records available for " + country;
+	buildYears();
+    updateYearDisplay();
+    showCurrentPerson();
+    if (hasRecords) {
+        playYear();
+    }
+}
+
+document.getElementById("countrySelect").addEventListener("change", changeCountry);
+window.addEventListener("resize", updateYearDisplay);
+changeCountry();
+
+
+</script>
+
+</body>
+</html>

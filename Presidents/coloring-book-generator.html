@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f2ea">
+  <title>Coloring Book Studio | Print-Ready Interior</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f5f2ea;
+      --surface: #fffefa;
+      --ink: #202b25;
+      --muted: #647168;
+      --line: #d7d9cf;
+      --green: #2e6448;
+      --green-light: #e4eee4;
+      --gold: #d49b3f;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); }
+    button, input { font: inherit; }
+    .shell { width: min(1120px, 100%); margin: 0 auto; padding: 0 28px 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; min-height: 62px; border-bottom: 1px solid var(--line); }
+    .brand, .eyebrow, .count, .page-label { font: 11px/1.5 Consolas, "Courier New", monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .brand { color: var(--green); font-weight: 700; }
+    .topbar span:last-child { color: var(--muted); }
+    header { padding: 42px 0 28px; }
+    .eyebrow { color: var(--green); }
+    h1 { max-width: 760px; margin: 9px 0 12px; font: 700 clamp(38px, 7vw, 66px)/.98 Georgia, serif; letter-spacing: -.04em; }
+    .intro { max-width: 720px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.65; }
+    .workspace { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr); gap: 20px; align-items: start; }
+    .panel { padding: 22px; border: 1px solid var(--line); background: var(--surface); box-shadow: 0 10px 24px #26392b0a; }
+    .panel h2 { margin: 0 0 18px; font: 700 22px Georgia, serif; }
+    .field { display: grid; gap: 7px; margin: 15px 0; }
+    .field label, .toggle { font-size: 13px; font-weight: 600; }
+    input[type="number"], .prompt-input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid #bac5bb; border-radius: 3px; color: var(--ink); background: white; }
+    input:focus-visible, button:focus-visible { outline: 3px solid #d49b3f99; outline-offset: 2px; }
+    .hint, .help { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .toggle { display: flex; align-items: flex-start; gap: 10px; margin: 19px 0; line-height: 1.45; cursor: pointer; }
+    .toggle input { width: 17px; height: 17px; margin: 0; flex: 0 0 auto; accent-color: var(--green); }
+    .plan { margin: 18px 0; padding: 14px; border-left: 3px solid var(--gold); background: #f8f3e7; font-size: 13px; line-height: 1.5; }
+    .plan strong { display: block; margin-bottom: 3px; }
+    .warning { display: none; margin: 12px 0 0; color: #805a17; font-size: 12px; line-height: 1.5; }
+    .warning.visible { display: block; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+    button { min-height: 42px; padding: 0 15px; border: 1px solid var(--green); border-radius: 3px; color: white; background: var(--green); font-weight: 650; cursor: pointer; }
+    button:hover { background: #224d36; }
+    button.secondary { color: var(--green); background: white; }
+    button.secondary:hover { background: var(--green-light); }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+    .prompt-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+    .count { color: var(--muted); text-align: right; }
+    .prompts { display: grid; gap: 9px; max-height: 565px; padding: 2px 3px 4px 0; overflow: auto; }
+    .prompt-row { display: grid; grid-template-columns: 31px minmax(0, 1fr); align-items: center; gap: 9px; }
+    .prompt-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(125px, .7fr); align-items: center; gap: 8px; min-width: 0; }
+    .prompt-number { color: var(--muted); font: 11px Consolas, monospace; text-align: right; }
+    .prompt-input { min-height: 39px; }
+    input[type="file"] { width: 100%; color: var(--muted); font-size: 12px; }
+    .detail-control { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 10px 0 14px; color: var(--muted); font-size: 12px; }
+    .detail-control input { grid-column: 1 / -1; width: 100%; accent-color: var(--green); }
+    .prompt-upload { display: grid; gap: 3px; min-width: 0; }
+    .prompt-file { min-width: 0; }
+    .prompt-file-name { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .status { min-height: 20px; margin: 13px 0 0; color: var(--green); font-size: 12px; line-height: 1.5; }
+    .preview-section { margin-top: 30px; }
+    .preview-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+    .preview-heading h2 { margin: 0; font: 700 24px Georgia, serif; }
+    .preview-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+    .preview-empty { padding: 35px 20px; border: 1px dashed #aeb8ac; color: var(--muted); text-align: center; font-size: 13px; line-height: 1.6; }
+    .book-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+    .book-page { position: relative; aspect-ratio: 8.5 / 11; padding: 5%; border: 1px solid #c9c9c2; background: white; box-shadow: 0 4px 14px #26392b0c; }
+    .book-page svg { display: block; width: 100%; height: 100%; }
+    .book-page.blank::after { position: absolute; inset: 0; display: grid; place-items: center; color: #b7b7b1; content: "BLANK BACK"; font: 9px Consolas, monospace; letter-spacing: .1em; }
+    .print-page { display: none; }
+    @media (max-width: 760px) {
+      .shell { padding-right: 16px; padding-left: 16px; }
+      header { padding-top: 30px; }
+      .workspace { grid-template-columns: 1fr; }
+      .prompts { max-height: 420px; }
+      .preview-heading { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .prompt-fields { grid-template-columns: minmax(0, 1fr); }
+    }
+    @page { size: Letter portrait; margin: 0; }
+    @media print {
+      html, body { width: 8.5in; margin: 0 !important; padding: 0 !important; background: white !important; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .shell, .book-preview { display: none !important; }
+      #printBook { display: block !important; }
+      .print-page {
+        display: block;
+        position: relative;
+        width: 8.5in;
+        height: 11in;
+        overflow: hidden;
+        break-after: page;
+        page-break-after: always;
+        background: white;
+      }
+      .print-page:last-child { break-after: auto; page-break-after: auto; }
+      .print-page svg { display: block; width: 8.5in; height: 11in; }
+      .print-page.blank { background: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="topbar" aria-label="Tool information">
+      <span class="brand">Coloring Book Studio</span>
+      <span>Black line art · 8.5 × 11 in</span>
+    </nav>
+    <header>
+      <div class="eyebrow">Create a print interior</div>
+      <h1>Your coloring book, page by page.</h1>
+      <p class="intro">Choose the interior length, add an original subject for each coloring page, or turn your own photo into printable black-and-white line art. Prepare a US Letter paperback interior right in your browser; selected photos stay on your device.</p>
+    </header>
+    <main>
+      <div class="workspace">
+        <section class="panel" aria-labelledby="settingsTitle">
+          <h2 id="settingsTitle">Book setup</h2>
+          <div class="field">
+            <label for="pageCount">Total interior pages</label>
+            <input id="pageCount" type="number" min="1" max="200" value="40" step="1">
+            <p class="hint">Includes coloring pages and any inserted blank pages. Choose 1–200 pages.</p>
+          </div>
+          <label class="toggle" for="blankPages">
+            <input id="blankPages" type="checkbox" checked>
+            <span>Add a blank page after each coloring page (single-sided coloring pages)</span>
+          </label>
+          <div class="plan" aria-live="polite">
+            <strong id="planTitle">20 coloring pages + 20 blank pages</strong>
+            <span id="planDetail">Enter one subject for each illustration.</span>
+          </div>
+          <p id="kdpWarning" class="warning">Most KDP paperback interiors require at least 24 pages. This shorter PDF is useful for review but may not meet the minimum for publishing.</p>
+          <p class="help">Print setup: US Letter (8.5 × 11 in), portrait, black line art, no bleed. Keep browser print scale at 100% and turn off browser headers and footers. Check KDP's current trim, margin, and page-count rules before upload; this tool creates the interior, not a cover.</p>
+          <div class="button-row">
+            <button id="generate" type="button">Generate PDF</button>
+            <button id="clear" class="secondary" type="button">Clear captions &amp; images</button>
+          </div>
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+        </section>
+        <section class="panel" aria-labelledby="promptTitle">
+          <div class="prompt-head">
+            <h2 id="promptTitle">Coloring page subjects</h2>
+            <span id="promptCount" class="count"></span>
+          </div>
+          <p class="hint">Enter a caption or subject for every page. Optionally upload an image beside it; the image will be converted to black-and-white coloring line art when you generate the book. Without an upload, the original subject illustration is used.</p>
+          <label class="detail-control" for="edgeSensitivity">
+            <span>Outline detail for uploaded images</span><output id="detailValue" for="edgeSensitivity">40%</output>
+            <input id="edgeSensitivity" type="range" min="10" max="90" value="40">
+          </label>
+          <div id="prompts" class="prompts"></div>
+        </section>
+      </div>
+      <section class="preview-section" aria-labelledby="previewTitle">
+        <div class="preview-heading">
+          <h2 id="previewTitle">Interior preview</h2>
+          <p id="previewCount">Your pages appear here after generation.</p>
+        </div>
+        <div id="previewEmpty" class="preview-empty">Set your subjects, then choose <strong>Generate PDF</strong>. In the browser print window, choose <strong>Save as PDF</strong> to download your interior.</div>
+        <div id="preview" class="book-preview"></div>
+      </section>
+    </main>
+  </div>
+  <div id="printBook" aria-hidden="true"></div>
+  <script>
+    "use strict";
+    const pageCountInput = document.getElementById("pageCount");
+    const blankPagesInput = document.getElementById("blankPages");
+    const promptsElement = document.getElementById("prompts");
+    const planTitle = document.getElementById("planTitle");
+    const planDetail = document.getElementById("planDetail");
+    const promptCountElement = document.getElementById("promptCount");
+    const kdpWarning = document.getElementById("kdpWarning");
+    const preview = document.getElementById("preview");
+    const printBook = document.getElementById("printBook");
+    const status = document.getElementById("status");
+    const maxPages = 200;
+    const edgeSensitivity = document.getElementById("edgeSensitivity");
+    const promptEntries = [];
+
+    function pagePlan() {
+      const requested = Number(pageCountInput.value);
+      const total = Number.isFinite(requested) ? Math.min(maxPages, Math.max(1, Math.floor(requested))) : 1;
+      const illustrationCount = blankPagesInput.checked ? Math.ceil(total / 2) : total;
+      const blankCount = total - illustrationCount;
+      return { total, illustrationCount, blankCount };
+    }
+
+    function updatePlan() {
+      const { total, illustrationCount, blankCount } = pagePlan();
+      planTitle.textContent = `${illustrationCount} coloring ${illustrationCount === 1 ? "page" : "pages"}${blankCount ? ` + ${blankCount} blank ${blankCount === 1 ? "page" : "pages"}` : ""}`;
+      planDetail.textContent = `${total} total interior ${total === 1 ? "page" : "pages"}. ${blankPagesInput.checked ? "Blank pages follow coloring pages." : "Every page has a coloring illustration."}`;
+      const uploadedCount = promptEntries.filter(entry => entry.file).length;
+      promptCountElement.textContent = `${illustrationCount} ${illustrationCount === 1 ? "page" : "pages"}${uploadedCount ? ` · ${uploadedCount} image${uploadedCount === 1 ? "" : "s"} selected` : ""}`;
+      kdpWarning.classList.toggle("visible", total < 24);
+      return { total, illustrationCount, blankCount };
+    }
+
+    function renderPromptFields() {
+      const { illustrationCount } = pagePlan();
+      promptsElement.querySelectorAll(".prompt-row").forEach((row, index) => {
+        if (promptEntries[index]) promptEntries[index].caption = row.querySelector(".prompt-input").value;
+      });
+      while (promptEntries.length < illustrationCount) promptEntries.push({ caption: "", file: null });
+      promptEntries.length = illustrationCount;
+      updatePlan();
+      promptsElement.replaceChildren();
+      for (let index = 0; index < illustrationCount; index++) {
+        const entry = promptEntries[index];
+        const row = document.createElement("div");
+        row.className = "prompt-row";
+        const number = document.createElement("span");
+        number.className = "prompt-number";
+        number.textContent = String(index + 1).padStart(2, "0");
+        const input = document.createElement("input");
+        input.className = "prompt-input";
+        input.type = "text";
+        input.maxLength = 70;
+        input.required = true;
+        input.placeholder = `Caption or subject for page ${index + 1}`;
+        input.setAttribute("aria-label", `Caption or subject for coloring page ${index + 1}`);
+        input.value = entry.caption;
+        input.addEventListener("input", () => { entry.caption = input.value; });
+        const fileInput = document.createElement("input");
+        fileInput.className = "prompt-file";
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.setAttribute("aria-label", `Optional coloring image for page ${index + 1}`);
+        const fileName = document.createElement("span");
+        fileName.className = "prompt-file-name";
+        fileName.textContent = entry.file ? entry.file.name : "Optional image";
+        fileInput.addEventListener("change", () => {
+          const file = fileInput.files[0];
+          if (!file) return;
+          if (!file.type.startsWith("image/") || file.size > 20 * 1024 * 1024) {
+            entry.file = null;
+            fileInput.value = "";
+            status.textContent = file.size > 20 * 1024 * 1024
+              ? "Choose an image smaller than 20 MB."
+              : "Choose a supported image file.";
+          } else {
+            entry.file = file;
+            fileName.textContent = file.name;
+            status.textContent = `Image selected for coloring page ${index + 1}. It will be converted when you generate the book.`;
+          }
+          if (!entry.file) fileName.textContent = "Optional image";
+          updatePlan();
+        });
+        fileInput.title = "Optional image to convert into coloring line art";
+        const upload = document.createElement("div");
+        upload.className = "prompt-upload";
+        upload.append(fileInput, fileName);
+        const fields = document.createElement("div");
+        fields.className = "prompt-fields";
+        fields.append(input, upload);
+        row.append(number, fields);
+        promptsElement.append(row);
+      }
+    }
+
+    function escapeXml(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&apos;"
+      })[character]);
+    }
+
+    function seededRandom(seedText) {
+      let seed = 2166136261;
+      for (const character of seedText) seed = Math.imul(seed ^ character.charCodeAt(0), 16777619);
+      return () => {
+        seed += 0x6D2B79F5;
+        let value = seed;
+        value = Math.imul(value ^ value >>> 15, value | 1);
+        value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+        return ((value ^ value >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    const drawings = [
+      { match: /\b(?:dogs?|pupp(?:y|ies))\b|كلب|كلاب|جرو|جراء/i, art: `<g stroke-width="4">
+        <path d="M340 420 Q296 392 278 345 Q271 323 289 320 Q320 350 354 366"/>
+        <path d="M348 408 Q374 363 438 367 Q476 350 512 373 Q542 392 536 432 Q530 468 488 482 Q423 506 361 474 Q338 459 348 408Z"/>
+        <path d="M366 461 Q347 490 349 548 L344 605 Q342 623 363 625 Q384 625 386 605 L397 493 M434 477 Q430 512 430 565 L426 607 Q426 625 447 625 Q469 625 470 606 L476 474"/>
+        <path d="M360 459 Q315 453 308 495 Q300 532 340 544 L371 532 M481 460 Q508 475 518 511 L525 590 Q527 612 506 615 Q487 616 484 597 L469 524"/>
+        <path d="M337 602 Q323 610 320 625 Q337 638 370 632 M425 604 Q412 613 412 628 Q431 640 462 632 M486 590 Q475 604 480 618 Q501 630 526 620"/>
+        <path d="M470 397 Q473 366 482 343 Q480 319 495 298 Q514 274 539 286 Q557 294 559 315 Q581 322 594 339 L622 350 Q630 356 621 366 L594 375 Q579 393 557 395 L536 408 Q506 416 486 408Z"/>
+        <path d="M494 300 Q475 282 466 296 Q457 317 469 344 Q477 362 493 367"/>
+        <path d="M534 287 Q541 272 550 260 M546 289 Q562 277 570 265"/>
+        <path d="M552 315 Q566 304 579 315"/>
+        <ellipse cx="552" cy="326" rx="7" ry="9"/>
+        <circle cx="554" cy="326" r="3" fill="#111"/>
+        <path d="M610 347 Q626 345 630 353 Q630 361 620 365 L604 362Z"/>
+        <circle cx="621" cy="353" r="2.5" fill="#111"/>
+        <path d="M608 366 Q598 379 580 380 M580 380 Q563 397 543 386 M580 380 Q565 372 551 378"/>
+        <path d="M510 386 Q500 375 497 359 M523 392 Q517 380 519 367 M510 410 Q503 428 493 438"/>
+        <path d="M380 386 Q402 377 422 383 M393 474 Q405 481 416 478 M456 379 Q468 380 477 388 M360 446 Q382 438 400 447 M409 451 Q431 445 451 453"/>
+        <path d="M352 429 Q342 442 346 457 M369 408 L376 396 M392 393 L399 382 M408 469 L416 480 M455 396 Q464 407 467 420 M479 425 Q483 437 481 448"/>
+        <path d="M348 610 L341 619 M361 613 L359 623 M430 610 L426 620 M444 612 L444 622 M491 598 L488 607 M506 600 L506 610"/>
+        <path d="M495 303 Q484 316 486 336 M498 310 Q491 324 495 342 M500 345 Q506 352 510 356"/>
+        <path d="M542 306 Q550 299 558 305 M538 333 Q548 339 557 334 M563 353 Q580 359 598 354"/>
+        <path d="M577 367 Q567 374 558 372 M518 376 Q510 386 509 399"/>
+        <path d="M363 373 Q370 370 377 373 M431 373 Q438 370 445 373 M376 360 Q380 356 385 360 M429 360 Q434 356 438 360"/>
+        <circle cx="392" cy="391" r="2"/><circle cx="397" cy="394" r="2"/><circle cx="402" cy="391" r="2"/>
+        <path d="M390 401 Q405 405 420 400 M399 410 Q406 413 414 410"/>
+        <path d="M373 279 Q381 288 385 299 M484 289 Q477 299 474 309"/>
+        <path d="M353 388 Q344 397 343 409 M360 394 Q353 403 353 414"/>
+        <path d="M365 371 Q363 384 367 396 M449 370 Q455 382 453 394"/>
+        <path d="M347 422 Q339 430 338 440 M356 417 Q350 425 350 434 M381 400 Q385 408 383 417"/>
+        <path d="M414 383 Q420 391 418 400 M430 386 Q437 394 434 403 M458 407 Q465 416 463 425"/>
+        <path d="M366 472 Q374 480 373 490 M379 476 Q386 484 384 493 M438 483 Q445 490 444 499"/>
+        <path d="M345 500 Q352 509 349 519 M348 530 Q356 535 363 534 M478 493 Q486 501 485 510 M490 530 Q498 536 506 535"/>
+        <path d="M334 614 Q330 619 330 625 M353 616 Q350 622 351 627 M437 614 Q434 621 435 627 M456 613 Q453 620 454 626 M493 603 Q490 610 491 616 M515 603 Q512 610 513 616"/>
+        <path d="M356 365 Q350 353 354 341 M468 358 Q476 350 481 340 M509 326 Q514 319 521 316"/>
+        <path d="M385 458 Q405 463 423 459 M397 469 Q409 472 420 468 M443 461 Q458 466 468 462"/>
+        <path d="M378 425 Q392 421 405 425 M412 425 Q427 420 440 426"/>
+        <path d="M485 395 Q493 402 496 412 M501 414 Q507 423 505 433 M482 451 Q489 460 488 468"/>
+        <path d="M331 461 Q323 468 322 477 M315 482 Q311 490 313 498 M323 531 Q331 539 340 539"/>
+        <path d="M294 355 Q300 366 310 371 M307 364 Q314 375 325 379 M525 405 Q535 412 540 421"/>
+        <path d="M404 618 Q405 625 403 632 M411 617 Q413 624 412 632 M390 615 Q392 623 390 629"/>
+      </g>` },
+      { match: /\b(?:cats?|kittens?)\b|ق[طّ]ة|قط/i, art: `<path d="M315 398 L295 305 L375 350 Q408 335 441 350 L521 305 L501 398 Q530 480 500 550 Q465 610 408 610 Q351 610 316 550 Q286 480 315 398Z"/><path d="M355 435 Q372 420 385 437 M431 437 Q445 420 462 437"/><path d="M408 460 L393 477 L423 477Z M408 477 Q400 500 380 497 M408 477 Q416 500 436 497"/><path d="M330 470 L250 455 M330 490 L248 495 M486 470 L566 455 M486 490 L568 495"/>` },
+      { match: /\b(?:rabbits?|bunnies|bunny|hares?|أرنب|أرانب)\b/i, art: `<path d="M350 390 Q305 255 335 210 Q375 205 390 370 M430 370 Q440 205 480 210 Q510 270 465 395"/><path d="M330 405 Q330 330 408 330 Q486 330 486 405 L475 515 Q465 575 408 580 Q351 575 341 515Z"/><ellipse cx="375" cy="425" rx="9" ry="13"/><ellipse cx="441" cy="425" rx="9" ry="13"/><path d="M408 455 L394 468 L422 468Z M408 468 Q405 493 382 489 M408 468 Q411 493 434 489"/><ellipse cx="320" cy="590" rx="42" ry="24"/><ellipse cx="496" cy="590" rx="42" ry="24"/><circle cx="408" cy="535" r="13"/>` },
+      { match: /\b(?:lions?|lioness|lionesses|أسد|أسود|لبؤة)\b/i, art: `<path d="M408 250 L430 280 L470 265 L477 307 L520 320 L505 360 L540 390 L510 420 L530 460 L490 480 L490 525 L445 525 L425 565 L390 540 L355 565 L340 525 L295 525 L305 480 L265 460 L285 420 L255 390 L290 360 L275 320 L320 307 L330 265 L370 280Z"/><circle cx="408" cy="410" r="112"/><path d="M330 378 Q365 350 391 380 M425 380 Q451 350 480 378"/><circle cx="360" cy="402" r="8"/><circle cx="456" cy="402" r="8"/><path d="M408 425 L391 444 L425 444Z M408 444 Q404 475 375 477 M408 444 Q412 475 441 477 M375 477 Q408 505 441 477"/>` },
+      { match: /\b(?:tiger|tigress|tigers|نمر|نمور|ببر)\b/i, art: `<path d="M315 385 Q300 315 350 295 L382 330 Q408 315 434 330 L470 295 Q515 325 495 400 Q525 475 490 540 Q455 590 408 590 Q360 590 326 540 Q290 475 315 385Z"/><path d="M350 335 L370 395 M390 325 L400 385 M430 325 L420 385 M470 335 L448 395 M315 405 L365 430 M501 405 L451 430 M320 475 L370 475 M496 475 L446 475 M345 545 L382 510 M470 545 L434 510"/><circle cx="370" cy="425" r="8"/><circle cx="446" cy="425" r="8"/><path d="M408 450 L393 466 L423 466Z M408 466 Q402 491 382 488 M408 466 Q414 491 434 488"/>` },
+      { match: /\b(?:elephants?|فيل|أفيال)\b/i, art: `<path d="M320 425 Q300 330 400 320 Q510 315 515 415 L510 515 Q500 560 460 560 H360 Q320 550 320 500Z"/><path d="M485 405 Q555 380 555 460 Q555 525 505 520 M330 425 Q270 400 275 465 Q280 505 330 500"/><path d="M365 535 V605 M410 548 V610 M465 540 V605"/><circle cx="455" cy="400" r="9"/><path d="M355 500 Q335 535 365 552 M400 500 Q420 535 390 552"/>` },
+      { match: /\b(?:giraffes?|زرافة|زرافات)\b/i, art: `<path d="M350 370 Q340 320 365 285 L360 235 L385 265 L410 230 L420 278 Q455 305 440 380 L465 565 H330Z"/><path d="M345 410 L300 450 L310 570 H360 M435 405 L485 445 L475 570 H430"/><path d="M350 565 V620 M390 565 V625 M430 565 V620"/><circle cx="370" cy="320" r="7"/><path d="M345 350 Q390 370 440 345 M343 390 Q390 410 444 388 M340 435 Q390 455 448 430 M337 480 Q390 500 454 475 M335 525 Q390 545 460 520"/><path d="M365 238 L355 205 M410 235 L425 203"/>` },
+      { match: /\b(?:panda|pandas|باندا|الباندا)\b/i, art: `<path d="M325 405 Q295 315 340 290 L380 330 Q408 315 436 330 L476 290 Q520 315 490 405 Q520 475 490 540 Q455 595 408 595 Q360 595 326 540 Q295 475 325 405Z"/><ellipse cx="365" cy="420" rx="25" ry="32"/><ellipse cx="451" cy="420" rx="25" ry="32"/><circle cx="365" cy="420" r="7"/><circle cx="451" cy="420" r="7"/><ellipse cx="408" cy="475" rx="32" ry="23"/><ellipse cx="408" cy="468" rx="10" ry="8"/><path d="M408 478 Q404 505 383 503 M408 478 Q412 505 433 503"/><ellipse cx="320" cy="590" rx="42" ry="23"/><ellipse cx="496" cy="590" rx="42" ry="23"/>` },
+      { match: /\b(?:bears?|cubs?|دب|دببة)\b/i, art: `<circle cx="337" cy="345" r="43"/><circle cx="479" cy="345" r="43"/><path d="M320 405 Q320 340 408 340 Q496 340 496 405 L485 515 Q475 585 408 585 Q341 585 331 515Z"/><circle cx="365" cy="430" r="8"/><circle cx="451" cy="430" r="8"/><ellipse cx="408" cy="475" rx="38" ry="28"/><ellipse cx="408" cy="464" rx="11" ry="9"/><path d="M408 477 Q404 502 383 500 M408 477 Q412 502 433 500"/><path d="M340 535 Q300 550 305 585 L365 585 M476 535 Q516 550 511 585 L451 585"/>` },
+      { match: /\b(?:horses?|pon(?:y|ies)|foals?|حصان|خيول|مهر)\b/i, art: `<path d="M325 420 Q305 335 365 310 L410 335 Q460 315 480 375 L520 420 L485 450 L475 535 L450 535 L445 450 L375 465 L365 565 L340 565 L340 455 L300 445Z"/><path d="M365 310 Q350 270 380 245 L400 290 L430 255 L427 330 M335 345 Q300 370 325 405 M385 350 L440 370 M462 365 L445 385"/><circle cx="455" cy="368" r="7"/><path d="M310 425 Q255 400 275 350 Q280 410 315 405 M340 550 V615 M455 520 V615 M365 550 V615 M475 515 V615"/><path d="M342 615 H372 M440 615 H470"/>` },
+      { match: /\b(?:cows?|calves|bulls?|cattle|بقرة|بقر|عجل)\b/i, art: `<path d="M330 390 Q315 325 365 325 L385 350 Q408 335 431 350 L451 325 Q501 325 486 390 L475 505 Q465 575 408 575 Q351 575 341 505Z"/><path d="M345 345 L300 305 L315 370 M470 345 L515 305 L500 370"/><path d="M345 390 Q365 370 383 394 Q378 425 350 425Z M433 394 Q451 370 471 390 L466 425 Q438 425 433 394Z"/><circle cx="367" cy="405" r="7"/><circle cx="449" cy="405" r="7"/><ellipse cx="408" cy="480" rx="61" ry="49"/><circle cx="385" cy="475" r="7"/><circle cx="431" cy="475" r="7"/><path d="M385 505 Q408 520 431 505 M365 548 V610 M450 548 V610"/>` },
+      { match: /\b(?:sheep|lamb|ram|خروف|خراف|نعجة|حمل)\b/i, art: `<circle cx="335" cy="405" r="43"/><circle cx="375" cy="365" r="48"/><circle cx="425" cy="365" r="48"/><circle cx="470" cy="405" r="43"/><circle cx="350" cy="460" r="48"/><circle cx="408" cy="445" r="55"/><circle cx="466" cy="460" r="48"/><path d="M380 430 Q380 385 408 385 Q436 385 436 430 L430 480 Q425 500 408 500 Q391 500 386 480Z"/><circle cx="397" cy="443" r="5"/><circle cx="419" cy="443" r="5"/><path d="M408 453 L402 463 L414 463Z M408 463 Q402 477 394 472 M408 463 Q414 477 422 472"/><path d="M365 485 V560 M450 485 V560 M350 560 H380 M435 560 H465"/>` },
+      { match: /\b(?:pig|piglet|pigs)\b|خنزير|خنازير/i, art: `<path d="M320 410 Q320 330 408 330 Q496 330 496 410 L485 520 Q475 585 408 585 Q341 585 331 520Z"/><path d="M345 355 L315 310 L380 340 M470 355 L501 310 L436 340"/><circle cx="370" cy="415" r="8"/><circle cx="446" cy="415" r="8"/><ellipse cx="408" cy="475" rx="58" ry="42"/><ellipse cx="388" cy="475" rx="8" ry="15"/><ellipse cx="428" cy="475" rx="8" ry="15"/><path d="M350 555 V600 M466 555 V600 M350 600 H380 M436 600 H466 M485 500 Q545 485 525 530 Q512 550 495 530"/>` },
+      { match: /\b(?:fox|foxes|ثعلب|ثعالب)\b/i, art: `<path d="M320 390 L295 295 L375 345 Q408 325 441 345 L521 295 L496 405 Q525 475 485 540 Q450 590 408 590 Q360 590 325 535 Q290 465 320 390Z"/><path d="M332 475 Q370 430 408 470 Q446 430 484 475 Q470 540 408 555 Q345 540 332 475Z"/><path d="M362 420 Q378 405 390 420 M426 420 Q438 405 454 420"/><circle cx="374" cy="425" r="6"/><circle cx="442" cy="425" r="6"/><path d="M408 450 L395 465 L421 465Z M408 465 Q402 485 385 482 M408 465 Q414 485 431 482"/>` },
+      { match: /\b(?:wolf|wolves|lobo|ذئب|ذئاب)\b/i, art: `<path d="M320 390 L292 285 L376 340 Q408 320 440 340 L524 285 L496 395 Q530 465 490 530 Q455 580 408 580 Q360 580 326 530 Q290 465 320 390Z"/><path d="M335 470 Q370 430 408 465 Q446 430 481 470 Q465 535 408 550 Q350 535 335 470Z"/><path d="M355 410 L390 425 M426 425 L461 410"/><circle cx="370" cy="420" r="7"/><circle cx="446" cy="420" r="7"/><path d="M408 445 L390 462 L426 462Z M408 462 Q400 488 380 482 M408 462 Q416 488 436 482"/>` },
+      { match: /\b(?:deer|stag|doe|fawn|أيل|غزال|غزلان|ظبي)\b/i, art: `<path d="M345 400 Q335 345 370 325 Q408 310 446 325 Q481 345 471 400 L460 520 Q450 575 408 575 Q366 575 356 520Z"/><path d="M365 340 Q330 300 325 255 M345 295 L300 280 M332 280 L345 250 M450 340 Q485 300 490 255 M470 295 L515 280 M483 280 L470 250"/><circle cx="382" cy="420" r="8"/><circle cx="434" cy="420" r="8"/><path d="M408 445 L395 460 L421 460Z M408 460 Q402 484 384 480 M408 460 Q414 484 432 480 M365 540 V600 M450 540 V600"/>` },
+      { match: /\b(?:turtles?|tortoises?)\b|سلحفاة|سلاحف/i, art: `<path d="M275 455 Q300 355 408 355 Q516 355 541 455 Q516 535 408 535 Q300 535 275 455Z"/><path d="M315 455 Q330 385 408 385 Q486 385 501 455 Q486 515 408 515 Q330 515 315 455Z"/><path d="M408 385 V515 M330 435 L486 475 M486 435 L330 475 M275 455 L235 430 L245 475Z"/><circle cx="555" cy="455" r="43"/><circle cx="570" cy="445" r="6"/><path d="M530 490 L520 525 H550 L555 495 M355 515 L345 555 H380 L385 520 M440 520 L445 555 H480 L465 510"/>` },
+      { match: /\b(?:frogs?|toads?)\b|ضفدع|ضفادع/i, art: `<path d="M300 440 Q300 365 355 365 Q385 365 400 395 Q415 365 445 365 Q500 365 500 440 Q535 470 510 530 Q470 580 400 575 Q330 580 290 530 Q265 470 300 440Z"/><circle cx="355" cy="375" r="38"/><circle cx="445" cy="375" r="38"/><circle cx="355" cy="375" r="8"/><circle cx="445" cy="375" r="8"/><path d="M340 475 Q400 530 460 475 M300 510 Q250 520 270 560 L325 545 M500 510 Q550 520 530 560 L475 545 M355 550 L340 600 M445 550 L460 600"/>` },
+      { match: /\b(?:whales?|humpbacks?)\b|حوت|حيتان/i, art: `<path d="M245 475 Q255 365 385 355 Q495 345 530 430 L590 380 L570 475 L595 560 L525 510 Q465 585 360 570 Q275 555 245 475Z"/><path d="M365 565 Q330 620 280 600 Q320 585 325 550 M430 565 Q465 620 515 600 Q480 585 475 540"/><circle cx="310" cy="445" r="8"/><path d="M285 405 Q265 355 300 330 M315 398 Q310 350 340 330 M400 410 Q435 455 400 500"/>` },
+      { match: /\b(?:dolphins?|porpoises?)\b|دلفين|دلافين/i, art: `<path d="M235 485 Q300 380 420 395 Q490 400 525 445 L585 405 L555 485 L590 555 L515 520 Q440 580 340 545 Q280 525 235 485Z"/><path d="M395 405 Q385 350 430 325 Q430 380 460 402 M380 535 Q360 580 315 590 Q340 555 330 525"/><circle cx="300" cy="455" r="8"/><path d="M400 425 Q440 465 405 505"/>` },
+      { match: /\b(?:seal|seals|sea lion|fur seal|فقمة|فقمات)\b/i, art: `<path d="M270 525 Q275 445 355 425 Q420 390 485 430 Q545 470 520 535 Q500 585 425 575 L335 570 Q290 565 270 525Z"/><path d="M490 455 Q535 420 555 385 Q575 430 545 465 M500 490 Q555 465 580 445 Q575 490 530 515 M350 555 Q310 600 275 580 Q300 550 315 530"/><circle cx="455" cy="455" r="8"/><path d="M485 475 Q510 490 485 505 M355 565 L335 610 M405 575 L395 615"/>` },
+      { match: /\b(?:sharks?|great white)\b|قرش|قروش/i, art: `<path d="M230 475 Q330 390 475 420 L540 360 L530 445 Q570 470 600 490 Q560 505 530 535 L540 610 L475 550 Q330 570 230 475Z"/><path d="M380 425 L420 345 L445 430 M370 545 L420 610 L440 540 M278 445 L305 480 L278 505"/><circle cx="310" cy="465" r="8"/><path d="M330 520 Q380 535 425 515 M350 518 L360 535 M375 520 L385 538 M400 518 L410 532"/>` },
+      { match: /\b(?:owls?|بومة|بوم)\b/i, art: `<path d="M300 535 Q280 450 310 375 L350 410 Q380 350 408 395 Q440 350 470 410 L510 375 Q540 455 515 535 Q470 600 408 600 Q345 600 300 535Z"/><circle cx="365" cy="445" r="38"/><circle cx="451" cy="445" r="38"/><circle cx="365" cy="445" r="13"/><circle cx="451" cy="445" r="13"/><path d="M408 465 L390 492 L426 492Z M350 535 Q408 505 466 535 M345 600 L330 625 M470 600 L485 625"/>` },
+      { match: /\b(?:bats?|vampire bat)\b|خفاش|خفافيش/i, art: `<path d="M408 420 Q375 370 345 400 L315 350 L305 435 Q260 390 225 410 L250 465 Q225 510 275 520 Q300 565 350 535 Q380 555 408 500 Q436 555 466 535 Q516 565 541 520 Q591 510 566 465 L591 410 Q556 390 511 435 L501 350 L471 400 Q441 370 408 420Z"/><circle cx="385" cy="440" r="7"/><circle cx="431" cy="440" r="7"/><path d="M408 450 L395 465 L421 465Z M408 465 Q402 485 385 480 M408 465 Q414 485 431 480 M370 475 L335 490 M446 475 L481 490"/>` },
+      { match: /\b(?:duck|duckling|ducks)\b|بطة|بط/i, art: `<path d="M300 500 Q285 420 350 395 Q390 380 420 415 Q455 390 490 420 Q525 455 505 520 Q485 575 410 575 Q335 575 300 500Z"/><path d="M425 420 Q420 345 470 325 Q515 330 510 390 L490 435"/><path d="M485 390 L540 410 L490 425Z"/><circle cx="480" cy="365" r="7"/><path d="M355 570 L345 610 M430 570 L440 610 M320 610 H370 M415 610 H465"/>` },
+      { match: /\b(?:chickens?|hens?|roosters?|chicks?|دجاجة|دجاج|ديك|كتكوت)\b/i, art: `<path d="M310 480 Q310 395 380 380 Q455 365 495 435 Q530 495 485 555 Q445 595 370 575 Q320 560 310 480Z"/><path d="M445 405 Q430 350 465 325 Q490 350 485 380 Q520 350 535 375 Q530 410 490 420"/><path d="M495 420 L545 440 L495 455Z"/><circle cx="470" cy="402" r="7"/><path d="M365 565 L355 610 M430 575 L440 610 M330 610 H375 M420 610 H465 M320 455 Q275 420 290 390 Q330 410 340 440"/>` },
+      { match: /\b(?:goose|geese|gosling|إوز|أوزة|وزة)\b/i, art: `<path d="M300 510 Q290 450 350 425 Q400 405 445 445 Q490 490 460 545 Q430 585 365 575 Q315 565 300 510Z"/><path d="M420 455 Q425 380 390 355 Q360 330 380 290 Q405 320 425 330 Q470 355 455 420 L445 465"/><path d="M385 300 L430 315 L390 330Z"/><circle cx="410" cy="350" r="6"/><path d="M350 570 L345 610 M420 575 L430 610 M320 610 H370 M405 610 H455"/>` },
+      { match: /\b(?:parrots?|parakeets?|macaws?)\b|ببغاء|ببغاوات/i, art: `<path d="M350 390 Q350 330 415 330 Q480 330 485 410 Q490 500 430 545 Q380 575 340 540 Q315 500 350 390Z"/><path d="M365 420 Q405 370 465 420 Q435 490 365 500Z"/><path d="M475 390 Q535 380 520 430 L475 450Z"/><circle cx="440" cy="390" r="8"/><path d="M365 530 L350 585 M430 545 L445 590 M330 590 H375 M425 595 H465 M365 350 Q330 315 345 280 M395 335 Q385 290 410 265"/>` },
+      { match: /\b(?:peacocks?|peafowl|طاووس|طواويس)\b/i, art: `<path d="M385 520 Q375 455 408 430 Q450 445 445 520 L435 585 H390Z"/><circle cx="415" cy="395" r="35"/><path d="M405 360 Q385 320 395 270 Q408 305 415 270 Q430 320 418 360"/><path d="M405 445 Q340 390 300 330 M410 440 Q370 370 365 300 M418 440 Q415 350 420 285 M425 440 Q465 365 475 300 M430 445 Q500 395 535 340"/><ellipse cx="300" cy="325" rx="23" ry="37"/><ellipse cx="365" cy="295" rx="23" ry="37"/><ellipse cx="420" cy="280" rx="23" ry="37"/><ellipse cx="475" cy="295" rx="23" ry="37"/><ellipse cx="535" cy="335" rx="23" ry="37"/><circle cx="300" cy="325" r="8"/><circle cx="365" cy="295" r="8"/><circle cx="420" cy="280" r="8"/><circle cx="475" cy="295" r="8"/><circle cx="535" cy="335" r="8"/><path d="M390 585 L380 615 M435 585 L445 615"/>` },
+      { match: /\b(?:bee|bees|bumblebee|نحلة|نحل)\b/i, art: `<ellipse cx="408" cy="465" rx="93" ry="68"/><path d="M375 405 Q340 340 300 365 Q280 390 350 435 M435 405 Q470 340 510 365 Q530 390 465 435"/><path d="M365 405 Q350 465 365 525 M410 398 V532 M455 405 Q470 465 455 525"/><circle cx="380" cy="452" r="7"/><circle cx="436" cy="452" r="7"/><path d="M380 485 Q408 505 436 485 M385 400 Q365 370 375 345 M430 400 Q450 370 440 345"/>` },
+      { match: /\b(?:snail|snails|حلزون|قوقع)\b/i, art: `<path d="M250 535 Q280 485 355 485 H545 Q570 485 570 520 V555 H250Z"/><path d="M345 485 Q330 450 345 405 Q365 350 420 350 Q475 350 495 405 Q510 450 485 485Z"/><path d="M420 350 Q465 390 420 420 Q380 445 410 475 Q455 470 460 430 Q470 390 420 350Z"/><path d="M515 485 L530 410 M555 485 L575 410"/><circle cx="530" cy="402" r="10"/><circle cx="575" cy="402" r="10"/><circle cx="533" cy="402" r="3"/><circle cx="578" cy="402" r="3"/><path d="M275 555 V575 M320 555 V575 M500 555 V575"/>` },
+      { match: /\b(?:squirrel|chipmunk|سنجاب|سناجب)\b/i, art: `<path d="M340 500 Q300 450 335 405 Q380 360 430 400 Q480 445 450 510 Q425 560 375 545Z"/><path d="M350 405 Q300 345 330 285 Q370 310 390 360 Q420 310 455 295 Q480 365 425 410"/><circle cx="410" cy="430" r="7"/><path d="M430 450 L465 462 L435 475 M365 535 L350 585 M410 540 L415 590 M350 590 H385 M400 595 H435"/><path d="M350 500 Q265 520 290 430 Q305 385 335 400 Q300 445 350 455"/>` },
+      { match: /\b(?:koala|koalas|كوالا)\b/i, art: `<circle cx="335" cy="385" r="52"/><circle cx="481" cy="385" r="52"/><circle cx="335" cy="385" r="23"/><circle cx="481" cy="385" r="23"/><path d="M330 425 Q330 345 408 345 Q486 345 486 425 L475 520 Q460 575 408 575 Q356 575 341 520Z"/><circle cx="375" cy="430" r="8"/><circle cx="441" cy="430" r="8"/><ellipse cx="408" cy="465" rx="22" ry="34"/><path d="M390 510 Q408 525 426 510 M355 550 L335 595 M460 550 L480 595"/>` },
+      { match: /\b(?:camels?|dromedaries?)\b|جمل|جمال/i, art: `<path d="M300 480 Q300 430 345 430 Q355 350 400 350 Q445 350 455 430 Q500 400 525 445 Q550 480 510 510 L485 555 H445 L435 510 H365 L355 565 H315 L330 500Z"/><path d="M475 425 Q475 360 520 340 L540 365 L525 425 M510 350 L500 315 M535 350 L550 320"/><circle cx="520" cy="375" r="6"/><path d="M340 540 V610 M465 540 V610 M320 610 H360 M445 610 H485 M335 430 Q380 410 430 435"/>` },
+      { match: /\b(?:mouse|mice|rat|hamster|الفأر|فأر|فئران|هامستر)\b/i, art: `<path d="M315 420 Q320 345 408 345 Q496 345 501 420 L490 520 Q475 585 408 585 Q341 585 326 520Z"/><circle cx="345" cy="345" r="43"/><circle cx="471" cy="345" r="43"/><circle cx="345" cy="345" r="22"/><circle cx="471" cy="345" r="22"/><circle cx="375" cy="435" r="8"/><circle cx="441" cy="435" r="8"/><ellipse cx="408" cy="475" rx="24" ry="18"/><path d="M408 493 Q405 515 385 510 M408 493 Q411 515 431 510 M350 480 L270 460 M350 495 L265 500 M466 480 L546 460 M466 495 L551 500 M485 540 Q555 570 520 610"/>` },
+      { match: /\b(?:monkey|monkeys|ape|gorilla|قرد|قرود|غوريلا)\b/i, art: `<path d="M320 405 Q300 315 408 315 Q516 315 496 405 Q530 470 490 545 Q455 600 408 590 Q360 600 326 545 Q285 470 320 405Z"/><circle cx="310" cy="430" r="35"/><circle cx="506" cy="430" r="35"/><ellipse cx="408" cy="460" rx="68" ry="78"/><circle cx="380" cy="425" r="8"/><circle cx="436" cy="425" r="8"/><path d="M408 443 L395 470 L421 470Z M378 492 Q408 520 438 492"/><path d="M350 550 Q300 575 325 615 M466 550 Q516 575 491 615 M345 565 L325 610 M471 565 L491 610"/>` },
+      { match: /\b(?:zebra|zebras|حمار وحشي|زيبرا)\b/i, art: `<path d="M320 405 Q320 330 408 330 Q496 330 496 405 L485 520 Q475 575 408 575 Q341 575 331 520Z"/><path d="M350 350 L320 305 L375 335 M466 350 L496 305 L441 335"/><path d="M335 385 L380 405 L340 430 M485 385 L440 405 L480 430 M332 465 L385 480 L338 510 M484 465 L431 480 L478 510 M360 555 L345 610 M455 555 L470 610"/><circle cx="375" cy="420" r="7"/><circle cx="441" cy="420" r="7"/><path d="M390 475 Q408 490 426 475"/>` },
+      { match: /\b(?:penguins?)\b|بطريق|بطاريق/i, art: `<path d="M408 300 Q305 320 315 465 Q320 600 408 610 Q496 600 501 465 Q511 320 408 300Z"/><path d="M355 415 Q300 420 285 510 Q325 495 350 470 M461 415 Q516 420 531 510 Q491 495 466 470"/><path d="M355 385 Q408 350 461 385 Q480 455 460 535 Q408 575 356 535 Q336 455 355 385Z"/><circle cx="385" cy="405" r="8"/><circle cx="431" cy="405" r="8"/><path d="M408 425 L390 445 L426 445Z M375 585 Q350 615 315 600 Q340 580 360 570 M440 585 Q466 615 501 600 Q476 580 456 570"/>` },
+      { match: /\b(?:snakes?|serpents?)\b|ثعبان|أفعى|ثعابين/i, art: `<path d="M300 585 Q260 530 330 495 Q420 450 480 485 Q550 525 490 565 Q430 605 355 565 Q285 525 350 465 Q415 405 490 440 Q545 465 505 500"/><path d="M485 440 Q510 405 555 420 Q585 432 560 455 Q535 478 505 462Z"/><circle cx="545" cy="435" r="5"/><path d="M560 448 L585 455 L560 462 M530 475 Q500 500 470 510 M360 565 Q330 600 300 580"/>` },
+      { match: /\b(?:crocodiles?|alligators?|caimans?)\b|تمساح|تماسيح/i, art: `<path d="M245 475 Q310 410 435 430 L540 440 L600 475 L540 510 L435 520 Q310 545 245 475Z"/><path d="M340 445 Q355 390 405 400 Q450 410 455 450 M315 505 L295 555 L355 530 M470 505 L495 550 L525 515"/><circle cx="465" cy="438" r="9"/><circle cx="468" cy="438" r="3"/><path d="M520 460 L540 475 L520 490 M390 475 L410 488 L430 475 L450 490 L470 475"/>` },
+      { match: /\b(?:kangaroos?|roos?|wallabies?)\b|كنغر|كناغر/i, art: `<path d="M365 365 Q340 315 365 270 L390 345 Q420 330 445 350 L475 280 Q500 325 460 380 Q490 430 465 500 L445 540 L470 610 L430 610 L395 545 L365 605 L325 605 L350 525 Q305 480 320 425Z"/><circle cx="420" cy="385" r="8"/><path d="M360 420 Q395 450 445 420 M345 485 Q390 520 455 485 M325 455 Q275 480 250 540 Q300 535 350 505"/><path d="M365 350 L345 310 M445 355 L470 320 M345 605 H390 M430 610 H480"/>` },
+      { match: /\b(?:octopus(?:es)?|octopi|squid|أخطبوط|أخطبوطات)\b/i, art: `<path d="M330 440 Q325 345 408 335 Q491 345 486 440 Q480 500 408 505 Q336 500 330 440Z"/><circle cx="375" cy="415" r="10"/><circle cx="441" cy="415" r="10"/><path d="M380 455 Q408 475 436 455 M345 485 Q280 515 285 600 Q310 620 330 575 M365 495 Q320 555 350 620 Q380 625 385 565 M390 505 Q370 570 410 625 Q435 620 415 555 M430 500 Q470 545 450 615 Q475 630 490 570 M465 485 Q535 510 535 585 Q560 600 575 540"/>` },
+      { match: /\b(?:crab|crabs|lobster|سلطعون|سرطان البحر|كركند)\b/i, art: `<path d="M320 450 Q320 390 408 390 Q496 390 496 450 L480 520 Q408 555 336 520Z"/><circle cx="380" cy="435" r="8"/><circle cx="436" cy="435" r="8"/><path d="M330 430 Q275 375 245 415 Q230 455 280 470 L325 455 M486 430 Q541 375 571 415 Q586 455 536 470 L491 455 M340 500 L290 535 L270 580 M365 520 L335 565 L330 600 M456 520 L481 565 L486 600 M480 500 L530 535 L550 580 M365 390 L345 350 M451 390 L471 350"/>` },
+      { match: /\b(?:seahorses?|sea horses?)\b|حصان البحر|أحصنة البحر/i, art: `<path d="M430 335 Q490 350 475 410 Q465 450 430 460 Q470 500 445 545 Q425 580 385 555 Q420 540 415 510 Q410 485 380 475 Q340 460 350 415 Q360 380 395 365 Q400 330 430 335Z"/><path d="M430 350 Q460 330 490 350 L465 375 M395 365 Q385 330 405 305 M420 460 Q390 440 370 455 M440 490 Q470 470 490 485"/><circle cx="445" cy="375" r="7"/><path d="M420 575 Q390 610 420 625 Q450 635 465 605 M370 420 Q390 435 410 420 M370 440 Q390 455 410 440"/>` },
+      { match: /\b(?:starfish|sea star|star fish|نجم البحر)\b/i, art: `<path d="M408 300 L455 420 L585 425 L485 505 L520 635 L408 560 L296 635 L331 505 L231 425 L361 420Z"/><path d="M408 355 L408 500 M275 430 L395 465 M540 430 L420 465 M315 595 L390 490 M500 595 L425 490"/><circle cx="385" cy="445" r="7"/><circle cx="431" cy="445" r="7"/>` },
+      { match: /tree|forest|oak|palm|شجرة|غابة/i, art: `<path d="M373 555 L380 430 L340 430 L388 375 L352 375 L408 275 L464 375 L428 375 L476 430 L436 430 L443 555Z"/><path d="M395 555 L395 490 L365 465 M422 490 L448 465"/><circle cx="408" cy="354" r="115"/><path d="M330 370 Q360 337 383 366 T435 365 T485 368 M355 411 Q385 380 408 409 T462 411"/>` },
+      { match: /flower|garden|rose|tulip|زهرة|وردة/i, art: `<path d="M408 440 C350 410 340 350 382 345 C390 290 443 290 437 345 C492 340 495 392 448 420 C470 468 425 495 408 450 C380 497 334 465 368 425Z"/><circle cx="408" cy="405" r="28"/><path d="M408 435 Q415 510 405 590 M408 505 Q355 470 335 500 Q360 545 408 526 M408 548 Q465 500 485 530 Q465 570 408 565"/><path d="M300 600 Q408 580 516 600"/>` },
+      { match: /\b(?:fish|fishes|ocean|underwater)\b|سمكة|أسماك/i, art: `<path d="M260 450 Q350 345 490 440 L555 385 L548 462 L558 535 L490 485 Q350 580 260 475 L225 515 L230 462 L225 410Z"/><circle cx="340" cy="440" r="9"/><path d="M380 390 Q425 460 380 520 M290 420 Q320 460 290 500 M480 438 Q460 462 480 483"/><path d="M270 610 Q300 580 330 610 T390 610 T450 610 T510 610"/>` },
+      { match: /butterfly|butterflies|فراشة/i, art: `<path d="M405 440 C350 330 235 315 250 420 Q260 480 390 475 C300 520 275 600 340 605 Q390 600 408 490 C430 600 480 600 515 565 Q545 515 425 475 C560 470 580 410 550 365 Q500 300 412 440Z"/><path d="M408 440 Q390 390 365 370 M412 440 Q440 385 463 365 M408 430 L408 530 M390 460 L355 445 M428 460 L465 445"/><circle cx="355" cy="420" r="20"/><circle cx="475" cy="420" r="20"/>` },
+      { match: /house|home|cottage|بيت|منزل/i, art: `<path d="M270 430 L408 315 L546 430 M300 410 V575 H516 V410 M375 575 V475 Q375 450 408 450 Q441 450 441 475 V575"/><rect x="325" y="445" width="38" height="42" rx="2"/><rect x="453" y="445" width="38" height="42" rx="2"/><path d="M355 345 V280 H405 V305 M270 590 Q408 565 546 590"/>` },
+      { match: /rocket|space|planet|astronaut|صاروخ|فضاء/i, art: `<path d="M408 285 Q510 360 485 500 L408 555 L331 500 Q306 360 408 285Z"/><circle cx="408" cy="410" r="38"/><path d="M330 465 L280 520 L335 530 M486 465 L536 520 L481 530 M385 530 L370 590 L408 565 L446 590 L431 530"/><path d="M270 340 L278 362 L300 370 L278 378 L270 400 L262 378 L240 370 L262 362Z M535 310 L541 327 L558 333 L541 339 L535 356 L529 339 L512 333 L529 327Z M550 540 L556 557 L573 563 L556 569 L550 586 L544 569 L527 563 L544 557Z"/>` },
+      { match: /bird|owl|duck|بومة|طائر/i, art: `<path d="M305 510 Q285 400 355 350 Q420 310 482 360 Q535 405 500 510 Q465 575 390 555 Q340 545 305 510Z"/><path d="M330 470 Q395 380 475 465 Q410 500 330 470Z"/><circle cx="390" cy="420" r="22"/><circle cx="390" cy="420" r="7"/><path d="M445 420 L485 435 L445 450 M385 555 L380 605 M430 555 L435 605 M350 605 L410 605 M405 605 L460 605"/>` },
+      { match: /dinosaur|dino|د[يّ]?ن[و]صور/i, art: `<path d="M315 555 Q285 500 315 455 L300 405 L350 425 Q380 380 445 390 Q505 400 515 455 L565 480 L515 500 Q505 550 460 560 L465 610 L425 610 L410 565 L370 560 L355 610 L315 610Z"/><circle cx="462" cy="435" r="8"/><path d="M325 460 L290 450 M375 405 L390 375 L405 402 M425 393 L440 363 L455 398 M475 410 L500 390 L500 425 M350 490 Q390 520 430 490"/>` },
+      { match: /mountain|camp|hiking|mountain|جبال|جبل/i, art: `<path d="M235 565 L355 370 L410 445 L485 325 L590 565Z"/><path d="M325 420 L355 370 L384 410 L360 402 L345 423 M450 390 L485 325 L523 387 L494 374 L477 394"/><circle cx="500" cy="270" r="48"/><path d="M250 585 Q330 565 408 585 T566 585 M275 615 Q350 595 425 615 T565 615"/>` },
+      { match: /sun|moon|star|night|شمس|قمر|نجوم/i, art: `<circle cx="408" cy="445" r="125"/><path d="M408 280 L426 335 L484 310 L466 368 L525 380 L478 420 L520 465 L460 470 L450 530 L408 485 L366 530 L356 470 L296 465 L338 420 L291 380 L350 368 L332 310 L390 335Z"/><circle cx="370" cy="430" r="8"/><circle cx="446" cy="430" r="8"/><path d="M370 475 Q408 510 446 475"/>` },
+      { match: /default/, art: `<path d="M408 305 C300 305 260 390 275 475 C290 565 345 600 408 600 C471 600 526 565 541 475 C556 390 516 305 408 305Z"/><path d="M305 410 Q350 350 395 410 T485 410 M305 480 Q350 420 395 480 T485 480 M320 540 Q365 480 410 540 T490 540"/><circle cx="360" cy="435" r="10"/><circle cx="456" cy="435" r="10"/><path d="M375 500 Q408 530 441 500"/>` }
+    ];
+
+    function matchesSubject(pattern, subject) {
+      if (pattern.test(subject)) return true;
+      if (/[\u0600-\u06ff]/i.test(subject)) {
+        return new RegExp(pattern.source.replace(/\\b/g, ""), pattern.flags).test(subject);
+      }
+      return false;
+    }
+
+    function wrapTitle(value, maxLength) {
+      const lines = [];
+      let line = "";
+      for (const word of value.trim().split(/\s+/)) {
+        if (word.length > maxLength) {
+          if (line) { lines.push(line); line = ""; }
+          for (let offset = 0; offset < word.length; offset += maxLength) lines.push(word.slice(offset, offset + maxLength));
+        } else if (line && `${line} ${word}`.length > maxLength) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = line ? `${line} ${word}` : word;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function makeArtwork(subject, pageNumber) {
+      const seedRandom = seededRandom(`${subject}:${pageNumber}`);
+      const normalized = subject.toLowerCase();
+      const drawing = drawings.find(item => matchesSubject(item.match, normalized)) || drawings[drawings.length - 1];
+      const titleLabel = escapeXml(subject.trim());
+      const titleLines = wrapTitle(subject, 28);
+      const titleFontSize = titleLines.length > 2 ? 23 : titleLines.length > 1 ? 27 : 32;
+      const titleStartY = 116 - (titleLines.length - 1) * (titleFontSize + 2) / 2;
+      const title = titleLines.map((line, index) => `<tspan x="408" dy="${index ? titleFontSize + 2 : 0}">${escapeXml(line)}</tspan>`).join("");
+      const stars = Array.from({ length: 8 }, (_, index) => {
+        const x = 115 + index * 84 + seedRandom() * 24;
+        const y = index % 2 ? 840 : 875;
+        return `<path d="M${x.toFixed(1)} ${y} l4 -10 4 10 10 4 -10 4 -4 10 -4 -10 -10 -4z"/>`;
+      }).join("");
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="816" height="1056" viewBox="0 0 816 1056" role="img" aria-label="Original ${titleLabel} coloring page">
+        <rect width="816" height="1056" fill="white"/>
+        <g fill="none" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="55" y="55" width="706" height="946" rx="22" stroke-width="2"/>
+          <path d="M95 145 Q408 160 721 145 M95 910 Q408 895 721 910" stroke-width="2"/>
+          ${stars}${drawing.art}
+        </g>
+        <text x="408" y="${titleStartY}" text-anchor="middle" fill="#111" font-family="Arial,sans-serif" font-size="${titleFontSize}" font-weight="700">${title}</text>
+        <text x="408" y="962" text-anchor="middle" fill="#111" font-family="Arial,sans-serif" font-size="14" letter-spacing="3">COLORING PAGE ${String(pageNumber).padStart(2, "0")}</text>
+      </svg>`;
+    }
+
+    function loadImage(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const image = new Image();
+        image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
+        image.onerror = () => { URL.revokeObjectURL(url); reject(new Error("The selected file could not be opened as an image.")); };
+        image.src = url;
+      });
+    }
+
+    function convertPhotoToLineArt(image, sensitivity) {
+      const width = 2550;
+      const height = 3300;
+      const workWidth = width / 2;
+      const workHeight = height / 2;
+      const scale = Math.min(workWidth / image.naturalWidth, workHeight / image.naturalHeight);
+      const drawWidth = Math.max(1, Math.round(image.naturalWidth * scale));
+      const drawHeight = Math.max(1, Math.round(image.naturalHeight * scale));
+      const workCanvas = document.createElement("canvas");
+      workCanvas.width = workWidth;
+      workCanvas.height = workHeight;
+      const workContext = workCanvas.getContext("2d", { willReadFrequently: true });
+      if (!workContext) throw new Error("Image processing is unavailable in this browser.");
+      workContext.fillStyle = "#fff";
+      workContext.fillRect(0, 0, workWidth, workHeight);
+      workContext.drawImage(image, (workWidth - drawWidth) / 2, (workHeight - drawHeight) / 2, drawWidth, drawHeight);
+      const imageData = workContext.getImageData(0, 0, workWidth, workHeight);
+      const pixels = imageData.data;
+      const pixelCount = workWidth * workHeight;
+      const gray = new Uint8Array(pixelCount);
+      const horizontalBlur = new Uint8Array(pixelCount);
+      const smoothed = new Uint8Array(pixelCount);
+      const blurWeights = [1, 8, 28, 56, 70, 56, 28, 8, 1];
+      for (let index = 0, pixel = 0; index < pixels.length; index += 4, pixel++) {
+        gray[pixel] = Math.round(pixels[index] * .299 + pixels[index + 1] * .587 + pixels[index + 2] * .114);
+      }
+
+      for (let y = 0; y < workHeight; y++) {
+        const row = y * workWidth;
+        for (let x = 0; x < workWidth; x++) {
+          const index = row + x;
+          let sum = 0;
+          for (let offset = -4; offset <= 4; offset++) {
+            const sampleX = Math.max(0, Math.min(workWidth - 1, x + offset));
+            sum += blurWeights[offset + 4] * gray[row + sampleX];
+          }
+          horizontalBlur[index] = Math.round(sum / 256);
+        }
+      }
+
+      for (let y = 0; y < workHeight; y++) {
+        for (let x = 0; x < workWidth; x++) {
+          const index = y * workWidth + x;
+          let sum = 0;
+          for (let offset = -4; offset <= 4; offset++) {
+            const sampleY = Math.max(0, Math.min(workHeight - 1, y + offset));
+            sum += blurWeights[offset + 4] * horizontalBlur[sampleY * workWidth + x];
+          }
+          smoothed[index] = Math.round(sum / 256);
+        }
+      }
+
+      const detail = Number(sensitivity);
+      const strongThreshold = 165 - detail * 1.1;
+      const weakThreshold = strongThreshold * .4;
+      const edges = new Uint8Array(pixelCount);
+      for (let y = 1; y < workHeight - 1; y++) {
+        for (let x = 1; x < workWidth - 1; x++) {
+          const index = y * workWidth + x;
+          const gx = -smoothed[index - workWidth - 1] + smoothed[index - workWidth + 1]
+            - 2 * smoothed[index - 1] + 2 * smoothed[index + 1]
+            - smoothed[index + workWidth - 1] + smoothed[index + workWidth + 1];
+          const gy = -smoothed[index - workWidth - 1] - 2 * smoothed[index - workWidth] - smoothed[index - workWidth + 1]
+            + smoothed[index + workWidth - 1] + 2 * smoothed[index + workWidth] + smoothed[index + workWidth + 1];
+          const edge = Math.sqrt(gx * gx + gy * gy);
+          if (edge >= strongThreshold) {
+            edges[index] = 2;
+          } else if (edge >= weakThreshold) {
+            edges[index] = 1;
+          }
+        }
+      }
+
+      const visited = new Uint8Array(pixelCount);
+      const queue = new Int32Array(pixelCount);
+      const minimumComponentSize = 4 + Math.round((100 - detail) * .05);
+      for (let start = 0; start < pixelCount; start++) {
+        if (edges[start] === 0 || visited[start]) continue;
+        let queueEnd = 1;
+        let strongEdges = 0;
+        queue[0] = start;
+        visited[start] = 1;
+        for (let queueIndex = 0; queueIndex < queueEnd; queueIndex++) {
+          const index = queue[queueIndex];
+          const y = Math.floor(index / workWidth);
+          const x = index - y * workWidth;
+          if (edges[index] === 2) strongEdges++;
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              const nextX = x + dx;
+              const nextY = y + dy;
+              if (nextX < 0 || nextX >= workWidth || nextY < 0 || nextY >= workHeight) continue;
+              const neighbor = nextY * workWidth + nextX;
+              if (edges[neighbor] > 0 && !visited[neighbor]) {
+                visited[neighbor] = 1;
+                queue[queueEnd++] = neighbor;
+              }
+            }
+          }
+        }
+        const keepComponent = queueEnd >= minimumComponentSize && strongEdges > 0;
+        for (let queueIndex = 0; queueIndex < queueEnd; queueIndex++) {
+          edges[queue[queueIndex]] = keepComponent ? 2 : 0;
+        }
+      }
+
+      const lineWidth = detail <= 35 ? 4 : detail <= 65 ? 3 : 2;
+      const boldEdges = new Uint8Array(pixelCount);
+      for (let y = lineWidth; y < workHeight - lineWidth; y++) {
+        for (let x = lineWidth; x < workWidth - lineWidth; x++) {
+          const index = y * workWidth + x;
+          if (edges[index] !== 2) continue;
+          for (let dy = -lineWidth; dy <= lineWidth; dy++) {
+            for (let dx = -lineWidth; dx <= lineWidth; dx++) {
+              boldEdges[index + dy * workWidth + dx] = 1;
+            }
+          }
+        }
+      }
+
+      const outputPixels = new Uint8ClampedArray(pixelCount * 4);
+      for (let index = 0; index < pixelCount; index++) {
+        const shade = boldEdges[index] ? 0 : 255;
+        const offset = index * 4;
+        outputPixels[offset] = shade;
+        outputPixels[offset + 1] = shade;
+        outputPixels[offset + 2] = shade;
+        outputPixels[offset + 3] = 255;
+      }
+
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = width;
+      outputCanvas.height = height;
+      const outputContext = outputCanvas.getContext("2d");
+      if (!outputContext) throw new Error("Image processing is unavailable in this browser.");
+      const outputData = outputContext.createImageData(width, height);
+      for (let y = 0; y < height; y++) {
+        const sourceY = Math.min(workHeight - 1, Math.floor(y / 2));
+        for (let x = 0; x < width; x++) {
+          const sourceX = Math.min(workWidth - 1, Math.floor(x / 2));
+          const sourceOffset = (sourceY * workWidth + sourceX) * 4;
+          const destinationOffset = (y * width + x) * 4;
+          outputData.data[destinationOffset] = outputPixels[sourceOffset];
+          outputData.data[destinationOffset + 1] = outputPixels[sourceOffset + 1];
+          outputData.data[destinationOffset + 2] = outputPixels[sourceOffset + 2];
+          outputData.data[destinationOffset + 3] = 255;
+        }
+      }
+      outputContext.putImageData(outputData, 0, 0);
+      return outputCanvas.toDataURL("image/png");
+    }
+
+    function makePhotoArtwork(dataUrl, caption, pageNumber) {
+      const captionLines = wrapTitle(caption, 28);
+      const fontSize = captionLines.length > 2 ? 23 : captionLines.length > 1 ? 27 : 32;
+      const captionY = 116 - (captionLines.length - 1) * (fontSize + 2) / 2;
+      const title = captionLines.map((line, index) => `<tspan x="408" dy="${index ? fontSize + 2 : 0}">${escapeXml(line)}</tspan>`).join("");
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="816" height="1056" viewBox="0 0 816 1056" role="img" aria-label="${escapeXml(caption)} coloring page from uploaded image">
+        <rect width="816" height="1056" fill="white"/>
+        <rect x="55" y="55" width="706" height="946" rx="22" fill="none" stroke="#111" stroke-width="2"/>
+        <path d="M95 145 Q408 160 721 145 M95 910 Q408 895 721 910" fill="none" stroke="#111" stroke-width="2"/>
+        <image href="${dataUrl}" x="95" y="168" width="626" height="730" preserveAspectRatio="xMidYMid meet"/>
+        <text x="408" y="${captionY}" text-anchor="middle" fill="#111" font-family="Arial,sans-serif" font-size="${fontSize}" font-weight="700">${title}</text>
+        <text x="408" y="962" text-anchor="middle" fill="#111" font-family="Arial,sans-serif" font-size="14" letter-spacing="3">COLORING PAGE ${String(pageNumber).padStart(2, "0")}</text>
+      </svg>`;
+    }
+
+    function makePage(svg, blank = false) {
+      const page = document.createElement("div");
+      page.className = `print-page${blank ? " blank" : ""}`;
+      if (svg) page.innerHTML = svg;
+      return page;
+    }
+
+    async function buildBook() {
+      const { total, illustrationCount } = updatePlan();
+      const inputs = [...promptsElement.querySelectorAll(".prompt-input")];
+      const missing = inputs.findIndex(input => !input.value.trim());
+      if (missing !== -1) {
+        const pageNumber = missing + 1;
+        status.textContent = `Add a subject for coloring page ${pageNumber} before generating the PDF.`;
+        inputs[missing].focus();
+        return false;
+      }
+      inputs.forEach((input, index) => { promptEntries[index].caption = input.value.trim(); });
+      const pages = [];
+      let illustrationNumber = 0;
+      for (let pageNumber = 1; pageNumber <= total; pageNumber++) {
+        if (pageNumber % 2 === 1 || !blankPagesInput.checked) {
+          illustrationNumber++;
+          const entry = promptEntries[illustrationNumber - 1];
+          if (entry.file) {
+            status.textContent = `Converting uploaded image for coloring page ${illustrationNumber}…`;
+            try {
+              const image = await loadImage(entry.file);
+              if (!image.naturalWidth || !image.naturalHeight) throw new Error("The selected image has no readable dimensions.");
+              const dataUrl = convertPhotoToLineArt(image, edgeSensitivity.value);
+              pages.push(makePage(makePhotoArtwork(dataUrl, entry.caption, illustrationNumber)));
+            } catch (error) {
+              status.textContent = `Could not convert the image for coloring page ${illustrationNumber}: ${error.message}`;
+              return false;
+            }
+          } else {
+            pages.push(makePage(makeArtwork(entry.caption, illustrationNumber)));
+          }
+        } else {
+          pages.push(makePage(null, true));
+        }
+      }
+      if (illustrationNumber !== illustrationCount || pages.length !== total) {
+        status.textContent = "Could not prepare the requested page layout. Please check the page settings and try again.";
+        return false;
+      }
+      const previewPages = pages.map(page => {
+        const copy = page.cloneNode(true);
+        copy.classList.replace("print-page", "book-page");
+        return copy;
+      });
+      preview.replaceChildren(...previewPages);
+      printBook.replaceChildren(...pages);
+      printBook.setAttribute("aria-hidden", "false");
+      document.getElementById("previewEmpty").hidden = true;
+      const uploadedCount = promptEntries.filter(entry => entry.file).length;
+      document.getElementById("previewCount").textContent = `${total} interior pages · ${illustrationCount} illustrations${uploadedCount ? ` including ${uploadedCount} uploaded image${uploadedCount === 1 ? "" : "s"}` : ""}${total - illustrationCount ? ` · ${total - illustrationCount} blank pages` : ""}`;
+      status.textContent = "Your interior is ready. In the print window, choose Save as PDF, US Letter, portrait, 100% scale, and disable headers and footers.";
+      return true;
+    }
+
+    pageCountInput.addEventListener("change", () => {
+      const value = Number(pageCountInput.value);
+      if (!Number.isFinite(value) || value < 1) pageCountInput.value = "1";
+      else if (value > maxPages) pageCountInput.value = String(maxPages);
+      else pageCountInput.value = String(Math.floor(value));
+      renderPromptFields();
+    });
+    blankPagesInput.addEventListener("change", renderPromptFields);
+    edgeSensitivity.addEventListener("input", () => {
+      document.getElementById("detailValue").textContent = `${edgeSensitivity.value}%`;
+    });
+    document.getElementById("clear").addEventListener("click", () => {
+      promptEntries.forEach(entry => {
+        entry.caption = "";
+        entry.file = null;
+      });
+      renderPromptFields();
+      status.textContent = "Captions and selected images cleared.";
+    });
+    document.getElementById("generate").addEventListener("click", async event => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      const originalLabel = button.textContent;
+      button.textContent = "Preparing coloring pages…";
+      try {
+        const prepared = await buildBook();
+        if (prepared) window.print();
+      } catch (error) {
+        status.textContent = `Could not prepare the coloring book: ${error.message}`;
+      } finally {
+        button.disabled = false;
+        button.textContent = originalLabel;
+      }
+    });
+
+    renderPromptFields();
+  </script>
+</body>
+</html>

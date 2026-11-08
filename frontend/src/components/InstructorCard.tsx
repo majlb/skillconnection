@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { BadgeCheck, MapPin, Monitor } from 'lucide-react';
+import { useMoney } from '@/context/CurrencyContext';
 import type { InstructorSummary } from '@/api/types';
-import { money } from '@/lib/format';
 import { Avatar, Badge, Stars } from './ui';
 
 export default function InstructorCard({ i, compact }: { i: InstructorSummary; compact?: boolean }) {
+  const money = useMoney();
   const city = i.locations.find((l) => l.primary)?.city ?? i.locations[0]?.city;
   return (
     <Link to={`/instructors/${i.id}`}

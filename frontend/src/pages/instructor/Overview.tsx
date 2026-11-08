@@ -2,11 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { CalendarCheck, DollarSign, TrendingUp, Wallet } from 'lucide-react';
 import { instructorApi } from '@/api/endpoints';
+import { useMoney } from '@/context/CurrencyContext';
 import BookingCard from '@/components/BookingCard';
 import { Badge, Card, Empty, Spinner, Stat } from '@/components/ui';
-import { dateOnly, money } from '@/lib/format';
+import { dateOnly } from '@/lib/format';
 
 export default function Overview() {
+  const money = useMoney();
   const { data: e, isLoading } = useQuery({ queryKey: ['earnings'], queryFn: instructorApi.earnings });
   const { data: upcoming = [] } = useQuery({ queryKey: ['instructor-bookings', 'upcoming'], queryFn: () => instructorApi.bookings('upcoming') });
   if (isLoading || !e) return <Spinner />;
