@@ -8,9 +8,9 @@ spring:
   application:
     name: skillconnect-api
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/skillconnect}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:NewPassword123}
+    url: ${DB_URL:jdbc:postgresql://ep-long-sun-bbd4amz0-pooler.c-15.us-east-1.aws.neon.tech/skillconnection?sslmode=require&channel_binding=require}
+    username: ${DB_USER:neondb_owner}
+    password: ${DB_PASSWORD:npg_beAya4nDYm9S}
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:10}
   jpa:
