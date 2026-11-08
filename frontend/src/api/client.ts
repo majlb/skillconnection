@@ -1,7 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import type { AuthResponse } from './types';
 
-export const API_BASE = import.meta.env.VITE_API_URL ?? '';
+export const API_BASE =
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://skillconnection-l36i.onrender.com');
 export const OAUTH_BASE = import.meta.env.VITE_OAUTH_BASE ?? 'http://localhost:8080';
 
 const REFRESH_KEY = 'sc-refresh';
