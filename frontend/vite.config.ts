@@ -8,8 +8,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': 'https://skillconnection-l36i.onrender.com',
-      '/ws': { target: 'ws://https://skillconnection-l36i.onrender.com', ws: true },
+      '/api': 'https://skillconnection-web.onrender.com',
+      '/ws': { target: 'https://skillconnection-web.onrender.com', ws: true },
     },
   },
 });
